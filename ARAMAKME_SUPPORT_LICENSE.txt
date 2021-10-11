@@ -1,0 +1,47 @@
+ARAMAKME SUPPORT v0.1 Software License
+
+///////////////////////////////
+//
+// ©2021 @aramakme
+//
+// This code is released with an ARAMAKME SUPPORT license v0.1.  The ARAMAKME SUPPORT license v0.1 provides the following rights:
+//    Usage: You may use this library provided that you follow the following restrictions:
+//         - you use it in support of an ARAMAKME license v0.1 or later
+//         - use of this library outside of an ARAMAKME license is prohibited without the express written and cryptographically signed consent of the copyright holder
+//    Commercial Use: You may use this library commecially provided you follow all stipulations under Usage
+//    Modificatoins: You may modify this code as long as any modified libraries are also released under the
+//         ARAMAKME SUPPORT v0.1 license and maintain sending a license_follow_rights_pecent to the stipulated license_canister configuration
+//         and as long as no future modifier demands more than the license_follow_rights_percent remaining rights.
+//    Merging: You may merge this code with another library as long as both are released with an ARAMAKME SUPPORT v0.1 license
+//    License Version Update: Only the copyright holder may update the license.
+//    Publishing and distribution:  You may publish and distribute this library as text and source code as long as this license in included in the text.  Any binary
+//         publication must include this license in the documentation. Any user levraging the published library must also adhere to this
+//         license.
+//    Selling Copies:  You may sell copies of this library as long as this license is disclosed to any buyer and provided that the buyer
+//         agrees, subject to penalty of law, to adhere to this license. The seller must provide a schedule to the buyer of expected ongoing
+//         costs expected in the operation of the code.
+//    Sublicensing: This software may be sub-licenesed as part of a larger license provided this license is disclosed to any licesee and provided that the licesee
+//         agrees, subject to penalty of law, to adhere to this license. The licensor must provide a schedule to the buyer of expected ongoing
+//         costs expected in the operation of the code.
+//    Usage tracking: You grant the canisters in license_canister the right to track calls and data about calls to the
+//          update_license function. This data may be used to track usage and provide refunds based on that usage.
+//    License Updates: The liscensor reserves the right to change the configuration of the parameters of this license if the cost structure or topograph of
+//          of the Internet Computer changes.
+//    Redistribution: 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the
+//          disclaimer at the end of the license.  2. Redistributions in binary form must reproduce the above copyright notice,
+//          this list of conditions and the following disclaimer in the documentation and/or other materials provided with the
+//          distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+// BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
+// SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+// OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// OFAC Compliance: Licensee agrees that they are currently in compliance with and shall at all times during the term of this Agreement (including any extension thereof) remain in
+// compliance with the regulations of OFAC (including those named on OFAC’s Specially Designated Nationals and Blocked Persons List) and any statute, executive order (including the
+// September 24, 2001, Executive Order Blocking Property and Prohibiting Transactions with Persons Who Commit, Threaten to Commit, or Support Terrorism), or other governmental action
+// relating thereto. Further licensee will apply this same OFAC compliance clause to any distribution partner or user of this software. Violation of this clause will result in a license
+// restriction and revocation.
+///////////////////////////////

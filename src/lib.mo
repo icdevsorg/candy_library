@@ -1,5 +1,5 @@
 ///////////////////////////////
-//
+// Note: Below is an example of integrating an ARAMAKME Liscense into a software library.  This actual license of this library is the MIT License which can be found at https://github.com/aramakme/candy_library/blob/main/src/mit_license.md with a forthcoming fork that removes the license checks and integration with the license manager.
 // ©2021 @aramakme
 //
 // This code is released with an ARAMAKME SOFTWARE License v0.1.  The ARAMAKME SOFTWARE license v0.1 provides the following rights:

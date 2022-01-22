@@ -193,7 +193,7 @@ module {
 
 
 
-    public class Candy(){
+    
 
 
         private func toPropertyUnstableMap(ps : PropertiesUnstable) : HashMap.HashMap<Text,PropertyUnstable> {
@@ -2327,7 +2327,7 @@ module {
         // End code from Departure labs property.mo
         //
         ///////////////////////////////////
-    };
+    
 
 
 };

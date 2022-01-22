@@ -90,6 +90,10 @@ module {
             #frozen: [CandyValue];
             #thawed: [CandyValue]; //need to thaw when going to CandyValueUnstable
         };
+        #Nats: {
+            #frozen: [Nat];
+            #thawed: [Nat]; //need to thaw when going to TrixValueUnstable
+         };
         #Floats: {
             #frozen: [Float];
             #thawed: [Float]; //need to thaw when going to CandyValueUnstable
@@ -123,6 +127,10 @@ module {
             #frozen: [Float];
             #thawed: Buffer.Buffer<Float>;
         };
+        #Nats: {
+            #frozen: [Nat];
+            #thawed: Buffer.Buffer<Nat>; //need to thaw when going to TrixValueUnstable
+         };
         #Array : {
             #frozen: [CandyValueUnstable];
             #thawed: Buffer.Buffer<CandyValueUnstable>; //need to thaw when going to CandyValueUnstable
@@ -1206,6 +1214,7 @@ module {
                     };
                 };
                 case(#Floats(val)){Prelude.nyi()};
+                case(#Nats(val)){Prelude.nyi()};
                 case(#Empty){ []};
             }
         };
@@ -1237,6 +1246,7 @@ module {
                     };
                 };
                 case(#Floats(val)){Prelude.nyi()};
+                case(#Nats(val)){Prelude.nyi()};
                 case(#Empty){ []};
             }
         };
@@ -1275,6 +1285,23 @@ module {
                 };
             };
         };
+
+        public func valueUnstableToNatsBuffer(val : CandyValueUnstable) : Buffer.Buffer<Nat>{
+            switch (val){
+                case(#Nats(val)){
+                    switch(val){
+                        case(#frozen(val)){
+                            toBuffer(val);
+                        };
+                        case(#thawed(val)){val};
+                    };
+                };
+                case(_){
+                    toBuffer([valueUnstableToNat(val)]); //may throw for unconvertable types
+                };
+            };
+        };
+
 
 
         public func cloneValueUnstable(val : CandyValueUnstable) : CandyValueUnstable{
@@ -1403,6 +1430,12 @@ module {
                         case(#thawed(val)){ #Floats(#thawed(val.toArray()))};
                     };
                 };
+                case(#Nats(val)){
+                    switch(val){
+                        case(#frozen(val)){ #Nats(#frozen(val))};
+                        case(#thawed(val)){ #Nats(#thawed(val.toArray()))};
+                    };
+                };
                 case(#Empty){ #Empty};
             }
         };
@@ -1452,6 +1485,12 @@ module {
                     switch(val){
                         case(#frozen(val)){ #Floats(#frozen(val))};
                         case(#thawed(val)){#Floats(#thawed(toBuffer<Float>(val)))};
+                    };
+                };
+                case(#Nats(val)){
+                    switch(val){
+                        case(#frozen(val)){ #Nats(#frozen(val))};
+                        case(#thawed(val)){#Nats(#thawed(toBuffer<Nat>(val)))};
                     };
                 };
                 case(#Empty){ #Empty};
@@ -1763,6 +1802,26 @@ module {
                         case(#thawed(val)){(val.size() * 4) + 2};
                     };
                 };
+                case(#Nats(val)){
+                    switch(val){
+                        case(#frozen(val)){
+                            var size = 0;
+                            for(thisItem in val.vals()){
+                                size += 1 + getValueSize(#Nat(thisItem));
+                            };
+                            
+                            return size;
+                        };
+                        case(#thawed(val)){
+                            var size = 0;
+                            for(thisItem in val.vals()){
+                                size += 1 + getValueSize(#Nat(thisItem));
+                            };
+                            
+                            return size;
+                        };
+                    };
+                };
                 case(#Empty){0};
             };
 
@@ -1852,6 +1911,26 @@ module {
                     switch(val){
                         case(#frozen(val)){(val.size() * 4) + 2};
                         case(#thawed(val)){(val.size() * 4) + 2};
+                    };
+                };
+                case(#Nats(val)){
+                    switch(val){
+                        case(#frozen(val)){
+                            var size = 0;
+                            for(thisItem in val.vals()){
+                                size += 1 + getValueUnstableSize(#Nat(thisItem));
+                            };
+                            
+                            return size;
+                        };
+                        case(#thawed(val)){
+                            var size = 0;
+                            for(thisItem in val.vals()){
+                                size += 1 + getValueUnstableSize(#Nat(thisItem));
+                            };
+                            
+                            return size;
+                        };
                     };
                 };
                 case(#Empty){0};

@@ -3,6 +3,18 @@ Library for Converting Types and Creating Workable Motoko Collections
 
 This library provides for both Stable and Unstable collections and conversions.  These methods help with keeping data in unstable workable runtime memory while providing methods to convert those objects to stable collections that can be put into upgrade variables for persistence across upgrades or for shipping the objects to other canisters and returning them as async functions. 
 
+I have refactored the files into separate libraries to silo some of the functionality.
+
+type.mo - holds most types and few conversion functions to stabilize/destabilize candy values, properties, and workspace types.
+
+conversion.mo - holds most of the conversion functions
+
+clone.mo - has some clone functions for deep cloning classes
+
+properties.mo - property and class functions for updating and manipulating classes
+
+workspace.mo - useful for keeping workable data in chunks that can be moved around canisters.
+
 CandyValue and CandyValueUnstable allow you to specify your variables in a variant class that makes keeping arrays and buffers of different types managable.  ie stable var myCollection : [CandyValueStable] = [#Int(0), #Text("second value"), #Float(3.14)]
 
 The property objects (adapted from https://github.com/DepartureLabsIC/non-fungible-token/blob/main/src/property.mo with copyright DepartureLabs and under MIT License, included here for compilability reasons.) allow for Key/Value collections that can be easily created, queried, and updated.  We include conversions between stable and unstable properties.
@@ -75,4 +87,9 @@ Workspace collections help manage data and can help chunk data into chunks sized
 Todo: Tests, examples
 
 Note: This project was a part of the [ARAMAKME expirament](https://hwqwz-ryaaa-aaaai-aasoa-cai.raw.ic0.app/) and an example of how to integrate an ARAMAKME license into a library can be found in the /Example_Aramakme_License folder.  The ARAMAKME license has since been removed from this library and it is licensed under the MIT License.  Until they are all distributed, the ARAMAKME NFTs are still for sale as a nastalgoic piece of memorobilia, and all profits will be locked into an 8 year neuron benifiting [ICDevs.org](https://icdevs.org) who are sheparding this library as it moves forward and improves.
+
+
+## Testing
+
+    printf "yes" | bash test_runner.sh
 

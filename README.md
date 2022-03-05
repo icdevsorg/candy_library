@@ -76,3 +76,8 @@ Todo: Tests, examples
 
 Note: This project was a part of the [ARAMAKME expirament](https://hwqwz-ryaaa-aaaai-aasoa-cai.raw.ic0.app/) and an example of how to integrate an ARAMAKME license into a library can be found in the /Example_Aramakme_License folder.  The ARAMAKME license has since been removed from this library and it is licensed under the MIT License.  Until they are all distributed, the ARAMAKME NFTs are still for sale as a nastalgoic piece of memorobilia, and all profits will be locked into an 8 year neuron benifiting [ICDevs.org](https://icdevs.org) who are sheparding this library as it moves forward and improves.
 
+
+## Testing
+
+    printf "yes" | bash test_runner.sh
+

@@ -166,26 +166,24 @@ module {
 
         
 
-        public func getClassProperty(val: CandyValue, name : Text) : Property{
+        public func getClassProperty(val: CandyValue, name : Text) : ?Property{
             
             switch(val){
                 case(#Class(val)){
                     for(thisItem in val.vals()){
                         if(thisItem.name == name){
-                            return thisItem;
+                            return ?thisItem;
                         };
                     };
-                    //couldnt find name in class
-                    assert(false);
-                    //unreachable
-                    return {name=""; value=#Empty; immutable=true};
+                    
+                    return null;
 
                 };
                 case(_){
 
                     assert(false);
                     //unreachable
-                    return {name=""; value=#Empty; immutable=true};
+                    return null;
                 }
 
             };

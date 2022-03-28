@@ -228,7 +228,8 @@ module {
                 switch (m.get(q.name)) {
                     case (null) {
                         // Query contained an unknown property.
-                        return #err(#NotFound);
+                        //return #err(#NotFound);
+                        //for now, ignore unfound properteis
                     };
                     case (? p)  {
                         switch (p.value) {

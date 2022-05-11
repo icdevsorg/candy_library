@@ -1124,13 +1124,16 @@ module {
             return textToByteBuffer(_text).toArray();
         };
 
-        public func textToNat(phrase : Text) : ?Nat {
-            var theSum : Nat = 0;
-            Iter.iterate(Text.toIter(phrase), func (x : Char, n : Nat){
-                //todo: check for digits
-                theSum := theSum + ((Nat32.toNat(Char.toNat32(x)) - 48) * 10 **  (phrase.size()-n-1));
-            });
-            return ?theSum;
+        public func textToNat( txt : Text) : Nat {
+            assert(txt.size() > 0);
+            let chars = txt.chars();
+            var num : Nat = 0;
+            for (v in chars){
+                let charToNum = Nat32.toNat(Char.toNat32(v)-48);
+                assert(charToNum >= 0 and charToNum <= 9);
+                num := num * 10 +  charToNum;          
+            };
+            num;
         };
 
         public func valueToProperties(val : CandyValue) : Types.Properties {

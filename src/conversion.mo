@@ -1124,6 +1124,22 @@ module {
             return textToByteBuffer(_text).toArray();
         };
 
+        public func textToNat(phrase : Text) : ?Nat {
+            var theSum : Nat = 0;
+            Iter.iterate(Text.toIter(phrase), func (x : Char, n : Nat){
+                //todo: check for digits
+                theSum := theSum + ((Nat32.toNat(Char.toNat32(x)) - 48) * 10 **  (phrase.size()-n-1));
+            });
+            return ?theSum;
+        };
+
+        public func valueToProperties(val : CandyValue) : Types.Properties {
+            switch(val){
+                case(#Class(val)){ val};
+                case(_){assert(false);/*unreachable*/[];};
+            };
+        };
+
         public func bytesToText(_bytes : [Nat8]) : Text{
             
             var result : Text = "";
@@ -1182,8 +1198,10 @@ module {
                 bytes := List.push<Nat8>(a, bytes);
                 test := b > 0;
             };
-
-            Array.append<Nat8>([c],List.toArray<Nat8>(bytes));
+            let result = toBuffer<Nat8>([c]);
+            result.append(toBuffer<Nat8>(List.toArray<Nat8>(bytes)));
+            result.toArray();
+            //Array.append<Nat8>([c],List.toArray<Nat8>(bytes));
         };
 
         public func bytesToInt(_bytes : [Nat8]) : Int{

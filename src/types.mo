@@ -30,6 +30,7 @@ module {
 
     public type UpdateModeUnstable = {
         #Set    : CandyValueUnstable;
+        #Lock    : CandyValueUnstable;
         #Next   : [UpdateUnstable];
     };
 
@@ -78,6 +79,7 @@ module {
 
     public type UpdateMode = {
         #Set    : CandyValue;
+        #Lock    : CandyValue;
         #Next   : [Update];
     };
 

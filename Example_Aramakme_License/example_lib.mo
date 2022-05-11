@@ -243,6 +243,7 @@ module {
 
     public type UpdateMode = {
         #Set    : CandyValue;
+        #Lock   : CandyValue;
         #Next   : [Update];
     };
 

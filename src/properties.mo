@@ -38,12 +38,11 @@ module {
         };
 
         private func fromPropertyUnstableMap(m : HashMap.HashMap<Text,PropertyUnstable>) : PropertiesUnstable {
-            
-            var ps : PropertiesUnstable = [];
+            var ps : Buffer.Buffer<PropertyUnstable> = Buffer.Buffer<PropertyUnstable>(m.size());
             for ((_, p) in m.entries()) {
-                ps := Array.append(ps, [p]);
+                ps.add(p);
             };
-            ps;
+            ps.toArray();
         };
 
 
@@ -51,7 +50,7 @@ module {
         // NOTE: ignores unknown properties.
         public func getPropertiesUnstable(properties : PropertiesUnstable, qs : [Query]) : Result.Result<PropertiesUnstable, PropertyError> {
             let m               = toPropertyUnstableMap(properties);
-            var ps : PropertiesUnstable = [];
+            var ps : Buffer.Buffer<PropertyUnstable> = Buffer.Buffer<PropertyUnstable>(m.size());
             for (q in qs.vals()) {
                 switch (m.get(q.name)) {
                     case (null) {
@@ -63,18 +62,18 @@ module {
                             case (#Class(c)) {
                                 if (q.next.size() == 0) {
                                     // Return every sub-attribute attribute.
-                                    ps := Array.append(ps, [p]);
+                                    ps.add(p);
                                 } else {
                                     let sps = switch (getPropertiesUnstable(c, q.next)) {
                                         case (#err(e)) { return #err(e); };
                                         case (#ok(v))  { v; };
                                     };
                                     
-                                    ps := Array.append(ps, [{
+                                    ps.add({
                                         name      = p.name;
                                         value     = #Class(sps);
                                         immutable = p.immutable;
-                                    }]);
+                                    });
                                 };
                             };
                             case (other) {
@@ -82,13 +81,13 @@ module {
                                 if (q.next.size() != 0) {
                                     return #err(#NotFound);
                                 };
-                                ps := Array.append(ps, [p]);
+                                ps.add(p);
                             };
                         }
                     };
                 };
             };
-            #ok(ps);
+            #ok(ps.toArray());
         };
 
         // Updates the given properties based on the given update query.
@@ -117,6 +116,13 @@ module {
                                     name      = u.name;
                                     value     = v;
                                     immutable = false;
+                                });
+                            };
+                            case (#Lock(v)) {
+                                m.put(u.name, {
+                                    name      = u.name;
+                                    value     = v;
+                                    immutable = true;
                                 });
                             };
                         };
@@ -153,6 +159,13 @@ module {
                                     name      = p.name;
                                     value     = v;
                                     immutable = false;
+                                });
+                            };
+                            case (#Lock(v)) {
+                                m.put(u.name, {
+                                    name      = p.name;
+                                    value     = v;
+                                    immutable = true;
                                 });
                             };
                         };
@@ -212,18 +225,18 @@ module {
 
         private func fromPropertyMap(m : HashMap.HashMap<Text,Property>) : Properties {
             
-            var ps : Properties = [];
+            var ps : Buffer.Buffer<Property> = Buffer.Buffer(m.size());
             for ((_, p) in m.entries()) {
-                ps := Array.append(ps, [p]);
+                ps.add(p);
             };
-            ps;
+            ps.toArray();
         };
 
         // Returns a subset of from properties based on the given query.
         // NOTE: ignores unknown properties.
         public func getProperties(properties : Properties, qs : [Query]) : Result.Result<Properties, PropertyError> {
             let m               = toPropertyMap(properties);
-            var ps : Properties = [];
+            var ps : Buffer.Buffer<Property> = Buffer.Buffer<Property>(m.size());
             for (q in qs.vals()) {
                 switch (m.get(q.name)) {
                     case (null) {
@@ -236,18 +249,18 @@ module {
                             case (#Class(c)) {
                                 if (q.next.size() == 0) {
                                     // Return every sub-attribute attribute.
-                                    ps := Array.append(ps, [p]);
+                                    ps.add(p);
                                 } else {
                                     let sps = switch (getProperties(c, q.next)) {
                                         case (#err(e)) { return #err(e); };
                                         case (#ok(v))  { v; };
                                     };
                                     
-                                    ps := Array.append(ps, [{
+                                    ps.add({
                                         name      = p.name;
                                         value     = #Class(sps);
                                         immutable = p.immutable;
-                                    }]);
+                                    });
                                 };
                             };
                             case (other) {
@@ -255,13 +268,13 @@ module {
                                 if (q.next.size() != 0) {
                                     return #err(#NotFound);
                                 };
-                                ps := Array.append(ps, [p]);
+                                ps.add(p);
                             };
                         }
                     };
                 };
             };
-            #ok(ps);
+            #ok(ps.toArray());
         };
 
         // Updates the given properties based on the given update query.
@@ -290,6 +303,13 @@ module {
                                     name      = u.name;
                                     value     = v;
                                     immutable = false;
+                                });
+                            };
+                            case (#Lock(v)) {
+                                m.put(u.name, {
+                                    name      = u.name;
+                                    value     = v;
+                                    immutable = true;
                                 });
                             };
                         };
@@ -326,6 +346,13 @@ module {
                                     name      = p.name;
                                     value     = v;
                                     immutable = false;
+                                });
+                            };
+                            case (#Lock(v)) {
+                                m.put(u.name, {
+                                    name      = p.name;
+                                    value     = v;
+                                    immutable = true;
                                 });
                             };
                         };

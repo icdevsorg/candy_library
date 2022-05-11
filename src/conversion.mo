@@ -1136,6 +1136,8 @@ module {
             num;
         };
 
+        public func propertyToText(a:Types.Property):Text{valueToText(a.value)};
+
         public func valueToProperties(val : CandyValue) : Types.Properties {
             switch(val){
                 case(#Class(val)){ val};

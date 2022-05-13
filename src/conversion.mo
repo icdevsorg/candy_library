@@ -1135,16 +1135,22 @@ module {
         };
 
         //conversts "10" to 10
-        public func textToNat( txt : Text) : Nat {
-            assert(txt.size() > 0);
-            let chars = txt.chars();
-            var num : Nat = 0;
-            for (v in chars){
-                let charToNum = Nat32.toNat(Char.toNat32(v)-48);
-                assert(charToNum >= 0 and charToNum <= 9);
-                num := num * 10 +  charToNum;          
+        public func textToNat( txt : Text) : ?Nat {
+            if(txt.size() > 0){
+                let chars = txt.chars();
+                var num : Nat = 0;
+                for (v in chars){
+                    let charToNum = Nat32.toNat(Char.toNat32(v)-48);
+                    if(charToNum >= 0 and charToNum <= 9){
+                        num := num * 10 +  charToNum; 
+                    } else {
+                        return null;
+                    };         
+                };
+                ?num;
+            }else {
+                return null;
             };
-            num;
         };
 
         public func propertyToText(a:Types.Property):Text{valueToText(a.value)};

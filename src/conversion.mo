@@ -1124,6 +1124,17 @@ module {
             return textToByteBuffer(_text).toArray();
         };
 
+        //encodes a string it to a giant int
+        public func encodeTextAsNat(phrase : Text) : ?Nat {
+            var theSum : Nat = 0;
+            Iter.iterate(Text.toIter(phrase), func (x : Char, n : Nat){
+                //todo: check for digits
+                theSum := theSum + ((Nat32.toNat(Char.toNat32(x)) - 48) * 10 **  (phrase.size()-n-1));
+            });
+            return ?theSum;
+        };
+
+        //conversts "10" to 10
         public func textToNat( txt : Text) : Nat {
             assert(txt.size() > 0);
             let chars = txt.chars();

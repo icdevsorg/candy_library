@@ -13,19 +13,20 @@
 import Types "types";
 import Array "mo:base/Array";
 
+import SB "mo:stablebuffer/StableBuffer";
+
 module {
 
         type CandyValue = Types.CandyValue;
-        type CandyValueUnstable = Types.CandyValueUnstable;
-        type PropertyUnstable = Types.PropertyUnstable;
+        type Property = Types.Property;
 
 
-        public func cloneValueUnstable(val : CandyValueUnstable) : CandyValueUnstable{
+        public func clone(val : CandyValue) : CandyValue{
             switch(val){
                 case(#Class(val)){
 
-                    return #Class(Array.tabulate<PropertyUnstable>(val.size(), func(idx){
-                        {name= val[idx].name; value=cloneValueUnstable(val[idx].value); immutable = val[idx].immutable};
+                    return #Class(Array.tabulate<Property>(val.size(), func(idx){
+                        {name= val[idx].name; value=clone(val[idx].value); immutable = val[idx].immutable};
                     }));
                 };
                 case(#Bytes(val)){
@@ -36,7 +37,43 @@ module {
                         };
                         case(#thawed(val)){
                             
-                            #Bytes(#thawed(val.clone()));
+                            #Bytes(#thawed(SB.clone<Nat8>(val)));
+                        };
+                    }
+                };
+                case(#Nats(val)){
+                    switch(val){
+                        case(#frozen(val)){
+                            
+                            #Nats(#frozen(val));
+                        };
+                        case(#thawed(val)){
+                            
+                            #Nats(#thawed(SB.clone<Nat>(val)));
+                        };
+                    }
+                };
+                case(#Floats(val)){
+                    switch(val){
+                        case(#frozen(val)){
+                            
+                            #Floats(#frozen(val));
+                        };
+                        case(#thawed(val)){
+                            
+                            #Floats(#thawed(SB.clone<Float>(val)));
+                        };
+                    }
+                };
+                case(#Array(val)){
+                    switch(val){
+                        case(#frozen(val)){
+                            
+                            #Array(#frozen(val));
+                        };
+                        case(#thawed(val)){
+                            
+                            #Array(#thawed(SB.clone<CandyValue>(val)));
                         };
                     }
                 };

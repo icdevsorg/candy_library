@@ -22,9 +22,9 @@ shared (deployer) actor class test_runner() = this {
 
     public shared func test() : async {#success; #fail : Text} {
 
-        let suite = S.suite("test nft", [
+        let suite = S.suite("test candy", [
                     //test getting witness returns empty if no witness
-                    S.test("testOwner", switch(await testConversions()){case(#success){true};case(_){false};}, M.equals<Bool>(T.bool(true))),
+                    S.test("testConversions", switch(await testConversions()){case(#success){true};case(_){false};}, M.equals<Bool>(T.bool(true))),
                     
                 ]);
         S.run(suite);
@@ -32,16 +32,20 @@ shared (deployer) actor class test_runner() = this {
         return #success;
     };
 
-    // US.2
-    // US.3
     public shared func testConversions() : async {#success; #fail : Text} {
-        Debug.print("running testOwner");
+        Debug.print("running testConversions");
 
         let owner = Principal.toText(deployer.caller);
 
         let suite = S.suite("test conversion", [
-
-            S.test("Nat32 is Nat", Conversion.valueUnstableToNat(#Nat32(10)), M.equals<Nat>(T.nat(10)))
+            S.test("Nat8 is Nat", Conversion.valueToNat(#Nat8(10)), M.equals<Nat>(T.nat(10))),
+            S.test("Nat16 is Nat", Conversion.valueToNat(#Nat16(10)), M.equals<Nat>(T.nat(10))),
+            S.test("Nat32 is Nat", Conversion.valueToNat(#Nat32(10)), M.equals<Nat>(T.nat(10))),
+            S.test("Nat64 is Nat", Conversion.valueToNat(#Nat64(10)), M.equals<Nat>(T.nat(10))),
+            S.test("Nat8 is Text", Conversion.valueToText(#Nat8(10)), M.equals<Text>(T.text("10"))),
+            S.test("Nat16 is Text", Conversion.valueToText(#Nat16(10)), M.equals<Text>(T.text("10"))),
+            S.test("Nat32 is Text", Conversion.valueToText(#Nat32(10)), M.equals<Text>(T.text("10"))),
+            S.test("Nat64 is Text", Conversion.valueToText(#Nat64(10)), M.equals<Text>(T.text("10")))
         ]);
 
         S.run(suite);

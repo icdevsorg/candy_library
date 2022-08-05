@@ -19,7 +19,7 @@ import Nat "mo:base/Nat";
 import Types "types";
 import Conversion "conversion";
 import Clone "clone";
-import RB "mo:stablerbtree/StableRBTree";
+import RB "mo:map/Map";
 import SB "mo:stablebuffer/StableBuffer";
 
 module {

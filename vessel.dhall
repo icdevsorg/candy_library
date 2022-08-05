@@ -1,4 +1,4 @@
 {
-  dependencies = [ "base", "matchers", "stablerbtree", "stablebuffer" ],
+  dependencies = [ "base", "matchers", "stablebuffer", "map" ],
   compiler = None Text
 }

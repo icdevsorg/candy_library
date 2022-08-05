@@ -34,7 +34,7 @@ import List "mo:base/List";
 import Types "types";
 import Hex "hex";
 import Properties "properties";
-import RB "mo:stablerbtree/StableRBTree";
+import RB "mo:map/Map";
 import SB "mo:stablebuffer/StableBuffer";
 
 

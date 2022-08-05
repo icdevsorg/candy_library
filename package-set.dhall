@@ -4,16 +4,17 @@ let Package =
 
 let
   additions =
-    [{ name = "stablerbtree"
-      , repo = "https://github.com/skilesare/StableRBTree"
-      , version = "v0.6.1"
-      , dependencies = [ "base"]
-      },
+    [
       { name = "stablebuffer"
       , repo = "https://github.com/skilesare/StableBuffer"
       , version = "v0.2.0"
       , dependencies = [ "base"]
-      }] : List Package
+      },
+    { name = "map"
+    , repo = "https://github.com/ZhenyaUsenko/motoko-hash-map"
+    , version = "v6.0.0"
+    , dependencies = [ "base"]
+    }] : List Package
 
 let
   {- This is where you can override existing packages in the package-set

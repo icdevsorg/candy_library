@@ -587,13 +587,13 @@ module {
         public func bytesToNat64(bytes: [Nat8]) : Nat64{
             
             (Nat64.fromNat(Nat8.toNat(bytes[0])) << 56) +
-            (Nat64.fromNat(Nat8.toNat(bytes[0])) << 48) +
-            (Nat64.fromNat(Nat8.toNat(bytes[1])) << 40) +
-            (Nat64.fromNat(Nat8.toNat(bytes[2])) << 32) +
-            (Nat64.fromNat(Nat8.toNat(bytes[0])) << 24) +
-            (Nat64.fromNat(Nat8.toNat(bytes[1])) << 16) +
-            (Nat64.fromNat(Nat8.toNat(bytes[2])) << 8) +
-            (Nat64.fromNat(Nat8.toNat(bytes[3])));
+            (Nat64.fromNat(Nat8.toNat(bytes[1])) << 48) +
+            (Nat64.fromNat(Nat8.toNat(bytes[2])) << 40) +
+            (Nat64.fromNat(Nat8.toNat(bytes[3])) << 32) +
+            (Nat64.fromNat(Nat8.toNat(bytes[4])) << 24) +
+            (Nat64.fromNat(Nat8.toNat(bytes[5])) << 16) +
+            (Nat64.fromNat(Nat8.toNat(bytes[6])) << 8) +
+            (Nat64.fromNat(Nat8.toNat(bytes[7])));
         };
 
 

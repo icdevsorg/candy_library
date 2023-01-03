@@ -15,36 +15,25 @@ import Array "mo:base/Array";
 
 module {
 
-        type CandyValue = Types.CandyValue;
-        type CandyValueUnstable = Types.CandyValueUnstable;
-        type PropertyUnstable = Types.PropertyUnstable;
+  type CandyValue = Types.CandyValue;
+  type CandyValueUnstable = Types.CandyValueUnstable;
+  type PropertyUnstable = Types.PropertyUnstable;
 
+  public func cloneValueUnstable(val : CandyValueUnstable) : CandyValueUnstable{
+    switch(val){
+      case(#Class(val)){
 
-        public func cloneValueUnstable(val : CandyValueUnstable) : CandyValueUnstable{
-            switch(val){
-                case(#Class(val)){
-
-                    return #Class(Array.tabulate<PropertyUnstable>(val.size(), func(idx){
-                        {name= val[idx].name; value=cloneValueUnstable(val[idx].value); immutable = val[idx].immutable};
-                    }));
-                };
-                case(#Bytes(val)){
-                    switch(val){
-                        case(#frozen(val)){
-                            
-                            #Bytes(#frozen(val));
-                        };
-                        case(#thawed(val)){
-                            
-                            #Bytes(#thawed(val.clone()));
-                        };
-                    }
-                };
-                case(_){
-                    
-                    val;
-                }
-            };
+        return #Class(Array.tabulate<PropertyUnstable>(val.size(), func(idx){
+            {name= val[idx].name; value=cloneValueUnstable(val[idx].value); immutable = val[idx].immutable};
+        }));
+      };
+      case(#Bytes(val)){
+        switch(val){
+          case(#frozen(val)) #Bytes(#frozen(val));
+          case(#thawed(val)) #Bytes(#thawed(val.clone()));
         };
-
+      };
+      case(_) val;
+    };
+  };
 }

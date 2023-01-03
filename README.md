@@ -93,3 +93,10 @@ Note: This project was a part of the [ARAMAKME expirament](https://hwqwz-ryaaa-a
 
     printf "yes" | bash test_runner.sh
 
+## Release
+
+v0.1.12
+
+* Refactor - Cleaned up code
+* JSON - added a library to dump values to JSON
+

@@ -11,6 +11,7 @@ import Clone "../src/clone";
 import Conversion "../src/conversion";
 import Properties "../src/properties";
 import Workspace "../src/workspace";
+import Candid "../src/candid";
 
 
 

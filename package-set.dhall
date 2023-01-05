@@ -5,21 +5,22 @@ let Package =
 let
   -- This is where you can add your own packages to the package-set
   additions =
-    [] : List Package
+    [{ name = "candid"
+      , version = "v1.0.1"
+      , repo = "https://github.com/gekctek/motoko_candid"
+      , dependencies = ["xtendedNumbers", "base"] : List Text
+      },
+      { name = "xtendedNumbers"
+      , version = "v1.0.2"
+      , repo = "https://github.com/gekctek/motoko_numbers"
+      , dependencies = [] : List Text
+      }] : List Package
 
-let
-  {- This is where you can override existing packages in the package-set
-
-     For example, if you wanted to use version `v2.0.0` of the foo library:
-     let overrides = [
-         { name = "foo"
-         , version = "v2.0.0"
-         , repo = "https://github.com/bar/foo"
+  let overrides = 
+  [{name = "base"
+         , version = "moc-0.7.4"
+         , repo = "https://github.com/dfinity/motoko-base"
          , dependencies = [] : List Text
-         }
-     ]
-  -}
-  overrides =
-    [] : List Package
+         }]
 
 in  upstream # additions # overrides

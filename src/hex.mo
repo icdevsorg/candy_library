@@ -7,6 +7,10 @@
  * Stability   : Stable
  */
 
+/// Hexadecimal support for the candy library.
+///
+/// This module contains the utilities useful for handling hexadecimal values.
+
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Option "mo:base/Option";

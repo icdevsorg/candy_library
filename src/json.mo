@@ -1,3 +1,6 @@
+/// JSON support for the candy library.
+///
+/// This module contains the utilities useful for handling JSON values.
 
 import Buffer "mo:base/Buffer";
 import Nat "mo:base/Nat";

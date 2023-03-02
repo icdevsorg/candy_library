@@ -12,6 +12,9 @@
 
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
+import StableBuffer "mo:stable_buffer/StableBuffer";
+import Map "mo:Map/Map";
+import Set "mo:Map/Set";
 
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
@@ -42,8 +45,8 @@ module {
   public func countAddressedChunksInWorkspace(x : Workspace) : Nat{
     
     var chunks = 0;
-    for (thisZone in Iter.range(0, x.size() - 1)){
-      chunks += x.get(thisZone).size();
+    for (thisZone in Iter.range(0, StableBuffer.size(x) - 1)){
+      chunks += StableBuffer.size(StableBuffer.get(x,thisZone));
     };
     chunks;
 
@@ -51,12 +54,12 @@ module {
 
   public func emptyWorkspace() : Workspace {
     
-    return Buffer.Buffer<DataZone>(1);
+    return StableBuffer.init<DataZone>();
   };
 
   public func initWorkspace(size : Nat) : Workspace {
     
-    return Buffer.Buffer<DataZone>(size);
+    return StableBuffer.initPresized<DataZone>(size);
   };
 
   //variants take up 2 bytes as long as there are fewer than 32 item in the enum
@@ -113,58 +116,45 @@ module {
         }
       };
       case(#Array(val)){
-        switch(val){
-          case(#frozen(val)){
+       
             var size = 0;
             for(thisItem in val.vals()){
               size += 1 + getValueSize(thisItem);
             };
             
             return size;
-          };
-          case(#thawed(val)){
-            var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueSize(thisItem);
-            };
-            
-            return size;
-          };
-        };
+          
       };
       case(#Bytes(val)){
-        switch(val){
-          case(#frozen(val)){val.size() + 2};
-          case(#thawed(val)){val.size() + 2};
-        };
+        val.size() + 2
       };
       case(#Floats(val)){
-        switch(val){
-          case(#frozen(val)){(val.size() * 4) + 2};
-          case(#thawed(val)){(val.size() * 4) + 2};
-        };
+        (val.size() * 4) + 2
       };
       case(#Nats(val)){
-        switch(val){
-          case(#frozen(val)){
             var size = 0;
             for(thisItem in val.vals()){
               size += 1 + getValueSize(#Nat(thisItem));
             };
             
             return size;
-          };
-          case(#thawed(val)){
-            var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueSize(#Nat(thisItem));
-            };
-            
-            return size;
-          };
-        };
       };
-      case(#Empty){0};
+      case(#Map(val)){
+        var size = 0;
+        for(thisItem in val.vals()){
+          size += getValueSize(thisItem.0) + getValueSize(thisItem.1) + 2;
+        };
+        
+        return size;
+          
+      };
+      case(#Set(val)){
+        var size = 0;
+        for(thisItem in val.vals()){
+          size += getValueSize(thisItem) + 2;
+        };
+        return size;  
+      };
     };
 
     return varSize;
@@ -223,59 +213,44 @@ module {
         }
       };
       case(#Array(val)){
-        switch(val){
-          case(#frozen(val)){
-            var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueUnstableSize(thisItem);
-            };
-            
-            return size;
-          };
-          case(#thawed(val)){
-            var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueUnstableSize(thisItem);
-            };
-            
-            return size;
-          };
+        
+        var size = 0;
+        for(thisItem in StableBuffer.vals(val)){
+          size += 1 + getValueUnstableSize(thisItem);
         };
+        
+        return size;
+          
       };
-
       case(#Bytes(val)){
-        switch(val){
-          case(#frozen(val)){val.size() + 2};
-          case(#thawed(val)){val.size() + 2};
-        };
+        StableBuffer.size(val) + 2;
       };
       case(#Floats(val)){
-        switch(val){
-          case(#frozen(val)){(val.size() * 4) + 2};
-          case(#thawed(val)){(val.size() * 4) + 2};
-        };
+        (StableBuffer.size(val) * 4) + 2;
       };
       case(#Nats(val)){
-        switch(val){
-          case(#frozen(val)){
-            var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueUnstableSize(#Nat(thisItem));
-            };
-            
-            return size;
-          };
-          case(#thawed(val)){
-            var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueUnstableSize(#Nat(thisItem));
-            };
-            
-            return size;
-          };
+        var size = 0;
+        for(thisItem in StableBuffer.vals(val)){
+          size += 1 + getValueUnstableSize(#Nat(thisItem));
         };
+        return size;
       };
-      case(#Empty){0};
+      case(#Map(val)){
+        var size = 0;
+        for(thisItem in Map.entries<CandyValueUnstable, CandyValueUnstable>(val)){
+          size += getValueUnstableSize(thisItem.0) + getValueUnstableSize(thisItem.1) + 2;
+        };
+        
+        return size;
+          
+      };
+      case(#Set(val)){
+        var size = 0;
+        for(thisItem in Set.keys<CandyValueUnstable>(val)){
+          size += getValueUnstableSize(thisItem) + 2;
+        };
+        return size;  
+      };
     };
     return varSize + 2;
   };
@@ -287,8 +262,8 @@ module {
     var currentZone = 0;
     var currentChunk = 0;
     let result = Array.tabulate<AddressedChunk>(countAddressedChunksInWorkspace(x), func(thisChunk){
-      let thisChunk = (currentZone, currentChunk, Types.stabalizeValue(x.get(currentZone).get(currentChunk)));
-      if(currentChunk == Nat.sub(x.get(currentZone).size(),1)){
+      let thisChunk = (currentZone, currentChunk, Types.stabalizeValue(StableBuffer.get(StableBuffer.get(x,currentZone),currentChunk)));
+      if(currentChunk == Nat.sub(StableBuffer.size(StableBuffer.get(x, currentZone)),1)){
         currentZone += 1;
         currentChunk := 0;
       } else {
@@ -304,13 +279,13 @@ module {
     
     var currentZone = 0;
     var currentChunk = 0;
-    let ws = Buffer.Buffer<DataZone>(x.size());
-    for(thisZone in x.vals()){
+    let ws = StableBuffer.initPresized<DataZone>(StableBuffer.size(x));
+    for(thisZone in StableBuffer.vals(x)){
 
-      let tz = Buffer.Buffer<DataChunk>(thisZone.size());
-      ws.add(tz);
-      for(thisDataChunk in thisZone.vals()){
-        tz.add(Clone.cloneValueUnstable(thisDataChunk));
+      let tz = StableBuffer.initPresized<DataChunk>(StableBuffer.size(thisZone));
+      StableBuffer.add<DataZone>(ws, tz);
+      for(thisDataChunk in StableBuffer.vals(thisZone)){
+        StableBuffer.add(tz,Clone.cloneValueUnstable(thisDataChunk));
       };
         
     };
@@ -318,7 +293,7 @@ module {
   };
 
   public func fromAddressedChunks(x : AddressedChunkArray) : Workspace{
-    let result = Buffer.Buffer<DataZone>(x.size());
+    let result = StableBuffer.initPresized<DataZone>(x.size());
     fileAddressedChunks(result, x);
     return result;
   };
@@ -327,7 +302,7 @@ module {
     
     for (thisChunk : AddressedChunk in Array.vals<AddressedChunk>(x)){
 
-      let resultSize : Nat = workspace.size();
+      let resultSize : Nat = StableBuffer.size(workspace);
       let targetZone = thisChunk.0 + 1;
 
       if(targetZone  <= resultSize){
@@ -336,29 +311,29 @@ module {
         //append zone
 
         for (thisIndex in Iter.range(resultSize, targetZone-1)){
-          workspace.add(Buffer.Buffer<DataChunk>(1));
+          StableBuffer.add(workspace, StableBuffer.init<DataChunk>());
         };
 
       };
 
-      let thisZone = workspace.get(thisChunk.0);
+      let thisZone = StableBuffer.get(workspace,thisChunk.0);
 
-      if(thisChunk.1 + 1  <= thisZone.size()){
+      if(thisChunk.1 + 1  <= StableBuffer.size(thisZone)){
         //zone exists
-        thisZone.put(thisChunk.1, Types.destabalizeValue(thisChunk.2));
+        StableBuffer.put(thisZone, thisChunk.1, Types.destabalizeValue(thisChunk.2));
       } else {
         //append zone
 
-        for (newChunk in Iter.range(thisZone.size(), thisChunk.1)){
+        for (newChunk in Iter.range(StableBuffer.size(thisZone), thisChunk.1)){
 
           let newBuffer = if(thisChunk.1 == newChunk){
           //we know the size
 
             Types.destabalizeValue(thisChunk.2);
           } else {
-            #Empty;
+            #Option(null);
           };
-          thisZone.add(newBuffer);
+          StableBuffer.add(thisZone, newBuffer);
         };
         //return thisZone.get(thisChunk.1);
       };
@@ -372,7 +347,7 @@ module {
   public func getDataZoneSize(dz: DataZone) : Nat {
     
     var size : Nat = 0;
-    for(thisChunk in dz.vals()){
+    for(thisChunk in StableBuffer.vals(dz)){
       size += getValueUnstableSize(thisChunk);
     };
     
@@ -392,10 +367,10 @@ module {
       if(handBrake > 10000){ break chunking;};
       var foundBytes = 0;
       //calc bytes
-      for(thisZone in Iter.range(zoneTracker, _workspace.size()-1)){
-        for(thisChunk in Iter.range(chunkTracker, _workspace.get(thisZone).size()-1)){
+      for(thisZone in Iter.range(zoneTracker, StableBuffer.size(_workspace)-1)){
+        for(thisChunk in Iter.range(chunkTracker, StableBuffer.size(StableBuffer.get(_workspace,thisZone))-1)){
 
-          let thisItem = _workspace.get(thisZone).get(thisChunk);
+          let thisItem = StableBuffer.get(StableBuffer.get(_workspace,thisZone),thisChunk);
 
           let newSize = foundBytes + getValueUnstableSize(thisItem);
           
@@ -429,16 +404,16 @@ module {
     var zoneTracker = 0;
     var chunkTracker = 0;
 
-    let resultBuffer = Buffer.Buffer<AddressedChunk>(1);
+    let resultBuffer = StableBuffer.init<AddressedChunk>();
     label chunking while (1==1){
       handBrake += 1;
       if(handBrake > 10000){ break chunking;};
       var foundBytes = 0;
       //calc bytes
-      for(thisZone in Iter.range(zoneTracker, _workspace.size()-1)){
-          for(thisChunk in Iter.range(chunkTracker, _workspace.get(thisZone).size()-1)){
+      for(thisZone in Iter.range(zoneTracker, StableBuffer.size(_workspace)-1)){
+          for(thisChunk in Iter.range(chunkTracker, StableBuffer.size(StableBuffer.get(_workspace, thisZone))-1)){
 
-              let thisItem = _workspace.get(thisZone).get(thisChunk);
+              let thisItem = StableBuffer.get(StableBuffer.get(_workspace, thisZone), thisChunk);
 
               let newSize = foundBytes + getValueUnstableSize(thisItem);
               if( newSize > _maxChunkSize)
@@ -454,7 +429,7 @@ module {
               };
               if(currentChunk == _chunkID){
                   //add it to our return
-                  resultBuffer.add((thisZone, thisChunk, Types.stabalizeValue(thisItem)));
+                  StableBuffer.add(resultBuffer, (thisZone, thisChunk, Types.stabalizeValue(thisItem)));
 
               };
 
@@ -486,26 +461,26 @@ module {
         return thisItem.2;
       }
     };
-    return #Empty;
+    return #Option(null);
   };
 
 
 
   public func byteBufferDataZoneToBuffer(dz : DataZone): Buffer.Buffer<Buffer.Buffer<Nat8>>{
     
-    let result = Buffer.Buffer<Buffer.Buffer<Nat8>>(dz.size());
-    for(thisItem in dz.vals()){
+    let result = Buffer.Buffer<Buffer.Buffer<Nat8>>(StableBuffer.size(dz));
+    for(thisItem in StableBuffer.vals(dz)){
       result.add(Conversion.valueUnstableToBytesBuffer(thisItem));
     };
     
     return result;
   };
 
-  public func byteBufferChunksToValueUnstableBufferDataZone(buffer : Buffer.Buffer<Buffer.Buffer<Nat8>>): DataZone{
+  public func byteBufferChunksToValueUnstableBufferDataZone(buffer : Buffer.Buffer<Buffer.Buffer<Nat8>>): DataZone {
     
-    let result = Buffer.Buffer<CandyValueUnstable>(buffer.size());
+    let result = StableBuffer.initPresized<CandyValueUnstable>(buffer.size());
     for(thisItem in buffer.vals()){
-      result.add(#Bytes(#thawed(thisItem)));
+      StableBuffer.add(result, #Bytes(Types.toBuffer<Nat8>(thisItem.toArray())));
     };
 
     return result;
@@ -513,8 +488,8 @@ module {
 
   public func initDataZone(val : CandyValueUnstable) : DataZone{
     
-    let result = Buffer.Buffer<CandyValueUnstable>(1);
-    result.add(val);
+    let result = StableBuffer.init<CandyValueUnstable>();
+    StableBuffer.add(result, val);
     return result;
   };
 

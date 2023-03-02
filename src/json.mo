@@ -42,24 +42,14 @@ module {
             };
             //array
             case(#Array(val)){
-                switch(val){
-                    case(#frozen(val)){
-                        var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                        for(this_item in val.vals()){
-                            body.add(value_to_json(this_item));
-                        };
+                
+              var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+              for(this_item in val.vals()){
+                  body.add(value_to_json(this_item));
+              };
 
-                        return "[" # Text.join(",", body.vals()) # "]";
-                    };
-                    case(#thawed(val)){
-                        var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                        for(this_item in val.vals()){
-                            body.add(value_to_json(this_item));
-                        };
-
-                        return "[" # Text.join(",", body.vals()) # "]";
-                    };
-                };
+              return "[" # Text.join(",", body.vals()) # "]";
+                  
             };
             case(#Option(val)){
               switch(val){
@@ -68,55 +58,30 @@ module {
               }
             };
             case(#Nats(val)){
-                switch(val){
-                    case(#frozen(val)){
-                        var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                        for(this_item in val.vals()){
-                            body.add(Nat.toText(this_item));
-                        };
+                
+              var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+              for(this_item in val.vals()){
+                  body.add(Nat.toText(this_item));
+              };
 
-                        return "[" # Text.join(",", body.vals()) # "]";
-                    };
-                    case(#thawed(val)){
-                        var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                        for(this_item in val.vals()){
-                            body.add(Nat.toText(this_item));
-                        };
-
-                        return "[" # Text.join(",", body.vals()) # "]";
-                    };
-                };
+              return "[" # Text.join(",", body.vals()) # "]";
+                   
             };
             case(#Floats(val)){
-                switch(val){
-                    case(#frozen(val)){
-                        var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                        for(this_item in val.vals()){
-                           body.add(Float.toText(this_item));
-                        };
+               
+              var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+              for(this_item in val.vals()){
+                  body.add(Float.toText(this_item));
+              };
 
-                        return "[" # Text.join(",", body.vals()) # "]";
-                    };
-                    case(#thawed(val)){
-                        var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                        for(this_item in val.vals()){
-                           body.add(Float.toText(this_item));
-                        };
-
-                        return "[" # Text.join(",", body.vals()) # "]";
-                    };
-                };
+              return "[" # Text.join(",", body.vals()) # "]";
+                   
             };
             //bytes
             case(#Bytes(val)){
-                switch(val){
-                    case(#frozen(val)){
-                        return "\"" # CandyHex.encode(val) # "\"";//CandyHex.encode(val);
-                    };
-                    case(#thawed(val)){
-                        return "\"" # CandyHex.encode(val) # "\"";//CandyHex.encode(val);
-                    };
-                };
+                
+                return "\"" # CandyHex.encode(val) # "\"";//CandyHex.encode(val);
+                   
             };
             //bytes
             case(#Blob(val)){
@@ -131,7 +96,7 @@ module {
             
             //float	
             case(#Float(val)){ Float.format(#exact, val) ;};
-            case(#Empty){ "null";};
+            
             case(#Int(val)){Int.toText(val);};
             case(#Int64(val)){Int64.toText(val);};
             case(#Int32(val)){Int32.toText(val);};

@@ -1,4 +1,5 @@
-let upstream = https://github.com/dfinity/vessel-package-set/releases/download/mo-0.6.21-20220215/package-set.dhall sha256:b46f30e811fe5085741be01e126629c2a55d4c3d6ebf49408fb3b4a98e37589b
+let vessel_package_set =
+      https://github.com/dfinity/vessel-package-set/releases/download/mo-0.8.3-20230224/package-set.dhall
 let Package =
     { name : Text, version : Text, repo : Text, dependencies : List Text }
 
@@ -10,17 +11,28 @@ let
       , repo = "https://github.com/gekctek/motoko_candid"
       , dependencies = ["xtendedNumbers", "base"] : List Text
       },
+      { name = "candy_0_1_12"
+      , version = "v0.1.12"
+      , repo = "https://github.com/icdevs/candy_library"
+      , dependencies = ["base"] : List Text
+      },
       { name = "xtendedNumbers"
       , version = "v1.0.2"
       , repo = "https://github.com/gekctek/motoko_numbers"
       , dependencies = [] : List Text
-      }] : List Package
+      },
+       { name = "stable_buffer"
+  , repo = "https://github.com/skilesare/StableBuffer"
+  , version = "v0.2.0"
+  , dependencies = [ "base"]
+  },
+  { name = "base", repo = "https://github.com/dfinity/motoko-base.git", version = "moc-0.8.1", dependencies = []: List Text },
+  { name = "Map"
+  , repo = "https://github.com/ZhenyaUsenko/motoko-hash-map"
+  , version = "v7.0.0"
+  , dependencies = [ "base"]
+  },] : List Package
 
-  let overrides = 
-  [{name = "base"
-         , version = "moc-0.7.4"
-         , repo = "https://github.com/dfinity/motoko-base"
-         , dependencies = [] : List Text
-         }]
+  
 
-in  upstream # additions # overrides
+in vessel_package_set # additions

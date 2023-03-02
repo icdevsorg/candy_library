@@ -10,7 +10,13 @@
 ///////////////////////////////
 
 import Buffer "mo:base/Buffer";
+import StableBuffer "mo:stable_buffer/StableBuffer";
 import Array "mo:base/Array";
+import Iter "mo:base/Iter";
+import Map "mo:Map/Map";
+import Set "mo:Map/Set";
+import Blob "mo:base/Blob";
+import Nat32 "mo:base/Nat32";
 
 
 module {
@@ -19,19 +25,19 @@ module {
   public type PropertyUnstable = {name : Text; value : CandyValueUnstable; immutable : Bool};
 
   public type UpdateRequestUnstable = {
-  id     : Text;
-  update : [UpdateUnstable];
+    id     : Text;
+    update : [UpdateUnstable];
   };
 
   public type UpdateUnstable = {
-  name : Text;
-  mode : UpdateModeUnstable;
+    name : Text;
+    mode : UpdateModeUnstable;
   };
 
   public type UpdateModeUnstable = {
-  #Set    : CandyValueUnstable;
-  #Lock    : CandyValueUnstable;
-  #Next   : [UpdateUnstable];
+    #Set    : CandyValueUnstable;
+    #Lock    : CandyValueUnstable;
+    #Next   : [UpdateUnstable];
   };
 
   ////////////////////////////////////
@@ -110,23 +116,12 @@ module {
     #Class : [Property];
     #Principal : Principal;
     #Option : ?CandyValue;
-    #Array : {
-      #frozen: [CandyValue];
-      #thawed: [CandyValue]; //need to thaw when going to CandyValueUnstable
-    };
-    #Nats: {
-      #frozen: [Nat];
-      #thawed: [Nat]; //need to thaw when going to TrixValueUnstable
-     };
-    #Floats: {
-      #frozen: [Float];
-      #thawed: [Float]; //need to thaw when going to CandyValueUnstable
-    };
-    #Bytes : {
-      #frozen: [Nat8];
-      #thawed: [Nat8]; //need to thaw when going to CandyValueUnstable
-    };
-    #Empty;
+    #Array :  [CandyValue];
+    #Nats: [Nat];
+    #Floats: [Float]; 
+    #Bytes : [Nat8];
+    #Map : [(CandyValue, CandyValue)];
+    #Set : [CandyValue];
   };
 
   //unstable
@@ -147,34 +142,23 @@ module {
     #Blob : Blob;
     #Class : [PropertyUnstable];
     #Principal : Principal;
-    #Floats : {
-      #frozen: [Float];
-      #thawed: Buffer.Buffer<Float>;
-    };
-    #Nats: {
-        #frozen: [Nat];
-        #thawed: Buffer.Buffer<Nat>; //need to thaw when going to TrixValueUnstable
-     };
-    #Array : {
-      #frozen: [CandyValueUnstable];
-      #thawed: Buffer.Buffer<CandyValueUnstable>; //need to thaw when going to CandyValueUnstable
-    };
+    #Floats : StableBuffer.StableBuffer<Float>;
+    #Nats: StableBuffer.StableBuffer<Nat>; 
+    #Array : StableBuffer.StableBuffer<CandyValueUnstable>;
     #Option : ?CandyValueUnstable;
-    #Bytes : {
-      #frozen: [Nat8];
-      #thawed: Buffer.Buffer<Nat8>; //need to thaw when going to CandyValueUnstable
-    };
-    #Empty;
+    #Bytes : StableBuffer.StableBuffer<Nat8>; 
+    #Map : Map.Map<CandyValueUnstable, CandyValueUnstable>;
+    #Set : Set.Set<CandyValueUnstable>;
   };
 
   //a data chunk should be no larger than 2MB so that it can be shipped to other canisters
   public type DataChunk = CandyValueUnstable;
-  public type DataZone = Buffer.Buffer<DataChunk>;
-  public type Workspace = Buffer.Buffer<DataZone>;
+  public type DataZone = StableBuffer.StableBuffer<DataChunk>;
+  public type Workspace = StableBuffer.StableBuffer<DataZone>;
 
   public type AddressedChunk = (Nat, Nat, CandyValue);
   public type AddressedChunkArray = [AddressedChunk];
-  public type AddressedChunkBuffer = Buffer.Buffer<AddressedChunk>;
+  public type AddressedChunkBuffer = StableBuffer.StableBuffer<AddressedChunk>;
 
   public func stabalizeValue(item : CandyValueUnstable) : CandyValue{
     switch(item){
@@ -192,7 +176,6 @@ module {
       case(#Text(val)){ #Text(val)};
       case(#Bool(val)){ #Bool(val)};
       case(#Blob(val)){ #Blob(val)};
-
       case(#Class(val)){
         #Class(
           Array.tabulate<Property>(val.size(), func(idx){
@@ -200,37 +183,35 @@ module {
           }));
       };
       case(#Principal(val)){ #Principal(val)};
-      case(#Array(val)){
-        switch(val){
-          case(#frozen(val)){#Array(#frozen(stabalizeValueArray(val)))};
-          case(#thawed(val)){#Array(#thawed(stabalizeValueArray(val.toArray())))};
-        };
-      };
+      case(#Array(val)){ #Array(stabalizeValueArray(StableBuffer.toArray(val)))};
       case(#Option(val)){
         switch(val){
           case(null){ #Option(null)};
           case(?val){#Option(?stabalizeValue(val))};
         };
       };
-      case(#Bytes(val)){
-        switch(val){
-          case(#frozen(val)){ #Bytes(#frozen(val))};
-          case(#thawed(val)){ #Bytes(#thawed(val.toArray()))};
-        };
+      case(#Bytes(val)){ #Bytes(StableBuffer.toArray<Nat8>(val))};
+      case(#Floats(val)){#Floats(StableBuffer.toArray(val))};
+      case(#Nats(val)){#Nats(StableBuffer.toArray(val))};
+      case(#Map(val)){
+        let entries = Map.entries<CandyValueUnstable, CandyValueUnstable>(val);
+        let stableEntries = Iter.map<(CandyValueUnstable, CandyValueUnstable), (CandyValue, CandyValue)>(
+          entries,
+          func (x : (CandyValueUnstable, CandyValueUnstable)){
+            (stabalizeValue(x.0), stabalizeValue(x.1))
+          });
+      
+        #Map(Iter.toArray<(CandyValue,CandyValue)>(stableEntries));
       };
-      case(#Floats(val)){
-        switch(val){
-          case(#frozen(val)){ #Floats(#frozen(val))};
-          case(#thawed(val)){ #Floats(#thawed(val.toArray()))};
-        };
+      case(#Set(val)){
+        let entries = Set.keys<CandyValueUnstable>(val);
+        let stableEntries = Iter.map<(CandyValueUnstable), (CandyValue)>(
+          entries,
+          func (x : (CandyValueUnstable)){
+            (stabalizeValue(x))
+          });
+        #Set(Iter.toArray<(CandyValue)>(stableEntries));
       };
-      case(#Nats(val)){
-        switch(val){
-          case(#frozen(val)){ #Nats(#frozen(val))};
-          case(#thawed(val)){ #Nats(#thawed(val.toArray()))};
-        };
-      };
-      case(#Empty){ #Empty};
     }
   };
 
@@ -257,37 +238,35 @@ module {
             }));
         };
         case(#Principal(val)){#Principal(val)};
-        case(#Array(val)){
-          switch(val){
-            case(#frozen(val)){#Array(#frozen(destabalizeValueArray(val)))};
-            case(#thawed(val)){#Array(#thawed(toBuffer<CandyValueUnstable>(destabalizeValueArray(val))))};
-          };
-        };
+        case(#Array(val)){#Array(toBuffer<CandyValueUnstable>(destabalizeValueArray(val)))};
         case(#Option(val)){
           switch(val){
             case(null){ #Option(null)};
             case(?val){#Option(?destabalizeValue(val))};
           };
         };
-        case(#Bytes(val)){
-          switch(val){
-            case(#frozen(val)){ #Bytes(#frozen(val))};
-            case(#thawed(val)){#Bytes(#thawed(toBuffer<Nat8>(val)))};
-          };
+        case(#Bytes(val)){#Bytes(toBuffer<Nat8>(val))};
+        case(#Floats(val)){#Floats(toBuffer<Float>(val))};
+        case(#Nats(val)){#Nats(toBuffer<Nat>(val))};
+        case(#Map(val)){
+          //let entries = Map.entries<CandyValue, CandyValue>(val);
+          let unstableEntries = Iter.map<(CandyValue, CandyValue), (CandyValueUnstable, CandyValueUnstable)>(
+            val.vals(),
+            func (x : (CandyValue, CandyValue)){
+              (destabalizeValue(x.0), destabalizeValue(x.1))
+            });
+        
+          #Map(Map.fromIter<CandyValueUnstable, CandyValueUnstable>(unstableEntries, candyValueUnstableMapHashTool));
         };
-        case(#Floats(val)){
-          switch(val){
-            case(#frozen(val)){ #Floats(#frozen(val))};
-            case(#thawed(val)){#Floats(#thawed(toBuffer<Float>(val)))};
-          };
+        case(#Set(val)){
+          //let entries = Set.keys<CandyValueUnstable>(val);
+          let unstableEntries = Iter.map<(CandyValue), (CandyValueUnstable)>(
+            val.vals(),
+            func (x : (CandyValue)){
+              (destabalizeValue(x))
+            });
+          #Set(Set.fromIter<(CandyValueUnstable)>(unstableEntries, candyValueUnstableMapHashTool));
         };
-        case(#Nats(val)){
-          switch(val){
-            case(#frozen(val)){ #Nats(#frozen(val))};
-            case(#thawed(val)){#Nats(#thawed(toBuffer<Nat>(val)))};
-          };
-        };
-        case(#Empty){ #Empty};
       }
   };
 
@@ -315,8 +294,6 @@ module {
     };
     
     return finalItems.toArray();
-
-
   };
 
   public func destabalizeValueArray(items : [CandyValue]) : [CandyValueUnstable]{
@@ -331,25 +308,44 @@ module {
 
   public func stabalizeValueBuffer(items : DataZone) : [CandyValue]{
       
-    let finalItems = Buffer.Buffer<CandyValue>(items.size());
-    for(thisItem in items.vals()){
+    let finalItems = Buffer.Buffer<CandyValue>(StableBuffer.size(items));
+    for(thisItem in StableBuffer.vals(items)){
       finalItems.add(stabalizeValue(thisItem));
     };
     
     return finalItems.toArray();
-
   };
 
   //////////////////////////////////////////////////////////////////////
   // The following functions easily creates a buffer from an arry of any type
   //////////////////////////////////////////////////////////////////////
 
-  public func toBuffer<T>(x :[T]) : Buffer.Buffer<T>{
-    let thisBuffer = Buffer.Buffer<T>(x.size());
+  public func toBuffer<T>(x :[T]) : StableBuffer.StableBuffer<T>{
+    let thisBuffer = StableBuffer.initPresized<T>(x.size());
     for(thisItem in x.vals()){
-      thisBuffer.add(thisItem);
+      StableBuffer.add(thisBuffer,thisItem);
     };
     return thisBuffer;
   };
+
+
+  public func hash(x :CandyValue) : Nat {
+    Nat32.toNat(Blob.hash(to_candid(x)));
+  };
+
+  public func eq(x :CandyValue, y: CandyValue) : Bool {
+    Blob.equal(to_candid(x), to_candid(y));
+  };
+
+  public func hashUnstable(x :CandyValueUnstable) : Nat {
+    Nat32.toNat(Blob.hash(to_candid(stabalizeValue(x))));
+  };
+
+  public func eqUnstable(x :CandyValueUnstable, y: CandyValueUnstable) : Bool {
+    Blob.equal(to_candid(stabalizeValue(x)), to_candid(stabalizeValue(y)));
+  };
+
+  public let candyValuyMapHashTool = (hash, eq);
+  public let candyValueUnstableMapHashTool = (hashUnstable, eqUnstable);
 
 }

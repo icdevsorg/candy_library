@@ -1,6 +1,7 @@
 
 import Buffer "mo:base/Buffer";
 import Nat "mo:base/Nat";
+import Iter "mo:base/Iter";
 import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
 import Nat64 "mo:base/Nat64";
@@ -15,6 +16,8 @@ import Bool "mo:base/Bool";
 import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
+
+import Map "mo:Map/Map";
 
 import Types "types";
 import CandyHex "hex";
@@ -51,10 +54,8 @@ module {
             };
             //array
             case(#Array(val)){
-                let list = switch(val){
-                    case(#frozen(val)) val;
-                    case(#thawed(val)) val;
-                };
+                let list = val;
+
                 var bFoundMultipleTypes = false;
                 var lastType : ?CandidTypes.Type = null;
                 let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
@@ -103,10 +104,7 @@ module {
               };
             };
             case(#Nats(val)){
-                let list = switch(val){
-                    case(#frozen(val)) val;
-                    case(#thawed(val)) val;
-                };
+                let list = val;
                 
                 let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
                 for(this_item in list.vals()){
@@ -115,10 +113,7 @@ module {
                 buffer.add({_type=#vector(#nat); value = #vector(values.toArray())});
             };
             case(#Floats(val)){
-                let list = switch(val){
-                    case(#frozen(val)) val;
-                    case(#thawed(val)) val;
-                };
+                let list = val;
                 
                 let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
                 for(this_item in list.vals()){
@@ -129,10 +124,7 @@ module {
             };
             //bytes
             case(#Bytes(val)){
-                let list = switch(val){
-                    case(#frozen(val)) val;
-                    case(#thawed(val)) val;
-                };
+                let list = val;
                 
                 let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
                 for(this_item in list.vals()){
@@ -161,12 +153,113 @@ module {
             
             //float	
             case(#Float(val))buffer.add({_type = #float64; value = #float64(val)});
-            case(#Empty)buffer.add({_type = #empty; value = #empty});
             case(#Int(val))buffer.add({_type = #int; value = #int(val)});
             case(#Int64(val))buffer.add({_type = #int64; value = #int64(val)});
             case(#Int32(val))buffer.add({_type = #int32; value = #int32(val)});
             case(#Int16(val))buffer.add({_type = #int16; value = #int16(val)});
             case(#Int8(val))buffer.add({_type = #int8; value = #int8(val)});
+            case(#Map(val)){
+                let list = val;
+                
+                var bFoundMultipleKeyTypes = false;
+                var bFoundMultipleValueTypes = false;
+                var lastKeyType : ?CandidTypes.Type = null;
+                var lastValueType : ?CandidTypes.Type = null;
+                let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
+                let types: Buffer.Buffer<CandidTypes.RecordFieldType> = Buffer.Buffer<CandidTypes.RecordFieldType>(list.size());
+
+                let localValues: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(2);
+                let localTypes: Buffer.Buffer<CandidTypes.RecordFieldType> = Buffer.Buffer<CandidTypes.RecordFieldType>(2);
+
+
+                let body: Buffer.Buffer<Value.RecordFieldValue> = Buffer.Buffer<Value.RecordFieldValue>(list.size());
+
+
+                let localBody: Buffer.Buffer<Value.RecordFieldValue> = Buffer.Buffer<Value.RecordFieldValue>(2);
+
+                var tracker : Nat32 = 0;
+                for(this_item in list.vals()){
+                    let key = (value_to_candid(this_item.0))[0];
+                    let value = (value_to_candid(this_item.1))[0];
+                    switch(lastKeyType){
+                      case(null) lastKeyType := ?key._type;
+                      case(?lastKeyType){
+                        if(CandidTypes.equal(lastKeyType, key._type)){
+
+                        } else {
+                          bFoundMultipleKeyTypes := true;
+                        };
+                      };
+                    };
+                    switch(lastValueType){
+                      case(null) lastValueType := ?value._type;
+                      case(?lastValueType){
+                        if(CandidTypes.equal(lastValueType, value._type)){
+
+                        } else {
+                          bFoundMultipleValueTypes := true;
+                        };
+                      };
+                    };
+
+                    localTypes.add({_type = key._type; tag = #hash(0)});
+                    localTypes.add({_type = value._type; tag = #hash(1)});
+
+                    localBody.add({tag = #hash(0); value = key.value});
+                    localBody.add({tag = #hash(1); value = value.value});
+
+                    let thisItem = {_type=#record(localTypes.toArray()); value = #record(localBody.toArray())};
+
+                    types.add({_type = thisItem._type; tag = #hash(tracker)});
+                    body.add({tag = #hash(tracker); value = thisItem.value});
+                    values.add(thisItem.value);
+                    tracker += 1;
+                };
+
+                
+                buffer.add({_type=#record(types.toArray()); value = #record(body.toArray())})
+                
+            };
+            //array
+            case(#Set(val)){
+                let list = val;
+                
+                var bFoundMultipleTypes = false;
+                var lastType : ?CandidTypes.Type = null;
+                let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
+                let types: Buffer.Buffer<CandidTypes.RecordFieldType> = Buffer.Buffer<CandidTypes.RecordFieldType>(list.size());
+                let body: Buffer.Buffer<Value.RecordFieldValue> = Buffer.Buffer<Value.RecordFieldValue>(list.size());
+                var tracker : Nat32 = 0;
+                for(this_item in list.vals()){
+                    let item = (value_to_candid(this_item))[0];
+                    switch(lastType){
+                      case(null) lastType := ?item._type;
+                      case(?lastType){
+                        if(CandidTypes.equal(lastType, item._type)){
+
+                        } else {
+                          bFoundMultipleTypes := true;
+                        };
+                      };
+                    };
+                    types.add({_type = item._type; tag = #hash(tracker)});
+                    body.add({tag = #hash(tracker); value = item.value});
+                    values.add(item.value);
+                    tracker += 1;
+                };
+
+                if(bFoundMultipleTypes){
+                  //need to make a record
+                  buffer.add({_type=#record(types.toArray()); value = #record(body.toArray())})
+                } else {
+                  let thisType = switch(lastType){
+                    case(null) #_null ;
+                    case(?val) val ;
+                  };
+                  buffer.add({_type=#vector(thisType); value = #vector(values.toArray())});
+                };
+            };
+
         };
 
         buffer.toArray();

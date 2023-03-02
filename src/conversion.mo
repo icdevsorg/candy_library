@@ -34,6 +34,7 @@ import List "mo:base/List";
 import Types "types";
 import Hex "hex";
 import Properties "properties";
+import StableBuffer "mo:stable_buffer/StableBuffer";
 
 
 module {
@@ -316,7 +317,7 @@ module {
       };
       //blob
       case(#Blob(val)){
-          valueToText(#Bytes(#frozen(Blob.toArray(val))));
+          valueToText(#Bytes(Blob.toArray(val)));
       };
       //class
       case(#Class(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
@@ -334,58 +335,31 @@ module {
       case(#Principal(val)){ Principal.toText(val)};
       //array
       case(#Array(val)){
-        switch(val){
-          case(#frozen(val)){
-            var t = "[";
-            for(thisItem in val.vals()){
-              t := t # "{" # valueToText(thisItem) # "} ";
-            };
-            
-            return Text.trimEnd(t, #text(" ")) # "]";
+      
+          var t = "[";
+          for(thisItem in val.vals()){
+            t := t # "{" # valueToText(thisItem) # "} ";
           };
-          case(#thawed(val)){
-            var t = "[";
-            for(thisItem in val.vals()){
-              t := t # "{" #valueToText(thisItem) # "} ";
-            };
-            
-            return Text.trimEnd(t, #text(" ")) # "]";
-          };
-        };
+          
+          return Text.trimEnd(t, #text(" ")) # "]";
+      
       };
       //floats
       case(#Floats(val)){
-        switch(val){
-          case(#frozen(val)){
-            var t = "[";
-            for(thisItem in val.vals()){
-              t := t # Float.format(#exact, thisItem) # " ";
-            };
-            
-            return Text.trimEnd(t, #text(" ")) # "]";
+        
+          var t = "[";
+          for(thisItem in val.vals()){
+            t := t # Float.format(#exact, thisItem) # " ";
           };
-          case(#thawed(val)){
-            var t = "[";
-            for(thisItem in val.vals()){
-              t := t # Float.format(#exact, thisItem) # " ";
-            };
-            
-            return Text.trimEnd(t, #text(" ")) # "]";
-          };
-        };
+          
+          return Text.trimEnd(t, #text(" ")) # "]";
+
       };
       //bytes
       case(#Bytes(val)){
-        switch(val){
-          case(#frozen(val)){
-              
-            return Hex.encode(val);
-          };
-          case(#thawed(val)){
-              
-            return Hex.encode(val);
-          };
-        };
+       
+      return Hex.encode(val);
+         
       };
       case(_){assert(false);/*unreachable*/"";};
     };
@@ -411,14 +385,7 @@ module {
 
     switch(val){
       case(#Blob(val)){val};
-      case(#Bytes(val)){Blob.fromArray(
-
-        switch(val){
-          case(#frozen(val)){ val;};
-          case(#thawed(val)){ val};
-
-        }
-      )};
+      case(#Bytes(val)){Blob.fromArray(val)};
       case(#Text(val)){
           Blob.fromArray(textToBytes(val))
       };
@@ -442,7 +409,6 @@ module {
           Blob.fromArray(nat64ToBytes(val))
       };
       case(#Principal(val)){
-          
           Principal.toBlob(val);
       };
       //todo: could add all conversions here
@@ -454,12 +420,7 @@ module {
   public func valueToValueArray(val : CandyValue) : [CandyValue] {
 
     switch(val){
-      case(#Array(val)){
-        switch(val){
-          case(#frozen(val)){val};
-          case(#thawed(val)){val};
-        };
-      };
+      case(#Array(val)){val};
       //todo: could add all conversions here
       case(_){assert(false);/*unreachable*/[];};
     };
@@ -743,7 +704,7 @@ module {
       };
       //blob
       case(#Blob(val)){
-          valueUnstableToText(#Bytes(#frozen(Blob.toArray(val))));
+          valueToText(#Bytes(Blob.toArray(val)));
       };
       //class
       case(#Class(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
@@ -761,58 +722,31 @@ module {
       case(#Principal(val)){ Principal.toText(val)};
       //array
       case(#Array(val)){
-          switch(val){
-              case(#frozen(val)){
-                  var t = "[";
-                  for(thisItem in val.vals()){
-                      t := t # "{" # valueUnstableToText(thisItem) # "} ";
-                  };
-                  
-                  return Text.trimEnd(t, #text(" ")) # "]";
-              };
-              case(#thawed(val)){
-                  var t = "[";
-                  for(thisItem in val.vals()){
-                      t := t # "{" #valueUnstableToText(thisItem) # "} ";
-                  };
-                  
-                  return Text.trimEnd(t, #text(" ")) # "]";
-              };
-          };
+
+        var t = "[";
+        for(thisItem in StableBuffer.vals(val)){
+            t := t # "{" # valueUnstableToText(thisItem) # "} ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "]";
+              
       };
       //floats
       case(#Floats(val)){
-          switch(val){
-              case(#frozen(val)){
-                  var t = "[";
-                  for(thisItem in val.vals()){
-                      t := t # Float.format(#exact, thisItem) # " ";
-                  };
-                  
-                  return Text.trimEnd(t, #text(" ")) # "]";
-              };
-              case(#thawed(val)){
-                  var t = "[";
-                  for(thisItem in val.vals()){
-                      t := t # Float.format(#exact, thisItem) # " ";
-                  };
-                  
-                  return Text.trimEnd(t, #text(" ")) # "]";
-              };
-          };
+          
+        var t = "[";
+        for(thisItem in StableBuffer.vals(val)){
+            t := t # Float.format(#exact, thisItem) # " ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "]";
+             
       };
       //bytes
       case(#Bytes(val)){
-          switch(val){
-              case(#frozen(val)){
-                  
-                  return Hex.encode(val);
-              };
-              case(#thawed(val)){
-                  
-                  return Hex.encode(val.toArray());
-              };
-          };
+         
+        return Hex.encode(StableBuffer.toArray(val));
+            
       };
       case(_){assert(false);/*unreachable*/"";};
     };
@@ -838,13 +772,8 @@ module {
       case(#Blob(val)){ val};
       case(#Bytes(val)){
           
-          Blob.fromArray(
-          switch(val){
-              case(#frozen(val)){val;};
-              case(#thawed(val)){val.toArray()};
-
-          }
-      )};
+          Blob.fromArray(StableBuffer.toArray(val));
+      };
         case(#Text(val)){
           Blob.fromArray(textToBytes(val))
       };
@@ -880,12 +809,7 @@ module {
   public func valueUnstableToValueArray(val : CandyValueUnstable) : [CandyValueUnstable] {
 
     switch(val){
-      case(#Array(val)){
-          switch(val){
-              case(#frozen(val)){val};
-              case(#thawed(val)){val.toArray()};
-          };
-      };
+      case(#Array(val)){StableBuffer.toArray(val)};
       //todo: could add all conversions here
       case(_){assert(false);/*unreachable*/[];};
     };
@@ -911,15 +835,11 @@ module {
       case(#Principal(val)){principalToBytes(val)};
       case(#Option(val)){Prelude.nyi()};
       case(#Array(val)){Prelude.nyi()};
-      case(#Bytes(val)){
-          switch(val){
-              case(#frozen(val)){ val};
-              case(#thawed(val)){ val};
-          };
-      };
+      case(#Bytes(val)){val};
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
-      case(#Empty){ []};
+      case(#Map(val)){Prelude.nyi()};
+      case(#Set(val)){Prelude.nyi()};
     }
   };
 
@@ -943,30 +863,17 @@ module {
       case(#Principal(val)){principalToBytes(val)};
       case(#Option(val)){Prelude.nyi()};
       case(#Array(val)){Prelude.nyi()};
-      case(#Bytes(val)){
-          switch(val){
-              case(#frozen(val)){ val};
-              case(#thawed(val)){ val.toArray()};
-          };
-      };
+      case(#Bytes(val)){StableBuffer.toArray(val)};
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
-      case(#Empty){ []};
+      case(#Map(val)){Prelude.nyi()};
+      case(#Set(val)){Prelude.nyi()};
     }
   };
 
   public func valueUnstableToBytesBuffer(val : CandyValueUnstable) : Buffer.Buffer<Nat8>{
     switch (val){
-      case(#Bytes(val)){
-          switch(val){
-              case(#frozen(val)){
-                  
-                  return toBuffer<Nat8>(val);
-
-              };
-              case(#thawed(val)){ val};
-          };
-      };
+      case(#Bytes(val)){toBuffer(StableBuffer.toArray(val))};
       case(_){
           toBuffer<Nat8>(valueUnstableToBytes(val));//may throw for uncovertable types
       };
@@ -976,13 +883,8 @@ module {
   public func valueUnstableToFloatsBuffer(val : CandyValueUnstable) : Buffer.Buffer<Float>{
     switch (val){
       case(#Floats(val)){
-          switch(val){
-              case(#frozen(val)){
-                  
-                  toBuffer(val);
-              };
-              case(#thawed(val)){ val};
-          };
+          
+                  toBuffer(StableBuffer.toArray(val));
       };
       case(_){
           toBuffer([valueUnstableToFloat(val)]); //may throw for unconvertable types
@@ -993,12 +895,8 @@ module {
   public func valueUnstableToNatsBuffer(val : CandyValueUnstable) : Buffer.Buffer<Nat>{
     switch (val){
       case(#Nats(val)){
-          switch(val){
-              case(#frozen(val)){
-                  toBuffer(val);
-              };
-              case(#thawed(val)){val};
-          };
+          
+                  toBuffer(StableBuffer.toArray(val));
       };
       case(_){
           toBuffer([valueUnstableToNat(val)]); //may throw for unconvertable types
@@ -1251,7 +1149,7 @@ module {
       case(#Option(val)){
           switch(val){
               case(null){
-                  return #Empty;
+                  return #Option(null);
               };
               case(?val){
                   return val;
@@ -1268,7 +1166,7 @@ module {
       case(#Option(val)){
           switch(val){
               case(null){
-                  return #Empty;
+                  return #Option(null);
               };
               case(?val){
                   return val;

@@ -12,6 +12,9 @@
 
 import Types "types";
 import Array "mo:base/Array";
+import StableBuffer "mo:stable_buffer/StableBuffer";
+import Map "mo:Map/Map";
+import Set "mo:Map/Set";
 
 module {
 
@@ -27,12 +30,12 @@ module {
             {name= val[idx].name; value=cloneValueUnstable(val[idx].value); immutable = val[idx].immutable};
         }));
       };
-      case(#Bytes(val)){
-        switch(val){
-          case(#frozen(val)) #Bytes(#frozen(val));
-          case(#thawed(val)) #Bytes(#thawed(val.clone()));
-        };
-      };
+      case(#Bytes(val)){#Bytes(StableBuffer.clone(val))};
+      case(#Nats(val)){#Nats(StableBuffer.clone(val))};
+      case(#Floats(val)){#Floats(StableBuffer.clone(val))};
+      case(#Array(val)){#Array(StableBuffer.clone(val))};
+      case(#Map(val)){#Map(Map.fromIter<CandyValueUnstable,CandyValueUnstable>(Map.entries(val), Types.candyValueUnstableMapHashTool))};
+      case(#Set(val)){#Set(Set.fromIter<CandyValueUnstable>(Set.keys(val), Types.candyValueUnstableMapHashTool))};
       case(_) val;
     };
   };

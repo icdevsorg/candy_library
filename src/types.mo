@@ -24,23 +24,30 @@ import Map "mo:Map/Map";
 import Set "mo:Map/Set";
 import Blob "mo:base/Blob";
 import Nat32 "mo:base/Nat32";
+import Principal "mo:base/Principal";
+import Int "mo:base/Int";
 
 
 module {
-
+  /// A collection of `PropertyUnstable`.
   public type PropertiesUnstable = [PropertyUnstable];
+
+  /// Specifies a single unstable property.
   public type PropertyUnstable = {name : Text; value : CandyValueUnstable; immutable : Bool};
 
+  /// Specifies the unstable properties that should be updated to a certain value.
   public type UpdateRequestUnstable = {
     id     : Text;
     update : [UpdateUnstable];
   };
 
+  /// Update information for a single property. 
   public type UpdateUnstable = {
     name : Text;
     mode : UpdateModeUnstable;
   };
 
+  /// Mode for the update operation.
   public type UpdateModeUnstable = {
     #Set    : CandyValueUnstable;
     #Lock    : CandyValueUnstable;
@@ -57,10 +64,13 @@ module {
   // The following section is issued under the MIT License Copyright (c) 2021 Departure Labs:
   ///////////////////////////////////
 
+  /// Specifies a single property.
   public type Property = {name : Text; value : CandyValue; immutable : Bool};
 
+  /// A collection of `Property`.
   public type Properties = [Property];
 
+  /// Specifies an error which occurred during an operation on a `Property`.
   public type PropertyError = {
     #Unauthorized;
     #NotFound;
@@ -69,27 +79,31 @@ module {
     #Immutable;
   };
 
+  /// Specifies the properties that should be queried.
   public type Query = {
     name : Text;    // Target property name.
     next : [Query]; // Optional sub-properties in the case of a class value.
   };
 
+  /// Mode for the query operation.
   public type QueryMode = {
     #All;            // Returns all properties.
     #Some : [Query]; // Returns a select set of properties based on the name.
   };
 
-  // Specifies the properties that should be updated to a certain value.
+  /// Specifies the properties that should be updated to a certain value.
   public type UpdateRequest = {
     id     : Text;
     update : [Update];
   };
 
+  /// Update information for a single property. 
   public type Update = {
     name : Text;
     mode : UpdateMode;
   };
 
+  /// Mode for the update operation.
   public type UpdateMode = {
     #Set    : CandyValue;
     #Lock    : CandyValue;
@@ -104,7 +118,7 @@ module {
   //
   ///////////////////////////////////
 
-//stable
+  // The Stable CandyValue.
   public type CandyValue = {
     #Int : Int;
     #Int8: Int8;
@@ -131,7 +145,7 @@ module {
     #Set : [CandyValue];
   };
 
-  //unstable
+  // The Unstable CandyValue.
   public type CandyValueUnstable = {
     #Int :  Int;
     #Int8: Int8;
@@ -158,7 +172,7 @@ module {
     #Set : Set.Set<CandyValueUnstable>;
   };
 
-  //a data chunk should be no larger than 2MB so that it can be shipped to other canisters
+  // A `DataChunk` should be no larger than 2MB so that it can be shipped to other canisters.
   public type DataChunk = CandyValueUnstable;
   public type DataZone = StableBuffer.StableBuffer<DataChunk>;
   public type Workspace = StableBuffer.StableBuffer<DataZone>;
@@ -167,6 +181,12 @@ module {
   public type AddressedChunkArray = [AddressedChunk];
   public type AddressedChunkBuffer = StableBuffer.StableBuffer<AddressedChunk>;
 
+  /// Convert a `CandyValueUnstable` to `CandyValue`.
+  ///
+  /// ```motoko include=import
+  /// let unstable: CandyValueUnstable = #Principal(Principal.fromText("abc"));
+  /// let stableValue = stabalizeValue(unstable);
+  /// ```
   public func stabalizeValue(item : CandyValueUnstable) : CandyValue{
     switch(item){
       case(#Int(val)){ #Int(val)};
@@ -222,6 +242,12 @@ module {
     }
   };
 
+  /// Convert a `CandyValue` to `CandyValueUnstable`.
+  ///
+  /// ```motoko include=import
+  /// let stable: CandyValue = #Principal(Principal.fromText("abc"));
+  /// let unstableValue = destabalizeValue(unstable);
+  /// ```
   public func destabalizeValue(item : CandyValue) : CandyValueUnstable{
       switch(item){
         case(#Int(val)){ #Int(val)};
@@ -277,6 +303,16 @@ module {
       }
   };
 
+  /// Convert a `PropertyUnstable` to `Property`.
+  ///
+  /// ```motoko include=import
+  /// let unstable: PropertyUnstable = {
+  ///    name = "name";
+  ///    value = #Principal(Principal.fromText("abc"));
+  ///    immutable = false;
+  ///  };
+  /// let stableProperty = stabalizeProperty(unstable);
+  /// ```
   public func stabalizeProperty(item : PropertyUnstable) : Property{
     return {
       name = item.name;
@@ -285,6 +321,16 @@ module {
     }
   };
 
+  /// Convert a `Property` to `PropertyUnstable`.
+  ///
+  /// ```motoko include=import
+  /// let stableProperty: Property = {
+  ///    name = "name";
+  ///    value = #Principal(Principal.fromText("abc"));
+  ///    immutable = true;
+  ///  };
+  /// let unstableProperty = destabalizeProperty(stableProperty);
+  /// ```
   public func destabalizeProperty(item : Property) : PropertyUnstable{
     return {
       name = item.name;
@@ -293,8 +339,14 @@ module {
     }
   };
 
+  /// Convert a `[CandyValueUnstable]` to `[CandyValue]`.
+  ///
+  /// ```motoko include=import
+  ///  let array: [CandyValueUnstable] = [#Principal(Principal.fromText("abc")), #Int(1)];
+  ///  let arrayStable = stabalizeValueArray(array);
+  /// ```
   public func stabalizeValueArray(items : [CandyValueUnstable]) : [CandyValue]{
-    
+
     let finalItems = Buffer.Buffer<CandyValue>(items.size());
     for(thisItem in items.vals()){
       finalItems.add(stabalizeValue(thisItem));
@@ -303,6 +355,12 @@ module {
     return finalItems.toArray();
   };
 
+  /// Convert a `[CandyValue]` to `[CandyValueUnstable]`.
+  ///
+  /// ```motoko include=import
+  ///  let arrayStable: [CandyValue] = [#Principal(Principal.fromText("abc")), #Int(1)];
+  ///  let array = destabalizeValueArray(arrayStable);
+  /// ```
   public func destabalizeValueArray(items : [CandyValue]) : [CandyValueUnstable]{
     
     let finalItems = Buffer.Buffer<CandyValueUnstable>(items.size());
@@ -313,6 +371,11 @@ module {
     return finalItems.toArray();
   };
 
+  /// Convert a `DataZone` to `[CandyValue]`.
+  ///
+  /// ```motoko include=import
+  /// let array = Array.init<Nat>(4, 2);
+  /// ```
   public func stabalizeValueBuffer(items : DataZone) : [CandyValue]{
       
     let finalItems = Buffer.Buffer<CandyValue>(StableBuffer.size(items));
@@ -323,10 +386,11 @@ module {
     return finalItems.toArray();
   };
 
-  //////////////////////////////////////////////////////////////////////
-  // The following functions easily creates a buffer from an arry of any type
-  //////////////////////////////////////////////////////////////////////
-
+  /// Create a `Buffer` from [T] where T can be of any type.
+  ///
+  /// ```motoko include=import
+  /// let array = Array.init<Nat>(4, 2);
+  /// ```
   public func toBuffer<T>(x :[T]) : StableBuffer.StableBuffer<T>{
     let thisBuffer = StableBuffer.initPresized<T>(x.size());
     for(thisItem in x.vals()){
@@ -335,19 +399,38 @@ module {
     return thisBuffer;
   };
 
-
+  /// Get the hash of the `CandyValue`.
+  ///
+  /// ```motoko include=import
+  /// let array = Array.init<Nat>(4, 2);
+  /// ```
   public func hash(x :CandyValue) : Nat {
     Nat32.toNat(Blob.hash(to_candid(x)));
   };
 
+  /// Checks the two `CandyValue` params for equality.
+  ///
+  /// ```motoko include=import
+  /// let array = Array.init<Nat>(4, 2);
+  /// ```
   public func eq(x :CandyValue, y: CandyValue) : Bool {
     Blob.equal(to_candid(x), to_candid(y));
   };
 
+  /// Get the hash of the `CandyValueUnstable`.
+  ///
+  /// ```motoko include=import
+  /// let array = Array.init<Nat>(4, 2);
+  /// ```
   public func hashUnstable(x :CandyValueUnstable) : Nat {
     Nat32.toNat(Blob.hash(to_candid(stabalizeValue(x))));
   };
 
+  /// Checks the two `CandyValue` params for equality.
+  ///
+  /// ```motoko include=import
+  /// let array = Array.init<Nat>(4, 2);
+  /// ```
   public func eqUnstable(x :CandyValueUnstable, y: CandyValueUnstable) : Bool {
     Blob.equal(to_candid(stabalizeValue(x)), to_candid(stabalizeValue(y)));
   };

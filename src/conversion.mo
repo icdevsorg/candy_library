@@ -382,7 +382,6 @@ module {
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToText(value);
   /// ```
-  /// Note: Throws if the underlying value overflows.
   public func valueToText(val : CandyValue) : Text {
     switch(val){
       case(#Text(val)){ val};
@@ -581,6 +580,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Nat8`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Int8(15);
+  /// let converted_value = Conversion.valueUnstableToNat8(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows or is negative.
   public func valueUnstableToNat8(val : CandyValueUnstable) : Nat8 {
 
     switch(val){
@@ -611,6 +617,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Nat16`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Int16(15);
+  /// let converted_value = Conversion.valueUnstableToNat16(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows or is negative.
   public func valueUnstableToNat16(val : CandyValueUnstable) : Nat16 {
 
     switch(val){
@@ -641,6 +654,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Nat32`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Int32(15);
+  /// let converted_value = Conversion.valueUnstableToNat(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows or is negative.
   public func valueUnstableToNat32(val : CandyValueUnstable) : Nat32 {
 
     switch(val){
@@ -670,6 +690,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Nat64`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Int16(15);
+  /// let converted_value = Conversion.valueUnstableToNat64(value);
+  /// ```
+  /// Note: Throws if the underlying value is negative.
   public func valueUnstableToNat64(val : CandyValueUnstable) : Nat64 {
 
     switch(val){
@@ -700,6 +727,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Int`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Int16(15);
+  /// let converted_value = Conversion.valueUnstableToInt(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows.
   public func valueUnstableToInt(val : CandyValueUnstable) : Int {
 
     switch(val){
@@ -718,6 +752,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Int8`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Nat8(11);
+  /// let converted_value = Conversion.valueUnstableToInt8(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows.
   public func valueUnstableToInt8(val : CandyValueUnstable) : Int8 {
 
     switch(val){
@@ -736,6 +777,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Int16`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Float(10);
+  /// let converted_value = Conversion.valueUnstableToInt16(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows.
   public func valueUnstableToInt16(val : CandyValueUnstable) : Int16 {
 
     switch(val){
@@ -754,6 +802,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Int32`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Nat32(1111);
+  /// let converted_value = Conversion.valueUnstableToInt32(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows.
   public func valueUnstableToInt32(val : CandyValueUnstable) : Int32 {
     switch(val){
       case(#Int32(val)){ val};
@@ -770,6 +825,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Int64`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Nat64(12345);
+  /// let converted_value = Conversion.valueUnstableToInt64(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows.
   public func valueUnstableToInt64(val : CandyValueUnstable) : Int64 {
     switch(val){
       case(#Int64(val)){ val};
@@ -787,6 +849,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Float`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Int16(11);
+  /// let converted_value = Conversion.valueUnstableToFloat(value);
+  /// ```
+  /// Note: Throws if the underlying value overflows.
   public func valueUnstableToFloat(val : CandyValueUnstable) : Float {
     switch(val){
       case(#Float(val)){ val};
@@ -804,6 +873,12 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Text`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Float(11);
+  /// let converted_value = Conversion.valueUnstableToText(value);
+  /// ```
   public func valueUnstableToText(val : CandyValueUnstable) : Text {
     switch(val){
       case(#Text(val)){ val};
@@ -875,6 +950,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Principal`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
+  /// let converted_value = Conversion.valueUnstableToPrincipal(value);
+  /// ```
+  /// Note: Throws if the underlying value is not a `#Principal`.
   public func valueUnstableToPrincipal(val : CandyValueUnstable) : Principal {
     switch(val){
       case(#Principal(val)){ val};
@@ -882,6 +964,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Principal`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Bool(true);
+  /// let converted_value = Conversion.valueUnstableToPrincipal(value);
+  /// ```
+  /// Note: Throws if the underlying value is not a `#Bool`.
   public func valueUnstableToBool(val : CandyValueUnstable) : Bool {
     switch(val){
       case(#Bool(val)){ val};
@@ -889,6 +978,12 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Blob`.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
+  /// let converted_value = Conversion.valueUnstableToBlob(value);
+  /// ```
   public func valueUnstableToBlob(val : CandyValueUnstable) : Blob {
     switch(val){
 
@@ -928,7 +1023,15 @@ module {
     };
   };
 
-  //gets the array of candy values out of an array
+  /// Convert a `CandyValueUnstable` to `[CandyValueUnstable]`
+  ///
+  /// The conversion is done by getting the array of candy values of the #Array.
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Array([1, 2, 3]);
+  /// let converted_value = Conversion.valueUnstableToValueArray(value);
+  /// ```
+  /// Note: Throws if the underlying value is not an `#Array`.
   public func valueUnstableToValueArray(val : CandyValueUnstable) : [CandyValueUnstable] {
 
     switch(val){

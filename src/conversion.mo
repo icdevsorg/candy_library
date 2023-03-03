@@ -11,7 +11,7 @@
 
 /// Conversion utilities for the candy library.
 ///
-/// This module contains the converstion functions to convert values to & from 
+/// This module contains the conversion functions to convert values to & from 
 /// candy values.
 
 import Buffer "mo:base/Buffer";
@@ -1041,6 +1041,12 @@ module {
     };
   };
 
+  /// Convert a `CandyValue` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValue = #Principal(Principal.fromText("abc"));
+  /// let value_as_bytes = Conversion.valueToBytes(value);
+  /// ```
   public func valueToBytes(val : CandyValue) : [Nat8]{
     switch(val){
       case(#Int(val)){intToBytes(val)};
@@ -1069,6 +1075,12 @@ module {
     }
   };
 
+  /// Convert a `CandyValueUnstable` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
+  /// let value_as_bytes = Conversion.valueUnstableToBytes(value);
+  /// ```
   public func valueUnstableToBytes(val : CandyValueUnstable) : [Nat8]{
     switch(val){
       case(#Int(val)){intToBytes(val)};
@@ -1097,6 +1109,14 @@ module {
     }
   };
 
+  /// Convert a `CandyValueUnstable` to `Buffer<Nat8>`
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
+  /// let value_as_buffer = Conversion.valueUnstableToBytes(value);
+  /// ```
+  ///
+  /// Note: Throws if the underlying value isn't convertible.
   public func valueUnstableToBytesBuffer(val : CandyValueUnstable) : Buffer.Buffer<Nat8>{
     switch (val){
       case(#Bytes(val)){toBuffer(StableBuffer.toArray(val))};
@@ -1106,6 +1126,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Buffer<Float>`
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Nat(102);
+  /// let value_as_floats_buffer = Conversion.valueUnstableToFloatsBuffer(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
   public func valueUnstableToFloatsBuffer(val : CandyValueUnstable) : Buffer.Buffer<Float>{
     switch (val){
       case(#Floats(val)){
@@ -1118,6 +1145,13 @@ module {
     };
   };
 
+  /// Convert a `CandyValueUnstable` to `Buffer<Nat>`
+  ///
+  /// ```motoko include=import
+  /// let value: CandyValueUnstable = #Nat(102);
+  /// let value_as_nats_buffer = Conversion.valueUnstableToNatsBuffer(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
   public func valueUnstableToNatsBuffer(val : CandyValueUnstable) : Buffer.Buffer<Nat>{
     switch (val){
       case(#Nats(val)){
@@ -1137,6 +1171,12 @@ module {
   // The following functions easily creates a buffer from an arry of any type
   //////////////////////////////////////////////////////////////////////
 
+  /// Create a `Buffer` from [T] where T can be of any type.
+  ///
+  /// ```motoko include=import
+  ///  let array = [1, 2, 3];
+  ///  let buf = Conversion.toBuffer<Nat>(array);
+  /// ```
   public func toBuffer<T>(x :[T]) : Buffer.Buffer<T>{
     
     let thisBuffer = Buffer.Buffer<T>(x.size());
@@ -1147,10 +1187,16 @@ module {
   };
 
   //////////////////////////////////////////////////////////////////////
-  // The following functions converst standard types to Byte arrays
+  // The following functions convert standard types to Byte arrays
   // From there you can easily get to blobs if necessary with the Blob package
   //////////////////////////////////////////////////////////////////////
 
+  /// Convert a `Nat64` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  ///  let value: Nat64 = 150;
+  ///  let bytes = Conversion.nat64ToBytes(value);
+  /// ```
   public func nat64ToBytes(x : Nat64) : [Nat8] {
     
     [ Nat8.fromNat(Nat64.toNat((x >> 56) & (255))),
@@ -1163,6 +1209,12 @@ module {
     Nat8.fromNat(Nat64.toNat((x & 255))) ];
   };
 
+  /// Convert a `Nat32` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  ///  let value: Nat32 = 150;
+  ///  let bytes = Conversion.nat32ToBytes(value);
+  /// ```
   public func nat32ToBytes(x : Nat32) : [Nat8] {
     
     [ Nat8.fromNat(Nat32.toNat((x >> 24) & (255))),
@@ -1171,19 +1223,36 @@ module {
     Nat8.fromNat(Nat32.toNat((x & 255))) ];
   };
 
-  /// Returns [Nat8] of size 4 of the Nat16
+  /// Convert a `Nat16` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  ///  let value: Nat16 = 150;
+  ///  let bytes = Conversion.nat16ToBytes(value);
+  /// ```
   public func nat16ToBytes(x : Nat16) : [Nat8] {
     
     [ Nat8.fromNat(Nat16.toNat((x >> 8) & (255))),
     Nat8.fromNat(Nat16.toNat((x & 255))) ];
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Nat16`
+  ///
+  /// ```motoko include=import
+  ///  let bytes: [Nat8] = [1, 2, 3, 4];
+  ///  let value = Conversion.bytesToNat16(bytes);
+  /// ```
   public func bytesToNat16(bytes: [Nat8]) : Nat16{
     
     (Nat16.fromNat(Nat8.toNat(bytes[0])) << 8) +
     (Nat16.fromNat(Nat8.toNat(bytes[1])));
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Nat32`
+  ///
+  /// ```motoko include=import
+  ///  let bytes: [Nat8] = [1, 2, 3, 4];
+  ///  let value = Conversion.bytesToNat32(bytes);
+  /// ```
   public func bytesToNat32(bytes: [Nat8]) : Nat32{
     
     (Nat32.fromNat(Nat8.toNat(bytes[0])) << 24) +
@@ -1192,6 +1261,12 @@ module {
     (Nat32.fromNat(Nat8.toNat(bytes[3])));
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Nat64`
+  ///
+  /// ```motoko include=import
+  ///  let bytes: [Nat8] = [1, 2, 3, 4];
+  ///  let value = Conversion.bytesToNat64(bytes);
+  /// ```
   public func bytesToNat64(bytes: [Nat8]) : Nat64{
     
     (Nat64.fromNat(Nat8.toNat(bytes[0])) << 56) +
@@ -1204,7 +1279,12 @@ module {
     (Nat64.fromNat(Nat8.toNat(bytes[7])));
   };
 
-
+  /// Convert a `Nat` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  ///  let value: Nat = 150;
+  ///  let bytes = Conversion.natToBytes(value);
+  /// ```
   public func natToBytes(n : Nat) : [Nat8] {
     
     var a : Nat8 = 0;
@@ -1220,6 +1300,12 @@ module {
     List.toArray<Nat8>(bytes);
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Nat`
+  ///
+  /// ```motoko include=import
+  ///  let bytes: [Nat8] = [1, 2, 3, 4];
+  ///  let value = Conversion.bytesToNat(bytes);
+  /// ```
   public func bytesToNat(bytes : [Nat8]) : Nat {
     
     var n : Nat = 0;

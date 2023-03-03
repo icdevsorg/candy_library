@@ -118,7 +118,7 @@ module {
   //
   ///////////////////////////////////
 
-  // The Stable CandyValue.
+  /// The Stable CandyValue.
   public type CandyValue = {
     #Int : Int;
     #Int8: Int8;
@@ -145,7 +145,7 @@ module {
     #Set : [CandyValue];
   };
 
-  // The Unstable CandyValue.
+  /// The Unstable CandyValue.
   public type CandyValueUnstable = {
     #Int :  Int;
     #Int8: Int8;
@@ -172,7 +172,7 @@ module {
     #Set : Set.Set<CandyValueUnstable>;
   };
 
-  // A `DataChunk` should be no larger than 2MB so that it can be shipped to other canisters.
+  /// Note: A `DataChunk` should be no larger than 2MB so that it can be shipped to other canisters.
   public type DataChunk = CandyValueUnstable;
   public type DataZone = StableBuffer.StableBuffer<DataChunk>;
   public type Workspace = StableBuffer.StableBuffer<DataZone>;
@@ -185,7 +185,7 @@ module {
   ///
   /// ```motoko include=import
   /// let unstable: CandyValueUnstable = #Principal(Principal.fromText("abc"));
-  /// let stableValue = stabalizeValue(unstable);
+  /// let stableValue = Types.stabalizeValue(unstable);
   /// ```
   public func stabalizeValue(item : CandyValueUnstable) : CandyValue{
     switch(item){
@@ -246,7 +246,7 @@ module {
   ///
   /// ```motoko include=import
   /// let stable: CandyValue = #Principal(Principal.fromText("abc"));
-  /// let unstableValue = destabalizeValue(unstable);
+  /// let unstableValue = Types.destabalizeValue(unstable);
   /// ```
   public func destabalizeValue(item : CandyValue) : CandyValueUnstable{
       switch(item){
@@ -311,7 +311,7 @@ module {
   ///    value = #Principal(Principal.fromText("abc"));
   ///    immutable = false;
   ///  };
-  /// let stableProperty = stabalizeProperty(unstable);
+  /// let stableProperty = Types.stabalizeProperty(unstable);
   /// ```
   public func stabalizeProperty(item : PropertyUnstable) : Property{
     return {
@@ -329,7 +329,7 @@ module {
   ///    value = #Principal(Principal.fromText("abc"));
   ///    immutable = true;
   ///  };
-  /// let unstableProperty = destabalizeProperty(stableProperty);
+  /// let unstableProperty = Types.destabalizeProperty(stableProperty);
   /// ```
   public func destabalizeProperty(item : Property) : PropertyUnstable{
     return {
@@ -343,7 +343,7 @@ module {
   ///
   /// ```motoko include=import
   ///  let array: [CandyValueUnstable] = [#Principal(Principal.fromText("abc")), #Int(1)];
-  ///  let arrayStable = stabalizeValueArray(array);
+  ///  let arrayStable = Types.stabalizeValueArray(array);
   /// ```
   public func stabalizeValueArray(items : [CandyValueUnstable]) : [CandyValue]{
 
@@ -359,7 +359,7 @@ module {
   ///
   /// ```motoko include=import
   ///  let arrayStable: [CandyValue] = [#Principal(Principal.fromText("abc")), #Int(1)];
-  ///  let array = destabalizeValueArray(arrayStable);
+  ///  let array = Types.destabalizeValueArray(arrayStable);
   /// ```
   public func destabalizeValueArray(items : [CandyValue]) : [CandyValueUnstable]{
     
@@ -374,10 +374,11 @@ module {
   /// Convert a `DataZone` to `[CandyValue]`.
   ///
   /// ```motoko include=import
-  /// let array = Array.init<Nat>(4, 2);
+  ///  let dataZone = Types.toBuffer<DataChunk>([#Int32(5), #Int(1)]);
+  ///  let stabalizedValues = Types.stabalizeValueBuffer(dataZone);
   /// ```
   public func stabalizeValueBuffer(items : DataZone) : [CandyValue]{
-      
+
     let finalItems = Buffer.Buffer<CandyValue>(StableBuffer.size(items));
     for(thisItem in StableBuffer.vals(items)){
       finalItems.add(stabalizeValue(thisItem));
@@ -389,7 +390,8 @@ module {
   /// Create a `Buffer` from [T] where T can be of any type.
   ///
   /// ```motoko include=import
-  /// let array = Array.init<Nat>(4, 2);
+  ///  let array = [1, 2, 3];
+  ///  let buf = Types.toBuffer<Nat>(array);  
   /// ```
   public func toBuffer<T>(x :[T]) : StableBuffer.StableBuffer<T>{
     let thisBuffer = StableBuffer.initPresized<T>(x.size());
@@ -402,7 +404,8 @@ module {
   /// Get the hash of the `CandyValue`.
   ///
   /// ```motoko include=import
-  /// let array = Array.init<Nat>(4, 2);
+  /// let x: CandyValue = #Principal(Principal.fromText("abc"));
+  /// let h = Types.hash(x);
   /// ```
   public func hash(x :CandyValue) : Nat {
     Nat32.toNat(Blob.hash(to_candid(x)));
@@ -411,7 +414,11 @@ module {
   /// Checks the two `CandyValue` params for equality.
   ///
   /// ```motoko include=import
-  /// let array = Array.init<Nat>(4, 2);
+  /// let x: CandyValue = #Int(1);
+  /// let y: CandyValue = #Int(2);
+  /// let z: CandyValue = #Int(1);
+  /// let x_y = Types.eq(x, y); // false
+  /// let x_z = Types.eq(x, z); // true
   /// ```
   public func eq(x :CandyValue, y: CandyValue) : Bool {
     Blob.equal(to_candid(x), to_candid(y));
@@ -420,7 +427,8 @@ module {
   /// Get the hash of the `CandyValueUnstable`.
   ///
   /// ```motoko include=import
-  /// let array = Array.init<Nat>(4, 2);
+  /// let x: CandyValueUnstable = #Principal(Principal.fromText("abc"));
+  /// let h = Types.hashUnstable(x);  
   /// ```
   public func hashUnstable(x :CandyValueUnstable) : Nat {
     Nat32.toNat(Blob.hash(to_candid(stabalizeValue(x))));
@@ -429,7 +437,11 @@ module {
   /// Checks the two `CandyValue` params for equality.
   ///
   /// ```motoko include=import
-  /// let array = Array.init<Nat>(4, 2);
+  /// let x: CandyValueUnstable = #Int(1);
+  /// let y: CandyValueUnstable = #Int(2);
+  /// let z: CandyValueUnstable = #Int(1);
+  /// let x_y = Types.eq(x, y); // false
+  /// let x_z = Types.eq(x, z); // true
   /// ```
   public func eqUnstable(x :CandyValueUnstable, y: CandyValueUnstable) : Bool {
     Blob.equal(to_candid(stabalizeValue(x)), to_candid(stabalizeValue(y)));

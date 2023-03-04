@@ -25,6 +25,12 @@ module {
   type CandyValueUnstable = Types.CandyValueUnstable;
   type PropertyUnstable = Types.PropertyUnstable;
 
+  /// Deep clone a `CandyValueUnstable`.
+  ///
+  /// ```motoko include=import
+  /// let val: CandyValueUnstable = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let cloned_val = Clone.cloneValueUnstable(val);
+  /// ```
   public func cloneValueUnstable(val : CandyValueUnstable) : CandyValueUnstable{
     switch(val){
       case(#Class(val)){

@@ -1,3 +1,7 @@
+/// Hexadecimal support for the candy library.
+///
+/// This module contains the utilities useful for handling hexadecimal values.
+
 /**
  * Module      : Hex.mo
  * Description : Hexadecimal encoding and decoding routines.
@@ -6,10 +10,6 @@
  * Maintainer  : Enzo Haussecker <enzo@dfinity.org>
  * Stability   : Stable
  */
-
-/// Hexadecimal support for the candy library.
-///
-/// This module contains the utilities useful for handling hexadecimal values.
 
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
@@ -29,16 +29,12 @@ module {
     '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
   ];
 
-  /**
-   * Define a type to indicate that the decoder has failed.
-   */
+  /// Defines a type to indicate that the decoder has failed.
   public type DecodeError = {
     #msg : Text;
   };
 
-  /**
-   * Encode an array of unsigned 8-bit integers in hexadecimal format.
-   */
+  /// Encode an array of unsigned 8-bit integers in hexadecimal format.
   public func encode(array : [Nat8]) : Text {
     Array.foldLeft<Nat8, Text>(array, "", func (accum, w8) {
       accum # encodeW8(w8);

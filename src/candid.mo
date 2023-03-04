@@ -1,3 +1,4 @@
+/// Candid support for the candy values.
 
 import Buffer "mo:base/Buffer";
 import Nat "mo:base/Nat";
@@ -28,7 +29,12 @@ import Value "mo:candid/Value";
 
 
 module {
-  //convert a candy value to JSON
+  /// Convert a `CandyValue` to an Array of Candid `Arg`.
+  ///
+  /// ```motoko include=import
+  /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let candid = Candid.value_to_candid(val);
+  /// ```
   public func value_to_candid(val: Types.CandyValue): [Arg.Arg] {
 
       let buffer = Buffer.Buffer<Arg.Arg>(0);

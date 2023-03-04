@@ -1318,6 +1318,12 @@ module {
     return n;
   };
 
+  /// Convert `Text` to `Buffer<Nat8>`
+  ///
+  /// ```motoko include=import
+  ///  let t = "sample_text";
+  ///  let buf = Conversion.textToByteBuffer(t);
+  /// ```
   public func textToByteBuffer(_text : Text) : Buffer.Buffer<Nat8>{
     
     let result : Buffer.Buffer<Nat8> = Buffer.Buffer<Nat8>((_text.size() * 4) +4);
@@ -1329,12 +1335,23 @@ module {
     return result;
   };
 
+  /// Convert `Text` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  ///  let t = "sample_text";
+  ///  let bytes = Conversion.textToBytes(t);
+  /// ```
   public func textToBytes(_text : Text) : [Nat8]{
     
     return textToByteBuffer(_text).toArray();
   };
 
-  //encodes a string it to a giant int
+  /// Encode `Text` to a giant int(`?Nat`)
+  ///
+  /// ```motoko include=import
+  ///  let t = "sample_text";
+  ///  let encoded_t = Conversion.encodeTextAsNat(t);
+  /// ```
   public func encodeTextAsNat(phrase : Text) : ?Nat {
     var theSum : Nat = 0;
     Iter.iterate(Text.toIter(phrase), func (x : Char, n : Nat){
@@ -1344,7 +1361,14 @@ module {
     return ?theSum;
   };
 
-  //conversts "10" to 10
+  /// Convert `Text` to a `?Nat`
+  ///
+  /// ```motoko include=import
+  ///  let t = "100";
+  ///  let t_as_nat = Conversion.textToNat(t); // 100
+  /// ```
+  ///
+  /// Note: Returns `null` if the text is empty.
   public func textToNat( txt : Text) : ?Nat {
     if(txt.size() > 0){
       let chars = txt.chars();
@@ -1363,8 +1387,36 @@ module {
     };
   };
 
+  /// Convert `Property` to a `Text`
+  ///
+  /// ```motoko include=import
+  /// let prop: Property = {
+  ///    name = "name";
+  ///    value = #Principal(Principal.fromText("abc"));
+  ///    immutable = true;
+  /// };
+  /// let prop_as_text = Conversion.propertyToText(t);
+  /// ```
   public func propertyToText(a:Types.Property):Text{valueToText(a.value)};
 
+  /// Convert `CandyValue` to `Properties`
+  ///
+  /// ```motoko include=import
+  ///  let val: CandyValue = #Class([
+  ///    {
+  ///      name = "prop1";
+  ///      value = #Principal(Principal.fromText("abc"));
+  ///      immutable = true;
+  ///    },
+  ///    {
+  ///      name = "prop2";
+  ///      value = #Principal(Principal.fromText("abc"));
+  ///      immutable = false;
+  ///    }
+  ///  ]);
+  ///  let props = Conversion.valueToProperties(val);
+  /// ```
+  /// Note: throws if the underlying value is not `#Class`.
   public func valueToProperties(val : CandyValue) : Types.Properties {
     switch(val){
       case(#Class(val)){ val};
@@ -1372,6 +1424,12 @@ module {
     };
   };
 
+  /// Convert `[Nat8]` to a `Text`
+  ///
+  /// ```motoko include=import
+  /// let bytes: [Nat8] = [140, 145, 190, 192];
+  /// let bytes_as_text = Conversion.bytesToText(bytes);
+  /// ```
   public func bytesToText(_bytes : [Nat8]) : Text{
     
     var result : Text = "";
@@ -1389,16 +1447,34 @@ module {
     return result;
   };
 
+  /// Convert `Principal` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  /// let p = Principal.fromText("xyz");
+  /// let principal_as_bytes = Conversion.principalToBytes(p);
+  /// ```
   public func principalToBytes(_principal: Principal) : [Nat8]{
     
     return Blob.toArray(Principal.toBlob(_principal));
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Principal`
+  ///
+  /// ```motoko include=import
+  /// let bytes: [Nat8] = [140, 145, 190, 192];
+  /// let p = Conversion.bytesToPrincipal(bytes);
+  /// ```
   public func bytesToPrincipal(_bytes: [Nat8]) : Principal{
     
     return Principal.fromBlob(Blob.fromArray(_bytes));
   };
 
+  /// Convert `Principal` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  /// let b = false;
+  /// let bool_as_bytes = Conversion.boolToBytes(b);
+  /// ```
   public func boolToBytes(_bool : Bool) : [Nat8]{
     
     if(_bool == true){
@@ -1408,6 +1484,12 @@ module {
     };
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Bool`
+  ///
+  /// ```motoko include=import
+  /// let bytes: [Nat8] = [1:Nat8];
+  /// let b = Conversion.bytesToBool(bytes); // true
+  /// ```
   public func bytesToBool(_bytes : [Nat8]) : Bool{
     
     if(_bytes[0] == 0){
@@ -1417,6 +1499,12 @@ module {
     };
   };
 
+  /// Convert `Int` to Bytes(`[Nat8]`)
+  ///
+  /// ```motoko include=import
+  /// let i = 266;
+  /// let int_as_bytes = Conversion.intToBytes(b); // [0, 2, 10]
+  /// ```
   public func intToBytes(n : Int) : [Nat8]{
     
     var a : Nat8 = 0;
@@ -1436,6 +1524,12 @@ module {
     //Array.append<Nat8>([c],List.toArray<Nat8>(bytes));
   };
 
+  /// Convert Bytes(`[Nat8]`) to `Int`
+  ///
+  /// ```motoko include=import
+  /// let bytes: [Nat8] = [0, 2, 10];
+  /// let b = Conversion.bytesToBool(bytes); // 266
+  /// ```
   public func bytesToInt(_bytes : [Nat8]) : Int{
     
     var n : Int = 0;
@@ -1454,9 +1548,16 @@ module {
   };
 
   
-
+  /// Unwrap an Option value.
+  ///
+  /// If the underlying value is a #Option(T), T is returned,
+  /// Otherwise, the parameter is returned as it is.
+  ///
+  /// ```motoko include=import
+  /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let unwrapped_val = Conversion.unwrapOptionValue(val);
+  /// ```
   public func unwrapOptionValue(val : CandyValue): CandyValue{
-    
     switch(val){
       case(#Option(val)){
           switch(val){
@@ -1472,6 +1573,15 @@ module {
     };
   };
 
+  /// Unwrap an Option value.
+  ///
+  /// If the underlying value is a #Option(T), T is returned,
+  /// Otherwise, the parameter is returned as it is.
+  ///
+  /// ```motoko include=import
+  /// let val: CandyValueUnstable = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let unwrapped_val = Conversion.unwrapOptionValue(val);
+  /// ```
   public func unwrapOptionValueUnstable(val : CandyValueUnstable): CandyValueUnstable{
     
     switch(val){

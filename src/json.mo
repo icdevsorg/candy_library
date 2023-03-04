@@ -23,89 +23,78 @@ import Types "types";
 import CandyHex "hex";
 
 module {
-//convert a candy value to JSON
-    public func value_to_json(val: Types.CandyValue): Text {
-        switch(val){
-            //nat
-            case(#Nat(val)){ Nat.toText(val)};
-            case(#Nat64(val)){ Nat64.toText(val)};
-            case(#Nat32(val)){ Nat32.toText(val)};
-            case(#Nat16(val)){ Nat16.toText(val)};
-            case(#Nat8(val)){ Nat8.toText(val)};
-            //text
-            case(#Text(val)){ "\"" # val # "\""; };
-            //class
-            case(#Class(val)){
-                var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-                for(this_item in val.vals()){
-                    body.add("\"" # this_item.name # "\"" # ":" # value_to_json(this_item.value));
-                };
-
-                return "{" # Text.join(",", body.vals()) # "}";
-            };
-            //array
-            case(#Array(val)){
-                
-              var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-              for(this_item in val.vals()){
-                  body.add(value_to_json(this_item));
-              };
-
-              return "[" # Text.join(",", body.vals()) # "]";
-                  
-            };
-            case(#Option(val)){
-              switch(val){
-                case(null){"null";};
-                case(?val){value_to_json(val);}
-              }
-            };
-            case(#Nats(val)){
-                
-              var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-              for(this_item in val.vals()){
-                  body.add(Nat.toText(this_item));
-              };
-
-              return "[" # Text.join(",", body.vals()) # "]";
-                   
-            };
-            case(#Floats(val)){
-               
-              var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
-              for(this_item in val.vals()){
-                  body.add(Float.toText(this_item));
-              };
-
-              return "[" # Text.join(",", body.vals()) # "]";
-                   
-            };
-            //bytes
-            case(#Bytes(val)){
-                
-                return "\"" # CandyHex.encode(val) # "\"";//CandyHex.encode(val);
-                   
-            };
-            //bytes
-            case(#Blob(val)){
-                
-                return "\"" # CandyHex.encode(Blob.toArray(val)) # "\"";//CandyHex.encode(val);
-               
-            };
-            //principal
-            case(#Principal(val)){ "\"" # Principal.toText(val) # "\"";};
-            //bool	
-            case(#Bool(val)){ "\"" # Bool.toText(val) # "\"";};	
-            
-            //float	
-            case(#Float(val)){ Float.format(#exact, val) ;};
-            
-            case(#Int(val)){Int.toText(val);};
-            case(#Int64(val)){Int64.toText(val);};
-            case(#Int32(val)){Int32.toText(val);};
-            case(#Int16(val)){Int16.toText(val);};
-            case(#Int8(val)){Int8.toText(val);};
-            case(_){"";};
+  /// Convert `CandyValue` to JSON format as `Text`.
+  ///
+  /// ```motoko include=import
+  /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let val_as_json = Json.value_to_json(val);
+  /// ```
+  public func value_to_json(val: Types.CandyValue): Text {
+      switch(val){
+        //nat
+        case(#Nat(val)){ Nat.toText(val)};
+        case(#Nat64(val)){ Nat64.toText(val)};
+        case(#Nat32(val)){ Nat32.toText(val)};
+        case(#Nat16(val)){ Nat16.toText(val)};
+        case(#Nat8(val)){ Nat8.toText(val)};
+        //text
+        case(#Text(val)){ "\"" # val # "\""; };
+        //class
+        case(#Class(val)){
+          var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+          for(this_item in val.vals()){
+              body.add("\"" # this_item.name # "\"" # ":" # value_to_json(this_item.value));
+          };
+          return "{" # Text.join(",", body.vals()) # "}";
         };
-    };
+        //array
+        case(#Array(val)){
+          var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+          for(this_item in val.vals()){
+              body.add(value_to_json(this_item));
+          };
+          return "[" # Text.join(",", body.vals()) # "]";  
+        };
+        case(#Option(val)){
+          switch(val){
+            case(null){"null";};
+            case(?val){value_to_json(val);}
+          }
+        };
+        case(#Nats(val)){
+          var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+          for(this_item in val.vals()){
+              body.add(Nat.toText(this_item));
+          };
+          return "[" # Text.join(",", body.vals()) # "]";
+        };
+        case(#Floats(val)){
+          var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+          for(this_item in val.vals()){
+            body.add(Float.toText(this_item));
+          };
+          return "[" # Text.join(",", body.vals()) # "]";
+        };
+        //bytes
+        case(#Bytes(val)){
+          return "\"" # CandyHex.encode(val) # "\"";//CandyHex.encode(val);
+        };
+        //bytes
+        case(#Blob(val)){
+          return "\"" # CandyHex.encode(Blob.toArray(val)) # "\"";//CandyHex.encode(val);
+        };
+        //principal
+        case(#Principal(val)){ "\"" # Principal.toText(val) # "\"";};
+        //bool	
+        case(#Bool(val)){ "\"" # Bool.toText(val) # "\"";};	
+        //float	
+        case(#Float(val)){ Float.format(#exact, val) ;};
+        case(#Int(val)){Int.toText(val);};
+        case(#Int64(val)){Int64.toText(val);};
+        case(#Int32(val)){Int32.toText(val);};
+        case(#Int16(val)){Int16.toText(val);};
+        case(#Int8(val)){Int8.toText(val);};
+        case(_){"";};
+      };
+  };
 };

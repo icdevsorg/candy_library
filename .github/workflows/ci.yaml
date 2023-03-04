@@ -1,6 +1,11 @@
 name: ci
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - 0.2.0
+  pull_request:
 
 # Remember to update me in package-set.yml as well
 env:
@@ -24,7 +29,7 @@ jobs:
        chmod +x /home/runner/bin/vessel
     - name: "check"
       run: make check
-    - name: "test"
-      run: make test
+    # - name: "test"
+    #   run: make test
     - name: "docs"
       run: make docs

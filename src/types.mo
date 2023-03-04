@@ -183,6 +183,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `CandyValue`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let unstable: CandyValueUnstable = #Principal(Principal.fromText("abc"));
   /// let stableValue = Types.stabalizeValue(unstable);
@@ -244,6 +245,7 @@ module {
 
   /// Convert a `CandyValue` to `CandyValueUnstable`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let stable: CandyValue = #Principal(Principal.fromText("abc"));
   /// let unstableValue = Types.destabalizeValue(unstable);
@@ -305,6 +307,7 @@ module {
 
   /// Convert a `PropertyUnstable` to `Property`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let unstable: PropertyUnstable = {
   ///    name = "name";
@@ -323,6 +326,7 @@ module {
 
   /// Convert a `Property` to `PropertyUnstable`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let stableProperty: Property = {
   ///    name = "name";
@@ -341,6 +345,7 @@ module {
 
   /// Convert a `[CandyValueUnstable]` to `[CandyValue]`.
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let array: [CandyValueUnstable] = [#Principal(Principal.fromText("abc")), #Int(1)];
   ///  let arrayStable = Types.stabalizeValueArray(array);
@@ -357,6 +362,7 @@ module {
 
   /// Convert a `[CandyValue]` to `[CandyValueUnstable]`.
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let arrayStable: [CandyValue] = [#Principal(Principal.fromText("abc")), #Int(1)];
   ///  let array = Types.destabalizeValueArray(arrayStable);
@@ -373,6 +379,7 @@ module {
 
   /// Convert a `DataZone` to `[CandyValue]`.
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let dataZone = Types.toBuffer<DataChunk>([#Int32(5), #Int(1)]);
   ///  let stabalizedValues = Types.stabalizeValueBuffer(dataZone);
@@ -389,6 +396,7 @@ module {
 
   /// Create a `Buffer` from [T] where T can be of any type.
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let array = [1, 2, 3];
   ///  let buf = Types.toBuffer<Nat>(array);  
@@ -403,6 +411,7 @@ module {
 
   /// Get the hash of the `CandyValue`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let x: CandyValue = #Principal(Principal.fromText("abc"));
   /// let h = Types.hash(x);
@@ -413,6 +422,7 @@ module {
 
   /// Checks the two `CandyValue` params for equality.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let x: CandyValue = #Int(1);
   /// let y: CandyValue = #Int(2);
@@ -426,6 +436,7 @@ module {
 
   /// Get the hash of the `CandyValueUnstable`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let x: CandyValueUnstable = #Principal(Principal.fromText("abc"));
   /// let h = Types.hashUnstable(x);  
@@ -436,6 +447,7 @@ module {
 
   /// Checks the two `CandyValue` params for equality.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let x: CandyValueUnstable = #Int(1);
   /// let y: CandyValueUnstable = #Int(2);

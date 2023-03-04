@@ -31,6 +31,7 @@ import Value "mo:candid/Value";
 module {
   /// Convert a `CandyValue` to an Array of Candid `Arg`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
   /// let candid = Candid.value_to_candid(val);

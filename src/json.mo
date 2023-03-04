@@ -25,6 +25,7 @@ import CandyHex "hex";
 module {
   /// Convert `CandyValue` to JSON format as `Text`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
   /// let val_as_json = Json.value_to_json(val);

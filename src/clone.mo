@@ -27,6 +27,7 @@ module {
 
   /// Deep clone a `CandyValueUnstable`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let val: CandyValueUnstable = #Option(?#Principal(Principal.fromText("xyz")));
   /// let cloned_val = Clone.cloneValueUnstable(val);

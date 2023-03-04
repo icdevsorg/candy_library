@@ -55,6 +55,7 @@ module {
 
   /// Convert a `CandyValue` to `Nat`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int16(15);
   /// let converted_value = Conversion.valueToNat(value);
@@ -92,6 +93,7 @@ module {
 
   /// Convert a `CandyValue` to `Nat8`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToNat8(value);
@@ -128,6 +130,7 @@ module {
 
   /// Convert a `CandyValue` to `Nat16`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToNat16(value);
@@ -164,6 +167,7 @@ module {
 
   /// Convert a `CandyValue` to `Nat32`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToNat32(value);
@@ -199,6 +203,7 @@ module {
 
   /// Convert a `CandyValue` to `Nat64`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToNat64(value);
@@ -235,6 +240,7 @@ module {
 
   /// Convert a `CandyValue` to `Int`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToInt(value);
@@ -259,6 +265,7 @@ module {
 
   /// Convert a `CandyValue` to `Int8`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToInt8(value);
@@ -283,6 +290,7 @@ module {
 
   /// Convert a `CandyValue` to `Int16`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToInt16(value);
@@ -307,6 +315,7 @@ module {
 
   /// Convert a `CandyValue` to `Int32`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToInt32(value);
@@ -330,6 +339,7 @@ module {
 
   /// Convert a `CandyValue` to `Int64`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToInt64(value);
@@ -354,6 +364,7 @@ module {
 
   /// Convert a `CandyValue` to `Float`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int16(2);
   /// let converted_value = Conversion.valueToFloat(value);
@@ -378,6 +389,7 @@ module {
 
   /// Convert a `CandyValue` to `Text`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Int8(2);
   /// let converted_value = Conversion.valueToText(value);
@@ -455,6 +467,7 @@ module {
 
   /// Convert a `CandyValue` to `Principal`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Principal(Principal.fromText("abc"));
   /// let converted_value = Conversion.valueToPrincipal(value);
@@ -470,6 +483,7 @@ module {
 
   /// Convert a `CandyValue` to `Bool`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Bool(false);
   /// let converted_value = Conversion.valueToPBool(value);
@@ -485,6 +499,7 @@ module {
 
   /// Convert a `CandyValue` to `Blob`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Principal(Principal.fromText("abc"));
   /// let converted_value = Conversion.valueToBlob(value);
@@ -528,6 +543,7 @@ module {
   ///
   /// The conversion is done by getting the array of candy values of the #Array.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Array([1, 2, 3]);
   /// let converted_value = Conversion.valueToValueArray(value);
@@ -544,6 +560,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Nat`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int16(15);
   /// let converted_value = Conversion.valueUnstableToNat(value);
@@ -582,6 +599,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Nat8`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int8(15);
   /// let converted_value = Conversion.valueUnstableToNat8(value);
@@ -619,6 +637,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Nat16`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int16(15);
   /// let converted_value = Conversion.valueUnstableToNat16(value);
@@ -656,6 +675,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Nat32`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int32(15);
   /// let converted_value = Conversion.valueUnstableToNat(value);
@@ -692,6 +712,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Nat64`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int16(15);
   /// let converted_value = Conversion.valueUnstableToNat64(value);
@@ -729,6 +750,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Int`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int16(15);
   /// let converted_value = Conversion.valueUnstableToInt(value);
@@ -754,6 +776,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Int8`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Nat8(11);
   /// let converted_value = Conversion.valueUnstableToInt8(value);
@@ -779,6 +802,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Int16`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Float(10);
   /// let converted_value = Conversion.valueUnstableToInt16(value);
@@ -804,6 +828,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Int32`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Nat32(1111);
   /// let converted_value = Conversion.valueUnstableToInt32(value);
@@ -827,6 +852,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Int64`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Nat64(12345);
   /// let converted_value = Conversion.valueUnstableToInt64(value);
@@ -851,6 +877,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Float`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Int16(11);
   /// let converted_value = Conversion.valueUnstableToFloat(value);
@@ -875,6 +902,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Text`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Float(11);
   /// let converted_value = Conversion.valueUnstableToText(value);
@@ -952,6 +980,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Principal`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
   /// let converted_value = Conversion.valueUnstableToPrincipal(value);
@@ -966,6 +995,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Principal`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Bool(true);
   /// let converted_value = Conversion.valueUnstableToPrincipal(value);
@@ -980,6 +1010,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Blob`.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
   /// let converted_value = Conversion.valueUnstableToBlob(value);
@@ -1027,6 +1058,7 @@ module {
   ///
   /// The conversion is done by getting the array of candy values of the #Array.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Array([1, 2, 3]);
   /// let converted_value = Conversion.valueUnstableToValueArray(value);
@@ -1043,6 +1075,7 @@ module {
 
   /// Convert a `CandyValue` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValue = #Principal(Principal.fromText("abc"));
   /// let value_as_bytes = Conversion.valueToBytes(value);
@@ -1077,6 +1110,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
   /// let value_as_bytes = Conversion.valueUnstableToBytes(value);
@@ -1111,6 +1145,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Buffer<Nat8>`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Principal(Principal.fromText("abc"));
   /// let value_as_buffer = Conversion.valueUnstableToBytes(value);
@@ -1128,6 +1163,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Buffer<Float>`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Nat(102);
   /// let value_as_floats_buffer = Conversion.valueUnstableToFloatsBuffer(value);
@@ -1147,6 +1183,7 @@ module {
 
   /// Convert a `CandyValueUnstable` to `Buffer<Nat>`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let value: CandyValueUnstable = #Nat(102);
   /// let value_as_nats_buffer = Conversion.valueUnstableToNatsBuffer(value);
@@ -1173,6 +1210,7 @@ module {
 
   /// Create a `Buffer` from [T] where T can be of any type.
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let array = [1, 2, 3];
   ///  let buf = Conversion.toBuffer<Nat>(array);
@@ -1193,6 +1231,7 @@ module {
 
   /// Convert a `Nat64` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let value: Nat64 = 150;
   ///  let bytes = Conversion.nat64ToBytes(value);
@@ -1211,6 +1250,7 @@ module {
 
   /// Convert a `Nat32` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let value: Nat32 = 150;
   ///  let bytes = Conversion.nat32ToBytes(value);
@@ -1225,6 +1265,7 @@ module {
 
   /// Convert a `Nat16` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let value: Nat16 = 150;
   ///  let bytes = Conversion.nat16ToBytes(value);
@@ -1237,6 +1278,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Nat16`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let bytes: [Nat8] = [1, 2, 3, 4];
   ///  let value = Conversion.bytesToNat16(bytes);
@@ -1249,6 +1291,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Nat32`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let bytes: [Nat8] = [1, 2, 3, 4];
   ///  let value = Conversion.bytesToNat32(bytes);
@@ -1263,6 +1306,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Nat64`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let bytes: [Nat8] = [1, 2, 3, 4];
   ///  let value = Conversion.bytesToNat64(bytes);
@@ -1281,6 +1325,7 @@ module {
 
   /// Convert a `Nat` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let value: Nat = 150;
   ///  let bytes = Conversion.natToBytes(value);
@@ -1302,6 +1347,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Nat`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let bytes: [Nat8] = [1, 2, 3, 4];
   ///  let value = Conversion.bytesToNat(bytes);
@@ -1320,6 +1366,7 @@ module {
 
   /// Convert `Text` to `Buffer<Nat8>`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let t = "sample_text";
   ///  let buf = Conversion.textToByteBuffer(t);
@@ -1337,6 +1384,7 @@ module {
 
   /// Convert `Text` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let t = "sample_text";
   ///  let bytes = Conversion.textToBytes(t);
@@ -1348,6 +1396,7 @@ module {
 
   /// Encode `Text` to a giant int(`?Nat`)
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let t = "sample_text";
   ///  let encoded_t = Conversion.encodeTextAsNat(t);
@@ -1363,6 +1412,7 @@ module {
 
   /// Convert `Text` to a `?Nat`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let t = "100";
   ///  let t_as_nat = Conversion.textToNat(t); // 100
@@ -1389,6 +1439,7 @@ module {
 
   /// Convert `Property` to a `Text`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let prop: Property = {
   ///    name = "name";
@@ -1401,6 +1452,7 @@ module {
 
   /// Convert `CandyValue` to `Properties`
   ///
+  /// Example:
   /// ```motoko include=import
   ///  let val: CandyValue = #Class([
   ///    {
@@ -1426,6 +1478,7 @@ module {
 
   /// Convert `[Nat8]` to a `Text`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let bytes: [Nat8] = [140, 145, 190, 192];
   /// let bytes_as_text = Conversion.bytesToText(bytes);
@@ -1449,6 +1502,7 @@ module {
 
   /// Convert `Principal` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   /// let p = Principal.fromText("xyz");
   /// let principal_as_bytes = Conversion.principalToBytes(p);
@@ -1460,6 +1514,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Principal`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let bytes: [Nat8] = [140, 145, 190, 192];
   /// let p = Conversion.bytesToPrincipal(bytes);
@@ -1471,6 +1526,7 @@ module {
 
   /// Convert `Principal` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   /// let b = false;
   /// let bool_as_bytes = Conversion.boolToBytes(b);
@@ -1486,6 +1542,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Bool`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let bytes: [Nat8] = [1:Nat8];
   /// let b = Conversion.bytesToBool(bytes); // true
@@ -1501,6 +1558,7 @@ module {
 
   /// Convert `Int` to Bytes(`[Nat8]`)
   ///
+  /// Example:
   /// ```motoko include=import
   /// let i = 266;
   /// let int_as_bytes = Conversion.intToBytes(b); // [0, 2, 10]
@@ -1526,6 +1584,7 @@ module {
 
   /// Convert Bytes(`[Nat8]`) to `Int`
   ///
+  /// Example:
   /// ```motoko include=import
   /// let bytes: [Nat8] = [0, 2, 10];
   /// let b = Conversion.bytesToBool(bytes); // 266
@@ -1553,6 +1612,7 @@ module {
   /// If the underlying value is a #Option(T), T is returned,
   /// Otherwise, the parameter is returned as it is.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
   /// let unwrapped_val = Conversion.unwrapOptionValue(val);
@@ -1578,6 +1638,7 @@ module {
   /// If the underlying value is a #Option(T), T is returned,
   /// Otherwise, the parameter is returned as it is.
   ///
+  /// Example:
   /// ```motoko include=import
   /// let val: CandyValueUnstable = #Option(?#Principal(Principal.fromText("xyz")));
   /// let unwrapped_val = Conversion.unwrapOptionValue(val);

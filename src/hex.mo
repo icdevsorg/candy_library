@@ -41,9 +41,7 @@ module {
     });
   };
 
-  /**
-   * Encode an unsigned 8-bit integer in hexadecimal format.
-   */
+  /// Encode an unsigned 8-bit integer in hexadecimal format..
   private func encodeW8(w8 : Nat8) : Text {
     let c1 = symbols[Nat8.toNat(w8 / base)];
     let c2 = symbols[Nat8.toNat(w8 % base)];

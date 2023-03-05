@@ -175,6 +175,9 @@ module {
   /// Note: A `DataChunk` should be no larger than 2MB so that it can be shipped to other canisters.
   public type DataChunk = CandyValueUnstable;
   public type DataZone = StableBuffer.StableBuffer<DataChunk>;
+
+  /// Workspaces are valueble when using orthogonal persistance to keep track of data in a format 
+  /// that is easily transmitable across the wire given IC restrictions
   public type Workspace = StableBuffer.StableBuffer<DataZone>;
 
   public type AddressedChunk = (Nat, Nat, CandyValue);

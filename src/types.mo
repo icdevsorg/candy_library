@@ -29,29 +29,29 @@ import Int "mo:base/Int";
 
 
 module {
-  /// A collection of `PropertyUnstable`.
-  public type PropertiesUnstable = [PropertyUnstable];
+  /// A collection of `PropertyShared`.
+  public type PropertiesShared = [PropertyShared];
 
   /// Specifies a single unstable property.
-  public type PropertyUnstable = {name : Text; value : CandyValueUnstable; immutable : Bool};
+  public type PropertyShared = {name : Text; value : CandyValueShared; immutable : Bool};
 
   /// Specifies the unstable properties that should be updated to a certain value.
-  public type UpdateRequestUnstable = {
+  public type UpdateRequestShared = {
     id     : Text;
-    update : [UpdateUnstable];
+    update : [UpdateShared];
   };
 
   /// Update information for a single property. 
-  public type UpdateUnstable = {
+  public type UpdateShared = {
     name : Text;
-    mode : UpdateModeUnstable;
+    mode : UpdateModeShared;
   };
 
   /// Mode for the update operation.
-  public type UpdateModeUnstable = {
-    #Set    : CandyValueUnstable;
-    #Lock    : CandyValueUnstable;
-    #Next   : [UpdateUnstable];
+  public type UpdateModeShared = {
+    #Set    : CandyValueShared;
+    #Lock    : CandyValueShared;
+    #Next   : [UpdateShared];
   };
 
   ////////////////////////////////////
@@ -145,8 +145,8 @@ module {
     #Set : [CandyValue];
   };
 
-  /// The Unstable CandyValue.
-  public type CandyValueUnstable = {
+  /// The Shared CandyValue.
+  public type CandyValueShared = {
     #Int :  Int;
     #Int8: Int8;
     #Int16: Int16;
@@ -161,19 +161,19 @@ module {
     #Text : Text;
     #Bool : Bool;
     #Blob : Blob;
-    #Class : [PropertyUnstable];
+    #Class : [PropertyShared];
     #Principal : Principal;
     #Floats : StableBuffer.StableBuffer<Float>;
     #Nats: StableBuffer.StableBuffer<Nat>; 
-    #Array : StableBuffer.StableBuffer<CandyValueUnstable>;
-    #Option : ?CandyValueUnstable;
+    #Array : StableBuffer.StableBuffer<CandyValueShared>;
+    #Option : ?CandyValueShared;
     #Bytes : StableBuffer.StableBuffer<Nat8>; 
-    #Map : Map.Map<CandyValueUnstable, CandyValueUnstable>;
-    #Set : Set.Set<CandyValueUnstable>;
+    #Map : Map.Map<CandyValueShared, CandyValueShared>;
+    #Set : Set.Set<CandyValueShared>;
   };
 
   /// Note: A `DataChunk` should be no larger than 2MB so that it can be shipped to other canisters.
-  public type DataChunk = CandyValueUnstable;
+  public type DataChunk = CandyValueShared;
   public type DataZone = StableBuffer.StableBuffer<DataChunk>;
 
   /// Workspaces are valueble when using orthogonal persistance to keep track of data in a format 
@@ -184,14 +184,14 @@ module {
   public type AddressedChunkArray = [AddressedChunk];
   public type AddressedChunkBuffer = StableBuffer.StableBuffer<AddressedChunk>;
 
-  /// Convert a `CandyValueUnstable` to `CandyValue`.
+  /// Convert a `CandyValueShared` to `CandyValue`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let unstable: CandyValueUnstable = #Principal(Principal.fromText("abc"));
-  /// let stableValue = Types.stabalizeValue(unstable);
+  /// let unstable: CandyValueShared = #Principal(Principal.fromText("abc"));
+  /// let stableValue = Types.shareValue(unstable);
   /// ```
-  public func stabalizeValue(item : CandyValueUnstable) : CandyValue{
+  public func shareValue(item : CandyValueShared) : CandyValue{
     switch(item){
       case(#Int(val)){ #Int(val)};
       case(#Int8(val)){ #Int8(val)};
@@ -210,50 +210,50 @@ module {
       case(#Class(val)){
         #Class(
           Array.tabulate<Property>(val.size(), func(idx){
-              stabalizeProperty(val[idx]);
+              shareProperty(val[idx]);
           }));
       };
       case(#Principal(val)){ #Principal(val)};
-      case(#Array(val)){ #Array(stabalizeValueArray(StableBuffer.toArray(val)))};
+      case(#Array(val)){ #Array(shareValueArray(StableBuffer.toArray(val)))};
       case(#Option(val)){
         switch(val){
           case(null){ #Option(null)};
-          case(?val){#Option(?stabalizeValue(val))};
+          case(?val){#Option(?shareValue(val))};
         };
       };
       case(#Bytes(val)){ #Bytes(StableBuffer.toArray<Nat8>(val))};
       case(#Floats(val)){#Floats(StableBuffer.toArray(val))};
       case(#Nats(val)){#Nats(StableBuffer.toArray(val))};
       case(#Map(val)){
-        let entries = Map.entries<CandyValueUnstable, CandyValueUnstable>(val);
-        let stableEntries = Iter.map<(CandyValueUnstable, CandyValueUnstable), (CandyValue, CandyValue)>(
+        let entries = Map.entries<CandyValueShared, CandyValueShared>(val);
+        let stableEntries = Iter.map<(CandyValueShared, CandyValueShared), (CandyValue, CandyValue)>(
           entries,
-          func (x : (CandyValueUnstable, CandyValueUnstable)){
-            (stabalizeValue(x.0), stabalizeValue(x.1))
+          func (x : (CandyValueShared, CandyValueShared)){
+            (shareValue(x.0), shareValue(x.1))
           });
       
         #Map(Iter.toArray<(CandyValue,CandyValue)>(stableEntries));
       };
       case(#Set(val)){
-        let entries = Set.keys<CandyValueUnstable>(val);
-        let stableEntries = Iter.map<(CandyValueUnstable), (CandyValue)>(
+        let entries = Set.keys<CandyValueShared>(val);
+        let stableEntries = Iter.map<(CandyValueShared), (CandyValue)>(
           entries,
-          func (x : (CandyValueUnstable)){
-            (stabalizeValue(x))
+          func (x : (CandyValueShared)){
+            (shareValue(x))
           });
         #Set(Iter.toArray<(CandyValue)>(stableEntries));
       };
     }
   };
 
-  /// Convert a `CandyValue` to `CandyValueUnstable`.
+  /// Convert a `CandyValue` to `CandyValueShared`.
   ///
   /// Example:
   /// ```motoko include=import
   /// let stable: CandyValue = #Principal(Principal.fromText("abc"));
-  /// let unstableValue = Types.destabalizeValue(unstable);
+  /// let unstableValue = Types.unshareValue(unstable);
   /// ```
-  public func destabalizeValue(item : CandyValue) : CandyValueUnstable{
+  public func unshareValue(item : CandyValue) : CandyValueShared{
       switch(item){
         case(#Int(val)){ #Int(val)};
         case(#Int8(val)){ #Int8(val)};
@@ -271,16 +271,16 @@ module {
         case(#Blob(val)){ #Blob(val)};
         case(#Class(val)){
           #Class(
-            Array.tabulate<PropertyUnstable>(val.size(), func(idx){
-                destabalizeProperty(val[idx]);
+            Array.tabulate<PropertyShared>(val.size(), func(idx){
+                unshareProperty(val[idx]);
             }));
         };
         case(#Principal(val)){#Principal(val)};
-        case(#Array(val)){#Array(toBuffer<CandyValueUnstable>(destabalizeValueArray(val)))};
+        case(#Array(val)){#Array(toBuffer<CandyValueShared>(unshareValueArray(val)))};
         case(#Option(val)){
           switch(val){
             case(null){ #Option(null)};
-            case(?val){#Option(?destabalizeValue(val))};
+            case(?val){#Option(?unshareValue(val))};
           };
         };
         case(#Bytes(val)){#Bytes(toBuffer<Nat8>(val))};
@@ -288,46 +288,46 @@ module {
         case(#Nats(val)){#Nats(toBuffer<Nat>(val))};
         case(#Map(val)){
           //let entries = Map.entries<CandyValue, CandyValue>(val);
-          let unstableEntries = Iter.map<(CandyValue, CandyValue), (CandyValueUnstable, CandyValueUnstable)>(
+          let unstableEntries = Iter.map<(CandyValue, CandyValue), (CandyValueShared, CandyValueShared)>(
             val.vals(),
             func (x : (CandyValue, CandyValue)){
-              (destabalizeValue(x.0), destabalizeValue(x.1))
+              (unshareValue(x.0), unshareValue(x.1))
             });
         
-          #Map(Map.fromIter<CandyValueUnstable, CandyValueUnstable>(unstableEntries, candyValueUnstableMapHashTool));
+          #Map(Map.fromIter<CandyValueShared, CandyValueShared>(unstableEntries, candyValueSharedMapHashTool));
         };
         case(#Set(val)){
-          //let entries = Set.keys<CandyValueUnstable>(val);
-          let unstableEntries = Iter.map<(CandyValue), (CandyValueUnstable)>(
+          //let entries = Set.keys<CandyValueShared>(val);
+          let unstableEntries = Iter.map<(CandyValue), (CandyValueShared)>(
             val.vals(),
             func (x : (CandyValue)){
-              (destabalizeValue(x))
+              (unshareValue(x))
             });
-          #Set(Set.fromIter<(CandyValueUnstable)>(unstableEntries, candyValueUnstableMapHashTool));
+          #Set(Set.fromIter<(CandyValueShared)>(unstableEntries, candyValueSharedMapHashTool));
         };
       }
   };
 
-  /// Convert a `PropertyUnstable` to `Property`.
+  /// Convert a `PropertyShared` to `Property`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let unstable: PropertyUnstable = {
+  /// let unstable: PropertyShared = {
   ///    name = "name";
   ///    value = #Principal(Principal.fromText("abc"));
   ///    immutable = false;
   ///  };
-  /// let stableProperty = Types.stabalizeProperty(unstable);
+  /// let stableProperty = Types.shareProperty(unstable);
   /// ```
-  public func stabalizeProperty(item : PropertyUnstable) : Property{
+  public func shareProperty(item : PropertyShared) : Property{
     return {
       name = item.name;
-      value = stabalizeValue(item.value);
+      value = shareValue(item.value);
       immutable = item.immutable;
     }
   };
 
-  /// Convert a `Property` to `PropertyUnstable`.
+  /// Convert a `Property` to `PropertyShared`.
   ///
   /// Example:
   /// ```motoko include=import
@@ -336,48 +336,48 @@ module {
   ///    value = #Principal(Principal.fromText("abc"));
   ///    immutable = true;
   ///  };
-  /// let unstableProperty = Types.destabalizeProperty(stableProperty);
+  /// let unstableProperty = Types.unshareProperty(stableProperty);
   /// ```
-  public func destabalizeProperty(item : Property) : PropertyUnstable{
+  public func unshareProperty(item : Property) : PropertyShared{
     return {
       name = item.name;
-      value = destabalizeValue(item.value);
+      value = unshareValue(item.value);
       immutable = item.immutable;
     }
   };
 
-  /// Convert a `[CandyValueUnstable]` to `[CandyValue]`.
+  /// Convert a `[CandyValueShared]` to `[CandyValue]`.
   ///
   /// Example:
   /// ```motoko include=import
-  ///  let array: [CandyValueUnstable] = [#Principal(Principal.fromText("abc")), #Int(1)];
-  ///  let arrayStable = Types.stabalizeValueArray(array);
+  ///  let array: [CandyValueShared] = [#Principal(Principal.fromText("abc")), #Int(1)];
+  ///  let arrayStable = Types.shareValueArray(array);
   /// ```
-  public func stabalizeValueArray(items : [CandyValueUnstable]) : [CandyValue]{
+  public func shareValueArray(items : [CandyValueShared]) : [CandyValue]{
 
     let finalItems = Buffer.Buffer<CandyValue>(items.size());
     for(thisItem in items.vals()){
-      finalItems.add(stabalizeValue(thisItem));
+      finalItems.add(shareValue(thisItem));
     };
     
-    return finalItems.toArray();
+    return Buffer.toArray(finalItems);
   };
 
-  /// Convert a `[CandyValue]` to `[CandyValueUnstable]`.
+  /// Convert a `[CandyValue]` to `[CandyValueShared]`.
   ///
   /// Example:
   /// ```motoko include=import
   ///  let arrayStable: [CandyValue] = [#Principal(Principal.fromText("abc")), #Int(1)];
-  ///  let array = Types.destabalizeValueArray(arrayStable);
+  ///  let array = Types.unshareValueArray(arrayStable);
   /// ```
-  public func destabalizeValueArray(items : [CandyValue]) : [CandyValueUnstable]{
+  public func unshareValueArray(items : [CandyValue]) : [CandyValueShared]{
     
-    let finalItems = Buffer.Buffer<CandyValueUnstable>(items.size());
+    let finalItems = Buffer.Buffer<CandyValueShared>(items.size());
     for(thisItem in items.vals()){
-      finalItems.add(destabalizeValue(thisItem));
+      finalItems.add(unshareValue(thisItem));
     };
     
-    return finalItems.toArray();
+    return Buffer.toArray(finalItems);
   };
 
   /// Convert a `DataZone` to `[CandyValue]`.
@@ -385,16 +385,16 @@ module {
   /// Example:
   /// ```motoko include=import
   ///  let dataZone = Types.toBuffer<DataChunk>([#Int32(5), #Int(1)]);
-  ///  let stabalizedValues = Types.stabalizeValueBuffer(dataZone);
+  ///  let sharedValues = Types.shareValueBuffer(dataZone);
   /// ```
-  public func stabalizeValueBuffer(items : DataZone) : [CandyValue]{
+  public func shareValueBuffer(items : DataZone) : [CandyValue]{
 
     let finalItems = Buffer.Buffer<CandyValue>(StableBuffer.size(items));
     for(thisItem in StableBuffer.vals(items)){
-      finalItems.add(stabalizeValue(thisItem));
+      finalItems.add(shareValue(thisItem));
     };
     
-    return finalItems.toArray();
+    return Buffer.toArray(finalItems);
   };
 
   /// Create a `Buffer` from [T] where T can be of any type.
@@ -437,32 +437,32 @@ module {
     Blob.equal(to_candid(x), to_candid(y));
   };
 
-  /// Get the hash of the `CandyValueUnstable`.
+  /// Get the hash of the `CandyValueShared`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let x: CandyValueUnstable = #Principal(Principal.fromText("abc"));
-  /// let h = Types.hashUnstable(x);  
+  /// let x: CandyValueShared = #Principal(Principal.fromText("abc"));
+  /// let h = Types.hashShared(x);  
   /// ```
-  public func hashUnstable(x :CandyValueUnstable) : Nat {
-    Nat32.toNat(Blob.hash(to_candid(stabalizeValue(x))));
+  public func hashShared(x :CandyValueShared) : Nat {
+    Nat32.toNat(Blob.hash(to_candid(shareValue(x))));
   };
 
   /// Checks the two `CandyValue` params for equality.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let x: CandyValueUnstable = #Int(1);
-  /// let y: CandyValueUnstable = #Int(2);
-  /// let z: CandyValueUnstable = #Int(1);
+  /// let x: CandyValueShared = #Int(1);
+  /// let y: CandyValueShared = #Int(2);
+  /// let z: CandyValueShared = #Int(1);
   /// let x_y = Types.eq(x, y); // false
   /// let x_z = Types.eq(x, z); // true
   /// ```
-  public func eqUnstable(x :CandyValueUnstable, y: CandyValueUnstable) : Bool {
-    Blob.equal(to_candid(stabalizeValue(x)), to_candid(stabalizeValue(y)));
+  public func eqShared(x :CandyValueShared, y: CandyValueShared) : Bool {
+    Blob.equal(to_candid(shareValue(x)), to_candid(shareValue(y)));
   };
 
   public let candyValuyMapHashTool = (hash, eq);
-  public let candyValueUnstableMapHashTool = (hashUnstable, eqUnstable);
+  public let candyValueSharedMapHashTool = (hashShared, eqShared);
 
 }

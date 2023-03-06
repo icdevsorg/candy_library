@@ -16,6 +16,7 @@
 import CandyOld "mo:candy_0_1_12/types";
 import CandyTypes "types";
 import Array "mo:base/Array";
+import Buffer "mo:base/Buffer";
 
 module {
 
@@ -87,8 +88,8 @@ module {
     };
   };
 
-  /// Upgrade from V1 representation of `CandyValueUnstable` to the V2 representation.
-  public func upgradeValueUnstable(item : CandyOld.CandyValueUnstable) : CandyTypes.CandyValueUnstable {
+  /// Upgrade from V1 representation of `CandyValueUnstable` to the V2 representation 'CandyValudShared'.
+  public func upgradeValueUnstable(item : CandyOld.CandyValueUnstable) : CandyTypes.CandyValueShared {
     switch (item) {
       case (#Int(val)) { #Int(val) };
       case (#Int8(val)) { #Int8(val) };
@@ -106,7 +107,7 @@ module {
       case (#Blob(val)) { #Blob(val) };
       case (#Class(val)) {
         #Class(
-          Array.map<CandyOld.PropertyUnstable, CandyTypes.PropertyUnstable>(
+          Array.map<CandyOld.PropertyUnstable, CandyTypes.PropertyShared>(
             val,
             func(x) {
               {
@@ -120,10 +121,10 @@ module {
       case (#Array(val)) {
         switch (val) {
           case (#frozen(val)) {
-            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.CandyValueUnstable>(val, upgradeValueUnstable)));
+            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.CandyValueShared>(val, upgradeValueUnstable)));
           };
           case (#thawed(val)) {
-            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.CandyValueUnstable>(val.toArray(), upgradeValueUnstable)));
+            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.CandyValueShared>(Buffer.toArray(val), upgradeValueUnstable)));
           };
         };
       };
@@ -136,19 +137,19 @@ module {
       case (#Bytes(val)) {
         switch (val) {
           case (#frozen(val)) { #Bytes(CandyTypes.toBuffer(val)) };
-          case (#thawed(val)) { #Bytes(CandyTypes.toBuffer(val.toArray())) };
+          case (#thawed(val)) { #Bytes(CandyTypes.toBuffer(Buffer.toArray(val))) };
         };
       };
       case (#Floats(val)) {
         switch (val) {
           case (#frozen(val)) { #Floats(CandyTypes.toBuffer(val)) };
-          case (#thawed(val)) { #Floats(CandyTypes.toBuffer(val.toArray())) };
+          case (#thawed(val)) { #Floats(CandyTypes.toBuffer(Buffer.toArray(val))) };
         };
       };
       case (#Nats(val)) {
         switch (val) {
           case (#frozen(val)) { #Nats(CandyTypes.toBuffer(val)) };
-          case (#thawed(val)) { #Nats(CandyTypes.toBuffer(val.toArray())) };
+          case (#thawed(val)) { #Nats(CandyTypes.toBuffer(Buffer.toArray(val))) };
         };
       };
       case (#Empty) { #Option(null) };

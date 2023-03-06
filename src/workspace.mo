@@ -30,7 +30,7 @@ import Clone "clone";
 
 module {
   type CandyValue = Types.CandyValue;
-  type CandyValueUnstable = Types.CandyValueUnstable;
+  type CandyValueShared = Types.CandyValueShared;
   type Workspace = Types.Workspace;
   type DataZone = Types.DataZone;
   type AddressedChunkArray = Types.AddressedChunkArray;
@@ -163,8 +163,8 @@ module {
     return varSize;
   };
 
-  /// Get the size in bytes taken up by the `CandyValueUnstable`.
-  public func getValueUnstableSize(item : CandyValueUnstable) : Nat{
+  /// Get the size in bytes taken up by the `CandyValueShared`.
+  public func getValueSharedSize(item : CandyValueShared) : Nat{
     let varSize = switch(item){
       case(#Int(val)){
         var a : Nat = 0;
@@ -203,7 +203,7 @@ module {
       case(#Class(val)){
         var size = 0;
         for(thisItem in val.vals()){
-          size += 1 + (thisItem.name.size() * 4) + getValueUnstableSize(thisItem.value);
+          size += 1 + (thisItem.name.size() * 4) + getValueSharedSize(thisItem.value);
         };
 
         return size;
@@ -212,14 +212,14 @@ module {
       case(#Option(val)){
         switch val{
           case(null){0};
-          case(?val){ getValueUnstableSize(val)}
+          case(?val){ getValueSharedSize(val)}
         }
       };
       case(#Array(val)){
         
         var size = 0;
         for(thisItem in StableBuffer.vals(val)){
-          size += 1 + getValueUnstableSize(thisItem);
+          size += 1 + getValueSharedSize(thisItem);
         };
         
         return size;
@@ -234,14 +234,14 @@ module {
       case(#Nats(val)){
         var size = 0;
         for(thisItem in StableBuffer.vals(val)){
-          size += 1 + getValueUnstableSize(#Nat(thisItem));
+          size += 1 + getValueSharedSize(#Nat(thisItem));
         };
         return size;
       };
       case(#Map(val)){
         var size = 0;
-        for(thisItem in Map.entries<CandyValueUnstable, CandyValueUnstable>(val)){
-          size += getValueUnstableSize(thisItem.0) + getValueUnstableSize(thisItem.1) + 2;
+        for(thisItem in Map.entries<CandyValueShared, CandyValueShared>(val)){
+          size += getValueSharedSize(thisItem.0) + getValueSharedSize(thisItem.1) + 2;
         };
         
         return size;
@@ -249,8 +249,8 @@ module {
       };
       case(#Set(val)){
         var size = 0;
-        for(thisItem in Set.keys<CandyValueUnstable>(val)){
-          size += getValueUnstableSize(thisItem) + 2;
+        for(thisItem in Set.keys<CandyValueShared>(val)){
+          size += getValueSharedSize(thisItem) + 2;
         };
         return size;  
       };
@@ -272,7 +272,7 @@ module {
     var currentZone = 0;
     var currentChunk = 0;
     let result = Array.tabulate<AddressedChunk>(countAddressedChunksInWorkspace(x), func(thisChunk){
-      let thisChunk = (currentZone, currentChunk, Types.stabalizeValue(StableBuffer.get(StableBuffer.get(x,currentZone),currentChunk)));
+      let thisChunk = (currentZone, currentChunk, Types.shareValue(StableBuffer.get(StableBuffer.get(x,currentZone),currentChunk)));
       if(currentChunk == Nat.sub(StableBuffer.size(StableBuffer.get(x, currentZone)),1)){
         currentZone += 1;
         currentChunk := 0;
@@ -304,7 +304,7 @@ module {
       let tz = StableBuffer.initPresized<DataChunk>(StableBuffer.size(thisZone));
       StableBuffer.add<DataZone>(ws, tz);
       for(thisDataChunk in StableBuffer.vals(thisZone)){
-        StableBuffer.add(tz,Clone.cloneValueUnstable(thisDataChunk));
+        StableBuffer.add(tz,Clone.cloneValueShared(thisDataChunk));
       };
         
     };
@@ -339,7 +339,7 @@ module {
 
       if(thisChunk.1 + 1  <= StableBuffer.size(thisZone)){
         //zone exists
-        StableBuffer.put(thisZone, thisChunk.1, Types.destabalizeValue(thisChunk.2));
+        StableBuffer.put(thisZone, thisChunk.1, Types.unshareValue(thisChunk.2));
       } else {
         //append zone
 
@@ -348,7 +348,7 @@ module {
           let newBuffer = if(thisChunk.1 == newChunk){
           //we know the size
 
-            Types.destabalizeValue(thisChunk.2);
+            Types.unshareValue(thisChunk.2);
           } else {
             #Option(null);
           };
@@ -367,7 +367,7 @@ module {
   public func getDataZoneSize(dz: DataZone) : Nat {
     var size : Nat = 0;
     for(thisChunk in StableBuffer.vals(dz)){
-      size += getValueUnstableSize(thisChunk);
+      size += getValueSharedSize(thisChunk);
     };
     return size;
   };
@@ -390,7 +390,7 @@ module {
 
           let thisItem = StableBuffer.get(StableBuffer.get(_workspace,thisZone),thisChunk);
 
-          let newSize = foundBytes + getValueUnstableSize(thisItem);
+          let newSize = foundBytes + getValueSharedSize(thisItem);
           
           if( newSize > _maxChunkSize)
           {
@@ -433,7 +433,7 @@ module {
 
               let thisItem = StableBuffer.get(StableBuffer.get(_workspace, thisZone), thisChunk);
 
-              let newSize = foundBytes + getValueUnstableSize(thisItem);
+              let newSize = foundBytes + getValueSharedSize(thisItem);
               if( newSize > _maxChunkSize)
               {
                   //went over bytes
@@ -447,7 +447,7 @@ module {
               };
               if(currentChunk == _chunkID){
                   //add it to our return
-                  StableBuffer.add(resultBuffer, (thisZone, thisChunk, Types.stabalizeValue(thisItem)));
+                  StableBuffer.add(resultBuffer, (thisZone, thisChunk, Types.shareValue(thisItem)));
 
               };
 
@@ -486,25 +486,25 @@ module {
     
     let result = Buffer.Buffer<Buffer.Buffer<Nat8>>(StableBuffer.size(dz));
     for(thisItem in StableBuffer.vals(dz)){
-      result.add(Conversion.valueUnstableToBytesBuffer(thisItem));
+      result.add(Conversion.valueSharedToBytesBuffer(thisItem));
     };
     
     return result;
   };
 
-  public func byteBufferChunksToValueUnstableBufferDataZone(buffer : Buffer.Buffer<Buffer.Buffer<Nat8>>): DataZone {
+  public func byteBufferChunksToValueSharedBufferDataZone(buffer : Buffer.Buffer<Buffer.Buffer<Nat8>>): DataZone {
     
-    let result = StableBuffer.initPresized<CandyValueUnstable>(buffer.size());
+    let result = StableBuffer.initPresized<CandyValueShared>(buffer.size());
     for(thisItem in buffer.vals()){
-      StableBuffer.add(result, #Bytes(Types.toBuffer<Nat8>(thisItem.toArray())));
+      StableBuffer.add(result, #Bytes(Types.toBuffer<Nat8>(Buffer.toArray(thisItem))));
     };
 
     return result;
   };
 
   /// Initialize a `DataZone` with the given value.
-  public func initDataZone(val : CandyValueUnstable) : DataZone{
-    let result = StableBuffer.init<CandyValueUnstable>();
+  public func initDataZone(val : CandyValueShared) : DataZone{
+    let result = StableBuffer.init<CandyValueShared>();
     StableBuffer.add(result, val);
     return result;
   };
@@ -525,6 +525,6 @@ module {
         accumulator.add(thisbyte);
       };
     };
-    return accumulator.toArray();
+    return Buffer.toArray(accumulator);
   };
 }

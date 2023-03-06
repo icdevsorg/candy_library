@@ -57,7 +57,7 @@ module {
                   types.add({tag = #name(this_item.name); _type = (value_to_candid(this_item.value))[0]._type});
                   body.add({tag = #name(this_item.name); value = (value_to_candid(this_item.value))[0].value});
               };
-              buffer.add({_type=#record(types.toArray()); value = #record(body.toArray())})
+              buffer.add({_type=#record(Buffer.toArray(types)); value = #record(Buffer.toArray(body))})
           };
           //array
           case(#Array(val)){
@@ -89,13 +89,13 @@ module {
 
               if(bFoundMultipleTypes){
                 //need to make a record
-                buffer.add({_type=#record(types.toArray()); value = #record(body.toArray())})
+                buffer.add({_type=#record(Buffer.toArray(types)); value = #record(Buffer.toArray(body))})
               } else {
                 let thisType = switch(lastType){
                   case(null) #_null ;
                   case(?val) val ;
                 };
-                buffer.add({_type=#vector(thisType); value = #vector(values.toArray())});
+                buffer.add({_type=#vector(thisType); value = #vector(Buffer.toArray(values))});
               };
                   
           };
@@ -117,7 +117,7 @@ module {
               for(this_item in list.vals()){
                   values.add(#nat(this_item));
               };
-              buffer.add({_type=#vector(#nat); value = #vector(values.toArray())});
+              buffer.add({_type=#vector(#nat); value = #vector(Buffer.toArray(values))});
           };
           case(#Floats(val)){
               let list = val;
@@ -127,7 +127,7 @@ module {
                   values.add(#float64(this_item));
               };
 
-              buffer.add({_type=#vector(#float64); value = #vector(values.toArray())});
+              buffer.add({_type=#vector(#float64); value = #vector(Buffer.toArray(values))});
           };
           //bytes
           case(#Bytes(val)){
@@ -138,7 +138,7 @@ module {
                   values.add(#nat8(this_item));
               };
 
-              buffer.add({_type=#vector(#nat8); value = #vector(values.toArray())});
+              buffer.add({_type=#vector(#nat8); value = #vector(Buffer.toArray(values))});
           };
           //bytes
           case(#Blob(val)){
@@ -150,7 +150,7 @@ module {
                   values.add(#nat8(this_item));
               };
 
-              buffer.add({_type=#vector(#nat8); value = #vector(values.toArray())});
+              buffer.add({_type=#vector(#nat8); value = #vector(Buffer.toArray(values))});
               
           };
           //principal
@@ -215,7 +215,7 @@ module {
                   localBody.add({tag = #hash(0); value = key.value});
                   localBody.add({tag = #hash(1); value = value.value});
 
-                  let thisItem = {_type=#record(localTypes.toArray()); value = #record(localBody.toArray())};
+                  let thisItem = {_type=#record(Buffer.toArray(localTypes)); value = #record(Buffer.toArray(localBody))};
 
                   types.add({_type = thisItem._type; tag = #hash(tracker)});
                   body.add({tag = #hash(tracker); value = thisItem.value});
@@ -224,7 +224,7 @@ module {
               };
 
               
-              buffer.add({_type=#record(types.toArray()); value = #record(body.toArray())})
+              buffer.add({_type=#record(Buffer.toArray(types)); value = #record(Buffer.toArray(body))})
               
           };
           //array
@@ -257,18 +257,18 @@ module {
 
               if(bFoundMultipleTypes){
                 //need to make a record
-                buffer.add({_type=#record(types.toArray()); value = #record(body.toArray())})
+                buffer.add({_type=#record(Buffer.toArray(types)); value = #record(Buffer.toArray(body))})
               } else {
                 let thisType = switch(lastType){
                   case(null) #_null ;
                   case(?val) val ;
                 };
-                buffer.add({_type=#vector(thisType); value = #vector(values.toArray())});
+                buffer.add({_type=#vector(thisType); value = #vector(Buffer.toArray(values))});
               };
           };
 
       };
 
-      buffer.toArray();
+      Buffer.toArray(buffer);
   };
 };

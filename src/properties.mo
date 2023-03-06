@@ -23,33 +23,33 @@ import Types "types";
 
 module {
 
-  type PropertiesUnstable = Types.PropertiesUnstable;
+  type PropertiesShared = Types.PropertiesShared;
   type Query = Types.Query;
   type PropertyError = Types.PropertyError;
-  type UpdateUnstable = Types.UpdateUnstable;
+  type UpdateShared = Types.UpdateShared;
   type Property = Types.Property;
-  type PropertyUnstable = Types.PropertyUnstable;
+  type PropertyShared = Types.PropertyShared;
   type CandyValue = Types.CandyValue;
   type Properties = Types.Properties;
   type Update = Types.Update;
 
-  private func toPropertyUnstableMap(ps : PropertiesUnstable) : HashMap.HashMap<Text,PropertyUnstable> {
-    let m = HashMap.HashMap<Text,PropertyUnstable>(ps.size(), Text.equal, Text.hash);
+  private func toPropertySharedMap(ps : PropertiesShared) : HashMap.HashMap<Text,PropertyShared> {
+    let m = HashMap.HashMap<Text,PropertyShared>(ps.size(), Text.equal, Text.hash);
     for (property in ps.vals()) m.put(property.name, property);
     m;
   };
 
-  private func fromPropertyUnstableMap(m : HashMap.HashMap<Text,PropertyUnstable>) : PropertiesUnstable {
-    var ps : Buffer.Buffer<PropertyUnstable> = Buffer.Buffer<PropertyUnstable>(m.size());
+  private func fromPropertySharedMap(m : HashMap.HashMap<Text,PropertyShared>) : PropertiesShared {
+    var ps : Buffer.Buffer<PropertyShared> = Buffer.Buffer<PropertyShared>(m.size());
     for ((_, p) in m.entries()) ps.add(p);
-    ps.toArray();
+    Buffer.toArray(ps);
   };
 
-  /// Get a subset of fields from the `PropertiesUnstable` based on the given query.
+  /// Get a subset of fields from the `PropertiesShared` based on the given query.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let properties: PropertiesUnstable = [
+  /// let properties: PropertiesShared = [
   ///   {
   ///    name = "prop1";
   ///    value = #Principal(Principal.fromText("abc"));
@@ -91,12 +91,12 @@ module {
   ///  }
   /// ];
   /// // Will return prop2 and the class_field2 from prop3.
-  /// let subset_result = Properties.getPropertiesUnstable(properties, qs);
+  /// let subset_result = Properties.getPropertiesShared(properties, qs);
   /// ```
   /// Note: Ignores unknown properties.
-  public func getPropertiesUnstable(properties : PropertiesUnstable, qs : [Query]) : Result.Result<PropertiesUnstable, PropertyError> {    
-    let m = toPropertyUnstableMap(properties);
-    var ps : Buffer.Buffer<PropertyUnstable> = Buffer.Buffer<PropertyUnstable>(m.size());
+  public func getPropertiesShared(properties : PropertiesShared, qs : [Query]) : Result.Result<PropertiesShared, PropertyError> {    
+    let m = toPropertySharedMap(properties);
+    var ps : Buffer.Buffer<PropertyShared> = Buffer.Buffer<PropertyShared>(m.size());
     for (q in qs.vals()) {
       switch (m.get(q.name)) {
         case (null) return #err(#NotFound); // Query contained an unknown property.
@@ -107,7 +107,7 @@ module {
                 // Return every sub-attribute attribute.
                 ps.add(p);
               } else {
-                let sps = switch (getPropertiesUnstable(c, q.next)) {
+                let sps = switch (getPropertiesShared(c, q.next)) {
                   case (#err(e)) return #err(e);
                   case (#ok(v)) v;
                 };
@@ -128,14 +128,14 @@ module {
         };
       };
     };
-    #ok(ps.toArray());
+    #ok(Buffer.toArray(ps));
   };
 
   /// Updates the given properties based on the given update query.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let properties: PropertiesUnstable = [
+  /// let properties: PropertiesShared = [
   ///   {
   ///    name = "prop1";
   ///    value = #Principal(Principal.fromText("abc"));
@@ -179,20 +179,20 @@ module {
   ///  }
   /// ];
   /// // Will update prop1 and the class_field1 from prop3 to new values.
-  /// let updated_properties = Properties.updatePropertiesUnstable(properties, us);
+  /// let updated_properties = Properties.updatePropertiesShared(properties, us);
   /// ```
   /// Note:
   /// - Creates unknown properties.
   /// - Returns error if the query tries to update an immutable property.
-  public func updatePropertiesUnstable(properties : PropertiesUnstable, us : [UpdateUnstable]) : Result.Result<PropertiesUnstable, PropertyError> {
-    let m = toPropertyUnstableMap(properties);
+  public func updatePropertiesShared(properties : PropertiesShared, us : [UpdateShared]) : Result.Result<PropertiesShared, PropertyError> {
+    let m = toPropertySharedMap(properties);
     for (u in us.vals()) {
       switch (m.get(u.name)) {
         case (null) {
           // Update contained an unknown property, so it gets created.
           switch (u.mode) {
               case (#Next(sus)) {
-                let sps = switch(updatePropertiesUnstable([], sus)) {
+                let sps = switch(updatePropertiesShared([], sus)) {
                     case (#err(e)) return #err(e);
                     case (#ok(v)) v;
                 };
@@ -228,7 +228,7 @@ module {
             case (#Next(sus)) {
               switch (p.value) {
                 case (#Class(c)) {
-                  let sps = switch(updatePropertiesUnstable(c, sus)) {
+                  let sps = switch(updatePropertiesShared(c, sus)) {
                     case (#err(e)) return #err(e);
                     case (#ok(v)) v;
                   };
@@ -262,7 +262,7 @@ module {
       };
     };
       
-    #ok(fromPropertyUnstableMap(m));
+    #ok(fromPropertySharedMap(m));
   };
 
   /// Updates the given properties based on the given update query.
@@ -309,7 +309,7 @@ module {
   ////////////////////////////////////
   //
   // The following functions were copied from departurelabs' property.mo.  They work as a plug and play
-  // here with CandyValue and CandyValueUnstable.
+  // here with CandyValue and CandyValueShared.
   //
   // https://github.com/DepartureLabsIC/non-fungible-token/blob/main/src/property.mo
   //
@@ -330,7 +330,7 @@ module {
     for ((_, p) in m.entries()) {
       ps.add(p);
     };
-    ps.toArray();
+    Buffer.toArray(ps);
   };
 
   /// Get a subset of fields from the `Properties` based on the given query.
@@ -420,7 +420,7 @@ module {
         };
       };
     };
-    #ok(ps.toArray());
+    #ok(Buffer.toArray(ps));
   };
 
   /// Updates the given properties based on the given update query.

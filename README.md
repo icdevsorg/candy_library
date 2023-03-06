@@ -1,7 +1,7 @@
 # candy_library
 Library for Converting Types and Creating Workable Motoko Collections
 
-This library provides for both Stable and Unstable collections and conversions.  These methods help with keeping data in unstable workable runtime memory while providing methods to convert those objects to stable collections that can be put into upgrade variables for persistence across upgrades or for shipping the objects to other canisters and returning them as async functions. 
+This library provides for both Stable and Shared collections and conversions.  These methods help with keeping data in unstable workable runtime memory while providing methods to convert those objects to stable collections that can be put into upgrade variables for persistence across upgrades or for shipping the objects to other canisters and returning them as async functions. 
 
 I have refactored the files into separate libraries to silo some of the functionality.
 
@@ -15,7 +15,7 @@ properties.mo - property and class functions for updating and manipulating class
 
 workspace.mo - useful for keeping workable data in chunks that can be moved around canisters.
 
-CandyValue and CandyValueUnstable allow you to specify your variables in a variant class that makes keeping arrays and buffers of different types managable.  ie stable var myCollection : [CandyValueStable] = [#Int(0), #Text("second value"), #Float(3.14)]
+CandyValue and CandyValueShared allow you to specify your variables in a variant class that makes keeping arrays and buffers of different types managable.  ie stable var myCollection : [CandyValueStable] = [#Int(0), #Text("second value"), #Float(3.14)]
 
 The property objects (adapted from https://github.com/DepartureLabsIC/non-fungible-token/blob/main/src/property.mo with copyright DepartureLabs and under MIT License, included here for compilability reasons.) allow for Key/Value collections that can be easily created, queried, and updated.  We include conversions between stable and unstable properties.
 
@@ -39,31 +39,31 @@ We provide the following conversion methods.  Most will assert(false if you try 
 * CandyValue -> CandyValue Array
 * CandyValue -> Byte Array [Nat8]
 
-* CandyValueUnstable -> Nat
-* CandyValueUnstable -> Nat8
-* CandyValueUnstable -> Nat16
-* CandyValueUnstable -> Nat32
-* CandyValueUnstable -> Nat64
-* CandyValueUnstable -> Int
-* CandyValueUnstable -> Int8
-* CandyValueUnstable -> Int16
-* CandyValueUnstable -> Int32
-* CandyValueUnstable -> Int64
-* CandyValueUnstable -> Float
-* CandyValueUnstable -> Text
-* CandyValueUnstable -> Principal
-* CandyValueUnstable -> Bool
-* CandyValueUnstable -> Blob
-* CandyValueUnstable -> CandyValueUnstable Array
-* CandyValueUnstable -> Byte Array [Nat8]
-* CandyValueUnstable -> Byte Buffer Buffer.Buffer<Nat8>
-* CandyValueUnstable -> Float Buffer Buffer.Buffer<Float>
+* CandyValueShared -> Nat
+* CandyValueShared -> Nat8
+* CandyValueShared -> Nat16
+* CandyValueShared -> Nat32
+* CandyValueShared -> Nat64
+* CandyValueShared -> Int
+* CandyValueShared -> Int8
+* CandyValueShared -> Int16
+* CandyValueShared -> Int32
+* CandyValueShared -> Int64
+* CandyValueShared -> Float
+* CandyValueShared -> Text
+* CandyValueShared -> Principal
+* CandyValueShared -> Bool
+* CandyValueShared -> Blob
+* CandyValueShared -> CandyValueShared Array
+* CandyValueShared -> Byte Array [Nat8]
+* CandyValueShared -> Byte Buffer Buffer.Buffer<Nat8>
+* CandyValueShared -> Float Buffer Buffer.Buffer<Float>
 
 Clone Functions exist to clone unstable values into new variables, 
 
-#Option variant types can be unwrapped with unwrapOptionValue and unwrapOptionValueUnstable and will return #Empty if the option was null.
+#Option variant types can be unwrapped with unwrapOptionValue and unwrapOptionValueShared and will return #Empty if the option was null.
 
-Stabalize and Destablaize functions are provided for both CandyValue <> CandyValueUnstable, Properties <> PropertyUnstable, [CandyValue] <> [CandyValueUnstable].
+Stabalize and Destablaize functions are provided for both CandyValue <> CandyValueShared, Properties <> PropertyShared, [CandyValue] <> [CandyValueShared].
 
 A toBuffer function will convert an Array to a Buffer of the same type.  The is a n on n function and will iterate through each item in the array.
 
@@ -80,7 +80,7 @@ Workspace collections help manage data and can help chunk data into chunks sized
 * getAddressedChunkArraySize - returns the size of an AddressedChunkArray
 * getDataChunkFromAddressedChunkArray - returns the addressed chunk out of an AddresedChunkArray
 * byteBufferDataZoneToBuffer - specifically converts a DataZone containing a ByteBuffer into a ByteBuffer
-* byteBufferChunksToValueUnstableBufferDataZone - converts a ByteBuffer into a DataZone
+* byteBufferChunksToValueSharedBufferDataZone - converts a ByteBuffer into a DataZone
 * initDataZone - initializes a datazone
 * flattenAddressedChunkArray - Converts an addressed chunk array into a pure byte array. Breaks after 256 Zones or 256 Chunks.
 

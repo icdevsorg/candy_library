@@ -9,6 +9,9 @@
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ///////////////////////////////
 
+/// Cloning support for the candy values.
+///
+/// This module contains a few utilities for deep cloning candy values.
 
 import Types "types";
 import Array "mo:base/Array";
@@ -22,6 +25,13 @@ module {
   type CandyValueUnstable = Types.CandyValueUnstable;
   type PropertyUnstable = Types.PropertyUnstable;
 
+  /// Deep clone a `CandyValueUnstable`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let val: CandyValueUnstable = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let cloned_val = Clone.cloneValueUnstable(val);
+  /// ```
   public func cloneValueUnstable(val : CandyValueUnstable) : CandyValueUnstable{
     switch(val){
       case(#Class(val)){

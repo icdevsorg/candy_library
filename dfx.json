@@ -1,6 +1,5 @@
 {
   "canisters": {
-    
     "test_runner": {
       "main": "tests/test_runner.mo",
       "type": "motoko"

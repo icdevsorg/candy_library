@@ -9,6 +9,11 @@
 //THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ///////////////////////////////
 
+/// Workspace utilities for the candy library.
+///
+/// This module contains the utilities useful for keeping workable data in 
+/// chunks that can be moved around canisters. They enable the inspection and
+/// manipulation of workspaces.
 
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
@@ -24,7 +29,6 @@ import Conversion "conversion";
 import Clone "clone";
 
 module {
-
   type CandyValue = Types.CandyValue;
   type CandyValueUnstable = Types.CandyValueUnstable;
   type Workspace = Types.Workspace;
@@ -34,37 +38,36 @@ module {
   type AddressedChunkBuffer = Types.AddressedChunkBuffer;
   type DataChunk = Types.DataChunk;
 
-  
-
-  //////////////////////////////////////////////////////////////////////
-  // The following functions enable the inspection and manipulation of workspaces
-  // Workspaces are valueble when using orthogonal persistance to keep track of data
-  // in a format that is easily transmitable across the wire given IC restrictions
-  //////////////////////////////////////////////////////////////////////
-
+  /// Get the count of addressed chunks in the given `Workspace`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let ws = Workspace.initWorkspace(3);
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(1));
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(5));
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(2));
+  /// let count = Workspace.countAddressedChunksInWorkspace(ws); // 8.
+  /// ```
   public func countAddressedChunksInWorkspace(x : Workspace) : Nat{
-    
     var chunks = 0;
     for (thisZone in Iter.range(0, StableBuffer.size(x) - 1)){
       chunks += StableBuffer.size(StableBuffer.get(x,thisZone));
     };
     chunks;
-
   };
 
+  /// Create an empty `Workspace`.
   public func emptyWorkspace() : Workspace {
-    
     return StableBuffer.init<DataZone>();
   };
 
+  /// Initialize a `Workspace` with the given capacity.
   public func initWorkspace(size : Nat) : Workspace {
-    
     return StableBuffer.initPresized<DataZone>(size);
   };
 
-  //variants take up 2 bytes as long as there are fewer than 32 item in the enum
+  /// Get the size in bytes taken up by the `CandyValue`.
   public func getValueSize(item : CandyValue) : Nat{
-    
     let varSize = switch(item){
       case(#Int(val)){
         var a : Nat = 0;
@@ -160,8 +163,8 @@ module {
     return varSize;
   };
 
+  /// Get the size in bytes taken up by the `CandyValueUnstable`.
   public func getValueUnstableSize(item : CandyValueUnstable) : Nat{
-    
     let varSize = switch(item){
       case(#Int(val)){
         var a : Nat = 0;
@@ -255,10 +258,17 @@ module {
     return varSize + 2;
   };
 
-
-
+  /// Convert `Workspace` to `AddressedChunkArray`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let ws = Workspace.initWorkspace(3);
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(1));
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(5));
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(2));
+  /// let addressed_chunk_array = Workspace.workspaceToAddressedChunkArray(ws);
+  /// ```
   public func workspaceToAddressedChunkArray(x : Workspace) : AddressedChunkArray {
-    
     var currentZone = 0;
     var currentChunk = 0;
     let result = Array.tabulate<AddressedChunk>(countAddressedChunksInWorkspace(x), func(thisChunk){
@@ -271,10 +281,19 @@ module {
       };
       thisChunk;
     });
-
     return result;
   };
 
+  /// Get a deep clone of the given `Workspace`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let ws = Workspace.initWorkspace(3);
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(1));
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(5));
+  /// StableBuffer.add<DataZone>(ws, StableBuffer.initPresized<DataChunk>(2));
+  /// let ws_clone = Workspace.workspaceDeepClone(ws);
+  /// ```
   public func workspaceDeepClone(x : Workspace) : Workspace {
     
     var currentZone = 0;
@@ -344,13 +363,12 @@ module {
     return ;
   };
 
+  /// Get the size in bytes taken up by all values in the `DataZone`.
   public func getDataZoneSize(dz: DataZone) : Nat {
-    
     var size : Nat = 0;
     for(thisChunk in StableBuffer.vals(dz)){
       size += getValueUnstableSize(thisChunk);
     };
-    
     return size;
   };
 
@@ -464,8 +482,6 @@ module {
     return #Option(null);
   };
 
-
-
   public func byteBufferDataZoneToBuffer(dz : DataZone): Buffer.Buffer<Buffer.Buffer<Nat8>>{
     
     let result = Buffer.Buffer<Buffer.Buffer<Nat8>>(StableBuffer.size(dz));
@@ -486,8 +502,8 @@ module {
     return result;
   };
 
+  /// Initialize a `DataZone` with the given value.
   public func initDataZone(val : CandyValueUnstable) : DataZone{
-    
     let result = StableBuffer.init<CandyValueUnstable>();
     StableBuffer.add(result, val);
     return result;

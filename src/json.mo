@@ -23,14 +23,14 @@ import Types "types";
 import CandyHex "hex";
 
 module {
-  /// Convert `CandyValue` to JSON format as `Text`.
+  /// Convert `CandyShared` to JSON format as `Text`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let val: CandyShared = #Option(?#Principal(Principal.fromText("xyz")));
   /// let val_as_json = Json.value_to_json(val);
   /// ```
-  public func value_to_json(val: Types.CandyValue): Text {
+  public func value_to_json(val: Types.CandyShared): Text {
       switch(val){
         //nat
         case(#Nat(val)){ Nat.toText(val)};

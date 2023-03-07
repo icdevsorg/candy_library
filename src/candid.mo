@@ -29,14 +29,14 @@ import Value "mo:candid/Value";
 
 
 module {
-  /// Convert a `CandyValue` to an Array of Candid `Arg`.
+  /// Convert a `CandyShared` to an Array of Candid `Arg`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let val: CandyShared = #Option(?#Principal(Principal.fromText("xyz")));
   /// let candid = Candid.value_to_candid(val);
   /// ```
-  public func value_to_candid(val: Types.CandyValue): [Arg.Arg] {
+  public func value_to_candid(val: Types.CandyShared): [Arg.Arg] {
 
       let buffer = Buffer.Buffer<Arg.Arg>(0);
       

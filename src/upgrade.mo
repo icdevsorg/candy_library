@@ -16,12 +16,14 @@
 import CandyOld "mo:candy_0_1_12/types";
 import CandyTypes "types";
 import Array "mo:base/Array";
+import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
+import Map "mo:Map/Map";
 
 module {
 
-  /// Upgrade from V1 representation of `CandyValue` to the V2 representation.
-  public func upgradeValue(item : CandyOld.CandyValue) : CandyTypes.CandyValue {
+  /// Upgrade from V1 representation of `CandyShared` to the V2 representation.
+  public func upgradeCandy(item : CandyOld.CandyValueUnstable) : CandyTypes.Candy {
     switch (item) {
       case (#Int(val)) { #Int(val) };
       case (#Int8(val)) { #Int8(val) };
@@ -38,100 +40,28 @@ module {
       case (#Bool(val)) { #Bool(val) };
       case (#Blob(val)) { #Blob(val) };
       case (#Class(val)) {
-        #Class(
-          Array.map<CandyOld.Property, CandyTypes.Property>(
-            val,
-            func(x) {
+        let iter = Iter.map<CandyOld.PropertyUnstable, (Text, CandyTypes.Property)>(
+            val.vals(),
+            func(x) {(x.name,
               {
-                x with value = upgradeValue(x.value)
-              };
+                x with value = upgradeCandy(x.value)
+              });
             },
-          ),
-        );
-      };
-      case (#Principal(val)) { #Principal(val) };
-      case (#Array(val)) {
-        switch (val) {
-          case (#frozen(val)) {
-            #Array(Array.map<CandyOld.CandyValue, CandyTypes.CandyValue>(val, upgradeValue));
-          };
-          case (#thawed(val)) {
-            #Array(Array.map<CandyOld.CandyValue, CandyTypes.CandyValue>(val, upgradeValue));
-          };
-        };
-      };
-      case (#Option(val)) {
-        switch (val) {
-          case (null) { #Option(null) };
-          case (?val) { #Option(?upgradeValue(val)) };
-        };
-      };
-      case (#Bytes(val)) {
-        switch (val) {
-          case (#frozen(val)) { #Bytes(val) };
-          case (#thawed(val)) { #Bytes(val) };
-        };
-      };
-      case (#Floats(val)) {
-        switch (val) {
-          case (#frozen(val)) { #Floats(val) };
-          case (#thawed(val)) { #Floats(val) };
-        };
-      };
-      case (#Nats(val)) {
-        switch (val) {
-          case (#frozen(val)) { #Nats(val) };
-          case (#thawed(val)) { #Nats(val) };
-        };
-      };
-      case (#Empty) { #Option(null) };
-    };
-  };
+          );
 
-  /// Upgrade from V1 representation of `CandyValueUnstable` to the V2 representation 'CandyValudShared'.
-  public func upgradeValueUnstable(item : CandyOld.CandyValueUnstable) : CandyTypes.CandyValueShared {
-    switch (item) {
-      case (#Int(val)) { #Int(val) };
-      case (#Int8(val)) { #Int8(val) };
-      case (#Int16(val)) { #Int16(val) };
-      case (#Int32(val)) { #Int32(val) };
-      case (#Int64(val)) { #Int64(val) };
-      case (#Nat(val)) { #Nat(val) };
-      case (#Nat8(val)) { #Nat8(val) };
-      case (#Nat16(val)) { #Nat16(val) };
-      case (#Nat32(val)) { #Nat32(val) };
-      case (#Nat64(val)) { #Nat64(val) };
-      case (#Float(val)) { #Float(val) };
-      case (#Text(val)) { #Text(val) };
-      case (#Bool(val)) { #Bool(val) };
-      case (#Blob(val)) { #Blob(val) };
-      case (#Class(val)) {
         #Class(
-          Array.map<CandyOld.PropertyUnstable, CandyTypes.PropertyShared>(
-            val,
-            func(x) {
-              {
-                x with value = upgradeValueUnstable(x.value)
-              };
-            },
-          ),
-        );
+          Map.fromIter<Text, CandyTypes.Property>(iter,
+        Map.thash));
       };
       case (#Principal(val)) { #Principal(val) };
       case (#Array(val)) {
         switch (val) {
           case (#frozen(val)) {
-            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.CandyValueShared>(val, upgradeValueUnstable)));
+            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.Candy>(val, upgradeCandy)));
           };
           case (#thawed(val)) {
-            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.CandyValueShared>(Buffer.toArray(val), upgradeValueUnstable)));
+            #Array(CandyTypes.toBuffer(Array.map<CandyOld.CandyValueUnstable, CandyTypes.Candy>(Buffer.toArray(val), upgradeCandy)));
           };
-        };
-      };
-      case (#Option(val)) {
-        switch (val) {
-          case (null) { #Option(null) };
-          case (?val) { #Option(?upgradeValueUnstable(val)) };
         };
       };
       case (#Bytes(val)) {
@@ -152,6 +82,83 @@ module {
           case (#thawed(val)) { #Nats(CandyTypes.toBuffer(Buffer.toArray(val))) };
         };
       };
+      
+      case (#Option(val)) {
+        switch (val) {
+          case (null) { #Option(null) };
+          case (?val) { #Option(?upgradeCandy(val)) };
+        };
+      };
+      
+      case (#Empty) { #Option(null) };
+    };
+  };
+
+  /// Upgrade from V1 representation of `CandySharedUnstable` to the V2 representation 'CandyValudShared'.
+  public func upgradeCandyShared(item : CandyOld.CandyValue) : CandyTypes.CandyShared {
+    switch (item) {
+      case (#Int(val)) { #Int(val) };
+      case (#Int8(val)) { #Int8(val) };
+      case (#Int16(val)) { #Int16(val) };
+      case (#Int32(val)) { #Int32(val) };
+      case (#Int64(val)) { #Int64(val) };
+      case (#Nat(val)) { #Nat(val) };
+      case (#Nat8(val)) { #Nat8(val) };
+      case (#Nat16(val)) { #Nat16(val) };
+      case (#Nat32(val)) { #Nat32(val) };
+      case (#Nat64(val)) { #Nat64(val) };
+      case (#Float(val)) { #Float(val) };
+      case (#Text(val)) { #Text(val) };
+      case (#Bool(val)) { #Bool(val) };
+      case (#Blob(val)) { #Blob(val) };
+      case (#Class(val)) {
+        #Class(
+          Array.map<CandyOld.Property, CandyTypes.PropertyShared>(
+            val,
+            func(x) {
+              {
+                x with value = upgradeCandyShared(x.value)
+              };
+            },
+          ),
+        );
+      };
+      case (#Principal(val)) { #Principal(val) };
+      case (#Array(val)) {
+        switch (val) {
+          case (#frozen(val)) {
+            #Array(Array.map<CandyOld.CandyValue, CandyTypes.CandyShared>(val, upgradeCandyShared));
+          };
+          case (#thawed(val)) {
+            #Array(Array.map<CandyOld.CandyValue, CandyTypes.CandyShared>(Iter.toArray(val.vals()), upgradeCandyShared));
+          };
+        };
+      };
+      case (#Option(val)) {
+        switch (val) {
+          case (null) { #Option(null) };
+          case (?val) { #Option(?upgradeCandyShared(val)) };
+        };
+      };
+      case (#Bytes(val)) {
+        switch (val) {
+          case (#frozen(val)) { #Bytes(val) };
+          case (#thawed(val)) { #Bytes(val) };
+        };
+      };
+      case (#Floats(val)) {
+        switch (val) {
+          case (#frozen(val)) { #Floats(val) };
+          case (#thawed(val)) { #Floats(val) };
+        };
+      };
+      case (#Nats(val)) {
+        switch (val) {
+          case (#frozen(val)) { #Nats(val) };
+          case (#thawed(val)) { #Nats(val) };
+        };
+      };
+      
       case (#Empty) { #Option(null) };
     };
   };

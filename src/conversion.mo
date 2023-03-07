@@ -40,28 +40,29 @@ import Types "types";
 import Hex "hex";
 import Properties "properties";
 import StableBuffer "mo:stable_buffer/StableBuffer";
+import Map "mo:Map/Map";
 
 
 module {
 
-  type CandyValue = Types.CandyValue;
-  type CandyValueShared = Types.CandyValueShared;
+  type CandyShared = Types.CandyShared;
+  type Candy = Types.Candy;
   type DataZone = Types.DataZone;
-  type Property = Types.Property;
   type PropertyShared = Types.PropertyShared;
+  type Property = Types.Property;
 
 
   //todo: generic accesors
 
-  /// Convert a `CandyValue` to `Nat`.
+  /// Convert a `Candy` to `Nat`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int16(15);
-  /// let converted_value = Conversion.valueToNat(value);
+  /// let value: Candy = #Int16(15);
+  /// let converted_value = Conversion.candyToNat(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueToNat(val : CandyValue) : Nat {
+  public func candyToNat(val : Candy) : Nat {
     switch(val){
     case(#Nat(val)){ val};
     case(#Nat8(val)){ Nat8.toNat(val)};
@@ -70,36 +71,36 @@ module {
     case(#Nat64(val)){ Nat64.toNat(val)};
     case(#Float(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat(#Int(Float.toInt(Float.nearest(val))))};
+      candyToNat(#Int(Float.toInt(Float.nearest(val))))};
     case(#Int(val)){
       if(val < 0){assert false;};//will throw on negative
       
       Int.abs(val)};
     case(#Int8(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+      candyToNat(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
     case(#Int16(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+      candyToNat(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
     case(#Int32(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+      candyToNat(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
     case(#Int64(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+      candyToNat(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
     case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Nat8`.
+  /// Convert a `Candy` to `Nat8`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToNat8(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToNat8(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueToNat8(val : CandyValue) : Nat8 {
+  public func candyToNat8(val : Candy) : Nat8 {
     switch(val){
     case(#Nat8(val)){ val};
     case(#Nat(val)){ Nat8.fromNat(val)};//will throw on overflow
@@ -108,35 +109,35 @@ module {
     case(#Nat64(val)){ Nat8.fromNat(Nat64.toNat(val))};//will throw on overflow
     case(#Float(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat8(#Int(Float.toInt(Float.nearest(val))))};
+      candyToNat8(#Int(Float.toInt(Float.nearest(val))))};
     case(#Int(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat8(#Nat(Int.abs(val)))};
+      candyToNat8(#Nat(Int.abs(val)))};
     case(#Int8(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat8(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+      candyToNat8(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
     case(#Int16(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat8(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+      candyToNat8(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
     case(#Int32(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat8(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+      candyToNat8(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
     case(#Int64(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat8(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+      candyToNat8(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
     case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Nat16`.
+  /// Convert a `Candy` to `Nat16`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToNat16(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToNat16(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueToNat16(val : CandyValue) : Nat16 {
+  public func candyToNat16(val : Candy) : Nat16 {
     switch(val){
     case(#Nat16(val)){ val};
     case(#Nat8(val)){Nat16.fromNat(Nat8.toNat(val))};
@@ -145,35 +146,35 @@ module {
     case(#Nat64(val)){Nat16.fromNat(Nat64.toNat(val))};//will throw on overflow
     case(#Float(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat16(#Int(Float.toInt(Float.nearest(val))))};
+      candyToNat16(#Int(Float.toInt(Float.nearest(val))))};
     case(#Int(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat16(#Nat(Int.abs(val)))};
+      candyToNat16(#Nat(Int.abs(val)))};
     case(#Int8(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat16(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+      candyToNat16(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
     case(#Int16(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat16(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+      candyToNat16(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
     case(#Int32(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat16(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+      candyToNat16(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
     case(#Int64(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat16(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+      candyToNat16(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
     case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Nat32`.
+  /// Convert a `Candy` to `Nat32`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToNat32(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToNat32(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueToNat32(val : CandyValue) : Nat32 {
+  public func candyToNat32(val : Candy) : Nat32 {
     switch(val){
     case(#Nat32(val)){ val};
     case(#Nat16(val)){ Nat32.fromNat(Nat16.toNat(val))};
@@ -181,35 +182,35 @@ module {
     case(#Nat(val)){ Nat32.fromNat(val)};//will throw on overflow
     case(#Float(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat32(#Int(Float.toInt(Float.nearest(val))))};
+      candyToNat32(#Int(Float.toInt(Float.nearest(val))))};
     case(#Int(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat32(#Nat(Int.abs(val)))};
+      candyToNat32(#Nat(Int.abs(val)))};
     case(#Int8(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat32(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+      candyToNat32(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
     case(#Int16(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat32(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+      candyToNat32(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
     case(#Int32(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat32(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+      candyToNat32(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
     case(#Int64(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat32(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+      candyToNat32(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
     case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Nat64`.
+  /// Convert a `Candy` to `Nat64`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToNat64(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToNat64(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueToNat64(val : CandyValue) : Nat64 {
+  public func candyToNat64(val : Candy) : Nat64 {
     switch(val){
     case(#Nat64(val)){ val};
     case(#Nat32(val)){ Nat64.fromNat(Nat32.toNat(val))};
@@ -218,35 +219,35 @@ module {
     case(#Nat(val)){ Nat64.fromNat(val)};
     case(#Float(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat64(#Int(Float.toInt(Float.nearest(val))))};
+      candyToNat64(#Int(Float.toInt(Float.nearest(val))))};
     case(#Int(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat64(#Nat(Int.abs(val)))};
+      candyToNat64(#Nat(Int.abs(val)))};
     case(#Int8(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat64(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+      candyToNat64(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
     case(#Int16(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat64(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+      candyToNat64(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
     case(#Int32(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat64(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+      candyToNat64(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
     case(#Int64(val)){
       if(val < 0){assert false;};//will throw on negative
-      valueToNat64(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+      candyToNat64(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
     case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Int`.
+  /// Convert a `Candy` to `Int`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToInt(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToInt(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueToInt(val : CandyValue) : Int {
+  public func candyToInt(val : Candy) : Int {
     switch(val){
       case(#Int(val)){ val};
       case(#Int8(val)){ Int8.toInt(val)};
@@ -263,15 +264,15 @@ module {
     };
   };
 
-  /// Convert a `CandyValue` to `Int8`.
+  /// Convert a `Candy` to `Int8`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToInt8(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToInt8(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueToInt8(val : CandyValue) : Int8 {
+  public func candyToInt8(val : Candy) : Int8 {
     switch(val){
       case(#Int8(val)){val};
       case(#Int(val)){ Int8.fromInt(val)};//will throw on overflow
@@ -279,122 +280,122 @@ module {
       case(#Int32(val)){ Int8.fromInt(Int32.toInt(val))};//will throw on overflow
       case(#Int64(val)){ Int8.fromInt(Int64.toInt(val))};//will throw on overflow
       case(#Nat8(val)){ Int8.fromNat8(val)};
-      case(#Nat(val)){Int8.fromNat8(valueToNat8(#Nat(val)))};//will throw on overflow
-      case(#Nat16(val)){Int8.fromNat8(valueToNat8(#Nat16(val)))};//will throw on overflow
-      case(#Nat32(val)){Int8.fromNat8(valueToNat8(#Nat32(val)))};//will throw on overflow
-      case(#Nat64(val)){Int8.fromNat8(valueToNat8(#Nat64(val)))};//will throw on overflow
+      case(#Nat(val)){Int8.fromNat8(candyToNat8(#Nat(val)))};//will throw on overflow
+      case(#Nat16(val)){Int8.fromNat8(candyToNat8(#Nat16(val)))};//will throw on overflow
+      case(#Nat32(val)){Int8.fromNat8(candyToNat8(#Nat32(val)))};//will throw on overflow
+      case(#Nat64(val)){Int8.fromNat8(candyToNat8(#Nat64(val)))};//will throw on overflow
       case(#Float(val)){ Int8.fromInt(Float.toInt(Float.nearest(val)))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Int16`.
+  /// Convert a `Candy` to `Int16`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToInt16(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToInt16(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueToInt16(val : CandyValue) : Int16 {
+  public func candyToInt16(val : Candy) : Int16 {
     switch(val){
       case(#Int16(val)){ val};
       case(#Int8(val)){ Int16.fromInt(Int8.toInt(val))};
       case(#Int(val)){ Int16.fromInt(val)};//will throw on overflow
       case(#Int32(val)){ Int16.fromInt(Int32.toInt(val))};//will throw on overflow
       case(#Int64(val)){ Int16.fromInt(Int64.toInt(val))};//will throw on overflow
-      case(#Nat8(val)){Int16.fromNat16(valueToNat16(#Nat8(val)))};
-      case(#Nat(val)){Int16.fromNat16(valueToNat16(#Nat(val)))};//will throw on overflow
+      case(#Nat8(val)){Int16.fromNat16(candyToNat16(#Nat8(val)))};
+      case(#Nat(val)){Int16.fromNat16(candyToNat16(#Nat(val)))};//will throw on overflow
       case(#Nat16(val)){ Int16.fromNat16(val)};
-      case(#Nat32(val)){Int16.fromNat16(valueToNat16(#Nat32(val)))};//will throw on overflow
-      case(#Nat64(val)){Int16.fromNat16(valueToNat16(#Nat64(val)))};//will throw on overflow
+      case(#Nat32(val)){Int16.fromNat16(candyToNat16(#Nat32(val)))};//will throw on overflow
+      case(#Nat64(val)){Int16.fromNat16(candyToNat16(#Nat64(val)))};//will throw on overflow
       case(#Float(val)){ Int16.fromInt(Float.toInt(Float.nearest(val)))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Int32`.
+  /// Convert a `Candy` to `Int32`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToInt32(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToInt32(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueToInt32(val : CandyValue) : Int32 {
+  public func candyToInt32(val : Candy) : Int32 {
     switch(val){
       case(#Int32(val)){val};
       case(#Int16(val)){Int32.fromInt(Int16.toInt(val))};
       case(#Int8(val)){Int32.fromInt(Int8.toInt(val))};
       case(#Int(val)){Int32.fromInt(val)};//will throw on overflow
-      case(#Nat8(val)){Int32.fromNat32(valueToNat32(#Nat8(val)))};
-      case(#Nat(val)){Int32.fromNat32(valueToNat32(#Nat(val)))};//will throw on overflow
-      case(#Nat16(val)){Int32.fromNat32(valueToNat32(#Nat16(val)))};
+      case(#Nat8(val)){Int32.fromNat32(candyToNat32(#Nat8(val)))};
+      case(#Nat(val)){Int32.fromNat32(candyToNat32(#Nat(val)))};//will throw on overflow
+      case(#Nat16(val)){Int32.fromNat32(candyToNat32(#Nat16(val)))};
       case(#Nat32(val)){Int32.fromNat32(val)};
-      case(#Nat64(val)){Int32.fromNat32(valueToNat32(#Nat64(val)))};//will throw on overflow
+      case(#Nat64(val)){Int32.fromNat32(candyToNat32(#Nat64(val)))};//will throw on overflow
       case(#Float(val)){Int32.fromInt(Float.toInt(Float.nearest(val)))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Int64`.
+  /// Convert a `Candy` to `Int64`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToInt64(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToInt64(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueToInt64(val : CandyValue) : Int64 {
+  public func candyToInt64(val : Candy) : Int64 {
     switch(val){
       case(#Int64(val)){ val};
       case(#Int32(val)){ Int64.fromInt(Int32.toInt(val))};
       case(#Int16(val)){ Int64.fromInt(Int16.toInt(val))};
       case(#Int8(val)){ Int64.fromInt(Int8.toInt(val))};
       case(#Int(val)){ Int64.fromInt(val)};//will throw on overflow
-      case(#Nat8(val)){Int64.fromNat64(valueToNat64(#Nat8(val)))};
-      case(#Nat(val)){Int64.fromNat64(valueToNat64(#Nat(val)))};//will throw on overflow
-      case(#Nat16(val)){Int64.fromNat64(valueToNat64(#Nat16(val)))};
-      case(#Nat32(val)){Int64.fromNat64(valueToNat64(#Nat32(val)))};//will throw on overflow
+      case(#Nat8(val)){Int64.fromNat64(candyToNat64(#Nat8(val)))};
+      case(#Nat(val)){Int64.fromNat64(candyToNat64(#Nat(val)))};//will throw on overflow
+      case(#Nat16(val)){Int64.fromNat64(candyToNat64(#Nat16(val)))};
+      case(#Nat32(val)){Int64.fromNat64(candyToNat64(#Nat32(val)))};//will throw on overflow
       case(#Nat64(val)){ Int64.fromNat64(val)};
       case(#Float(val)){ Float.toInt64(Float.nearest(val))};
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Float`.
+  /// Convert a `Candy` to `Float`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int16(2);
-  /// let converted_value = Conversion.valueToFloat(value);
+  /// let value: Candy = #Int16(2);
+  /// let converted_value = Conversion.candyToFloat(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueToFloat(val : CandyValue) : Float {
+  public func candyToFloat(val : Candy) : Float {
     switch(val){
       case(#Float(val)){ val};
       case(#Int64(val)){ Float.fromInt64(val)};
-      case(#Int32(val)){valueToFloat(#Int(Int32.toInt(val)))};
-      case(#Int16(val)){valueToFloat(#Int(Int16.toInt(val)))};
-      case(#Int8(val)){valueToFloat(#Int(Int8.toInt(val)))};
+      case(#Int32(val)){candyToFloat(#Int(Int32.toInt(val)))};
+      case(#Int16(val)){candyToFloat(#Int(Int16.toInt(val)))};
+      case(#Int8(val)){candyToFloat(#Int(Int8.toInt(val)))};
       case(#Int(val)){ Float.fromInt(val)};
-      case(#Nat8(val)){valueToFloat(#Int(Nat8.toNat(val)))};
-      case(#Nat(val)){valueToFloat(#Int(val))};//will throw on overflow
-      case(#Nat16(val)){valueToFloat(#Int(Nat16.toNat(val)))};
-      case(#Nat32(val)){valueToFloat(#Int(Nat32.toNat(val)))};//will throw on overflow
-      case(#Nat64(val)){valueToFloat(#Int(Nat64.toNat(val)))};
+      case(#Nat8(val)){candyToFloat(#Int(Nat8.toNat(val)))};
+      case(#Nat(val)){candyToFloat(#Int(val))};//will throw on overflow
+      case(#Nat16(val)){candyToFloat(#Int(Nat16.toNat(val)))};
+      case(#Nat32(val)){candyToFloat(#Int(Nat32.toNat(val)))};//will throw on overflow
+      case(#Nat64(val)){candyToFloat(#Int(Nat64.toNat(val)))};
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValue` to `Text`.
+  /// Convert a `Candy` to `Text`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Int8(2);
-  /// let converted_value = Conversion.valueToText(value);
+  /// let value: Candy = #Int8(2);
+  /// let converted_value = Conversion.candyToText(value);
   /// ```
-  public func valueToText(val : CandyValue) : Text {
+  public func candyToText(val : Candy) : Text {
     switch(val){
       case(#Text(val)){ val};
       case(#Nat64(val)){ Nat64.toText(val)};
@@ -412,19 +413,19 @@ module {
       case(#Option(val)){
         switch(val){
           case(null){ "null"};
-          case(?val){valueToText(val)};
+          case(?val){candyToText(val)};
         };
       };
       //blob
       case(#Blob(val)){
-          valueToText(#Bytes(Blob.toArray(val)));
+          return Hex.encode(Blob.toArray(val));
       };
       //class
       case(#Class(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
 
         var t = "{";
-        for(thisItem in val.vals()){
-          t := t # thisItem.name # ":" # (if(thisItem.immutable == false){"var "}else{""}) # valueToText(thisItem.value) # "; ";
+        for(thisItem in Map.entries(val)){
+          t := t # thisItem.1.name # ":" # (if(thisItem.1.immutable == false){"var "}else{""}) # candyToText(thisItem.1.value) # "; ";
         };
         
         return Text.trimEnd(t, #text(" ")) # "}";
@@ -437,8 +438,8 @@ module {
       case(#Array(val)){
       
           var t = "[";
-          for(thisItem in val.vals()){
-            t := t # "{" # valueToText(thisItem) # "} ";
+          for(thisItem in StableBuffer.vals(val)){
+            t := t # "{" # candyToText(thisItem) # "} ";
           };
           
           return Text.trimEnd(t, #text(" ")) # "]";
@@ -448,7 +449,7 @@ module {
       case(#Floats(val)){
         
           var t = "[";
-          for(thisItem in val.vals()){
+          for(thisItem in StableBuffer.vals(val)){
             t := t # Float.format(#exact, thisItem) # " ";
           };
           
@@ -458,22 +459,22 @@ module {
       //bytes
       case(#Bytes(val)){
        
-      return Hex.encode(val);
+        return Hex.encode(StableBuffer.toArray(val));
          
       };
       case(_){assert(false);/*unreachable*/"";};
     };
   };
 
-  /// Convert a `CandyValue` to `Principal`.
+  /// Convert a `Candy` to `Principal`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Principal(Principal.fromText("abc"));
-  /// let converted_value = Conversion.valueToPrincipal(value);
+  /// let value: Candy = #Principal(Principal.fromText("abc"));
+  /// let converted_value = Conversion.candyToPrincipal(value);
   /// ```
   /// Note: Throws if the underlying value is not a `#Principal`.
-  public func valueToPrincipal(val : CandyValue) : Principal {
+  public func candyToPrincipal(val : Candy) : Principal {
    
     switch(val){
       case(#Principal(val)){val};
@@ -481,15 +482,15 @@ module {
     };
   };
 
-  /// Convert a `CandyValue` to `Bool`.
+  /// Convert a `Candy` to `Bool`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Bool(false);
-  /// let converted_value = Conversion.valueToPBool(value);
+  /// let value: Candy = #Bool(false);
+  /// let converted_value = Conversion.candyToPBool(value);
   /// ```
   /// Note: Throws if the underlying value is not a `#Bool`.
-  public func valueToBool(val : CandyValue) : Bool {
+  public func candyToBool(val : Candy) : Bool {
     
     switch(val){
       case(#Bool(val)){val};
@@ -497,18 +498,18 @@ module {
     };
   };
 
-  /// Convert a `CandyValue` to `Blob`.
+  /// Convert a `Candy` to `Blob`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Principal(Principal.fromText("abc"));
-  /// let converted_value = Conversion.valueToBlob(value);
+  /// let value: Candy = #Principal(Principal.fromText("abc"));
+  /// let converted_value = Conversion.candyToBlob(value);
   /// ```
-  public func valueToBlob(val : CandyValue) : Blob {
+  public func candyToBlob(val : Candy) : Blob {
 
     switch(val){
       case(#Blob(val)){val};
-      case(#Bytes(val)){Blob.fromArray(val)};
+      case(#Bytes(val)){Blob.fromArray(StableBuffer.toArray(val))};
       case(#Text(val)){
           Blob.fromArray(textToBytes(val))
       };
@@ -539,34 +540,33 @@ module {
     };
   };
 
-  /// Convert a `CandyValue` to `[CandyValue]`
+  /// Convert a `Candy` to `[Candy]`
   ///
   /// The conversion is done by getting the array of candy values of the #Array.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Array([1, 2, 3]);
-  /// let converted_value = Conversion.valueToValueArray(value);
+  /// let value: Candy = #Array([1, 2, 3]);
+  /// let converted_value = Conversion.candyToValueArray(value);
   /// ```
   /// Note: Throws if the underlying value is not an `#Array`.
-  public func valueToValueArray(val : CandyValue) : [CandyValue] {
-
+  public func candyToValueArray(val : Candy) : [Candy] {
     switch(val){
-      case(#Array(val)){val};
+      case(#Array(val)){StableBuffer.toArray(val)};
       //todo: could add all conversions here
       case(_){assert(false);/*unreachable*/[];};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Nat`.
+  /// Convert a `CandyShared` to `Nat`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int16(15);
-  /// let converted_value = Conversion.valueSharedToNat(value);
+  /// let value: CandyShared = #Int16(15);
+  /// let converted_value = Conversion.candySharedToNat(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueSharedToNat(val : CandyValueShared) : Nat {
+  public func candySharedToNat(val : CandyShared) : Nat {
 
     switch(val){
       case(#Nat(val)){ val};
@@ -576,36 +576,36 @@ module {
       case(#Nat64(val)){ Nat64.toNat(val)};
       case(#Float(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat(#Int(Float.toInt(Float.nearest(val))))};
+          candySharedToNat(#Int(Float.toInt(Float.nearest(val))))};
       case(#Int(val)){
           if(val < 0){assert false;};//will throw on negative
           
           Int.abs(val)};
       case(#Int8(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+          candySharedToNat(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
       case(#Int16(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+          candySharedToNat(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
       case(#Int32(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+          candySharedToNat(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
       case(#Int64(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+          candySharedToNat(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Nat8`.
+  /// Convert a `CandyShared` to `Nat8`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int8(15);
-  /// let converted_value = Conversion.valueSharedToNat8(value);
+  /// let value: CandyShared = #Int8(15);
+  /// let converted_value = Conversion.candySharedToNat8(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueSharedToNat8(val : CandyValueShared) : Nat8 {
+  public func candySharedToNat8(val : CandyShared) : Nat8 {
 
     switch(val){
       case(#Nat8(val)){ val};
@@ -615,35 +615,35 @@ module {
       case(#Nat64(val)){ Nat8.fromNat(Nat64.toNat(val))};//will throw on overflow
       case(#Float(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat8(#Int(Float.toInt(Float.nearest(val))))};
+          candySharedToNat8(#Int(Float.toInt(Float.nearest(val))))};
       case(#Int(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat8(#Nat(Int.abs(val)))};
+          candySharedToNat8(#Nat(Int.abs(val)))};
       case(#Int8(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat8(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+          candySharedToNat8(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
       case(#Int16(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat8(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+          candySharedToNat8(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
       case(#Int32(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat8(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+          candySharedToNat8(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
       case(#Int64(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat8(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+          candySharedToNat8(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Nat16`.
+  /// Convert a `CandyShared` to `Nat16`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int16(15);
-  /// let converted_value = Conversion.valueSharedToNat16(value);
+  /// let value: CandyShared = #Int16(15);
+  /// let converted_value = Conversion.candySharedToNat16(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueSharedToNat16(val : CandyValueShared) : Nat16 {
+  public func candySharedToNat16(val : CandyShared) : Nat16 {
 
     switch(val){
       case(#Nat16(val)){ val};
@@ -653,35 +653,35 @@ module {
       case(#Nat64(val)){ Nat16.fromNat(Nat64.toNat(val))};//will throw on overflow
       case(#Float(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat16(#Int(Float.toInt(Float.nearest(val))))};
+          candySharedToNat16(#Int(Float.toInt(Float.nearest(val))))};
       case(#Int(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat16(#Nat(Int.abs(val)))};
+          candySharedToNat16(#Nat(Int.abs(val)))};
       case(#Int8(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat16(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+          candySharedToNat16(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
       case(#Int16(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat16(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+          candySharedToNat16(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
       case(#Int32(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat16(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+          candySharedToNat16(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
       case(#Int64(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat16(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+          candySharedToNat16(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Nat32`.
+  /// Convert a `CandyShared` to `Nat32`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int32(15);
-  /// let converted_value = Conversion.valueSharedToNat(value);
+  /// let value: CandyShared = #Int32(15);
+  /// let converted_value = Conversion.candySharedToNat(value);
   /// ```
   /// Note: Throws if the underlying value overflows or is negative.
-  public func valueSharedToNat32(val : CandyValueShared) : Nat32 {
+  public func candySharedToNat32(val : CandyShared) : Nat32 {
 
     switch(val){
       case(#Nat32(val)){val};
@@ -690,35 +690,35 @@ module {
       case(#Nat(val)){ Nat32.fromNat(val)};//will throw on overflow
       case(#Float(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat32(#Int(Float.toInt(Float.nearest(val))))};
+          candySharedToNat32(#Int(Float.toInt(Float.nearest(val))))};
       case(#Int(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat32(#Nat(Int.abs(val)))};
+          candySharedToNat32(#Nat(Int.abs(val)))};
       case(#Int8(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat32(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+          candySharedToNat32(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
       case(#Int16(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat32(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+          candySharedToNat32(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
       case(#Int32(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat32(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+          candySharedToNat32(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
       case(#Int64(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat32(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+          candySharedToNat32(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Nat64`.
+  /// Convert a `CandyShared` to `Nat64`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int16(15);
-  /// let converted_value = Conversion.valueSharedToNat64(value);
+  /// let value: CandyShared = #Int16(15);
+  /// let converted_value = Conversion.candySharedToNat64(value);
   /// ```
   /// Note: Throws if the underlying value is negative.
-  public func valueSharedToNat64(val : CandyValueShared) : Nat64 {
+  public func candySharedToNat64(val : CandyShared) : Nat64 {
 
     switch(val){
       case(#Nat64(val)){ val};
@@ -728,35 +728,35 @@ module {
       case(#Nat(val)){ Nat64.fromNat(val)};
       case(#Float(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat64(#Int(Float.toInt(Float.nearest(val))))};
+          candySharedToNat64(#Int(Float.toInt(Float.nearest(val))))};
       case(#Int(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat64(#Nat(Int.abs(val)))};
+          candySharedToNat64(#Nat(Int.abs(val)))};
       case(#Int8(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat64(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
+          candySharedToNat64(#Int(Int8.toInt(Int8.abs(val))))};//will throw on overflow
       case(#Int16(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat64(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
+          candySharedToNat64(#Int(Int16.toInt(Int16.abs(val))))};//will throw on overflow
       case(#Int32(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat64(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
+          candySharedToNat64(#Int(Int32.toInt(Int32.abs(val))))};//will throw on overflow
       case(#Int64(val)){
           if(val < 0){assert false;};//will throw on negative
-          valueSharedToNat64(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
+          candySharedToNat64(#Int(Int64.toInt(Int64.abs(val))))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Int`.
+  /// Convert a `CandyShared` to `Int`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int16(15);
-  /// let converted_value = Conversion.valueSharedToInt(value);
+  /// let value: CandyShared = #Int16(15);
+  /// let converted_value = Conversion.candySharedToInt(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueSharedToInt(val : CandyValueShared) : Int {
+  public func candySharedToInt(val : CandyShared) : Int {
 
     switch(val){
       case(#Int(val)){val};
@@ -774,15 +774,15 @@ module {
     };
   };
 
-  /// Convert a `CandyValueShared` to `Int8`.
+  /// Convert a `CandyShared` to `Int8`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Nat8(11);
-  /// let converted_value = Conversion.valueSharedToInt8(value);
+  /// let value: CandyShared = #Nat8(11);
+  /// let converted_value = Conversion.candySharedToInt8(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueSharedToInt8(val : CandyValueShared) : Int8 {
+  public func candySharedToInt8(val : CandyShared) : Int8 {
 
     switch(val){
       case(#Int8(val)){ val};
@@ -791,24 +791,24 @@ module {
       case(#Int32(val)){ Int8.fromInt(Int32.toInt(val))};//will throw on overflow
       case(#Int64(val)){ Int8.fromInt(Int64.toInt(val))};//will throw on overflow
       case(#Nat8(val)){ Int8.fromNat8(val)};
-      case(#Nat(val)){Int8.fromNat8(valueSharedToNat8(#Nat(val)))};//will throw on overflow
-      case(#Nat16(val)){Int8.fromNat8(valueSharedToNat8(#Nat16(val)))};//will throw on overflow
-      case(#Nat32(val)){Int8.fromNat8(valueSharedToNat8(#Nat32(val)))};//will throw on overflow
-      case(#Nat64(val)){Int8.fromNat8(valueSharedToNat8(#Nat64(val)))};//will throw on overflow
+      case(#Nat(val)){Int8.fromNat8(candySharedToNat8(#Nat(val)))};//will throw on overflow
+      case(#Nat16(val)){Int8.fromNat8(candySharedToNat8(#Nat16(val)))};//will throw on overflow
+      case(#Nat32(val)){Int8.fromNat8(candySharedToNat8(#Nat32(val)))};//will throw on overflow
+      case(#Nat64(val)){Int8.fromNat8(candySharedToNat8(#Nat64(val)))};//will throw on overflow
       case(#Float(val)){ Int8.fromInt(Float.toInt(Float.nearest(val)))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Int16`.
+  /// Convert a `CandyShared` to `Int16`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Float(10);
-  /// let converted_value = Conversion.valueSharedToInt16(value);
+  /// let value: CandyShared = #Float(10);
+  /// let converted_value = Conversion.candySharedToInt16(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueSharedToInt16(val : CandyValueShared) : Int16 {
+  public func candySharedToInt16(val : CandyShared) : Int16 {
 
     switch(val){
       case(#Int16(val)){ val};
@@ -816,98 +816,98 @@ module {
       case(#Int(val)){ Int16.fromInt(val)};//will throw on overflow
       case(#Int32(val)){ Int16.fromInt(Int32.toInt(val))};//will throw on overflow
       case(#Int64(val)){ Int16.fromInt(Int64.toInt(val))};//will throw on overflow
-      case(#Nat8(val)){Int16.fromNat16(valueSharedToNat16(#Nat8(val)))};
-      case(#Nat(val)){Int16.fromNat16(valueSharedToNat16(#Nat(val)))};//will throw on overflow
+      case(#Nat8(val)){Int16.fromNat16(candySharedToNat16(#Nat8(val)))};
+      case(#Nat(val)){Int16.fromNat16(candySharedToNat16(#Nat(val)))};//will throw on overflow
       case(#Nat16(val)){ Int16.fromNat16(val)};
-      case(#Nat32(val)){Int16.fromNat16(valueSharedToNat16(#Nat32(val)))};//will throw on overflow
-      case(#Nat64(val)){Int16.fromNat16(valueSharedToNat16(#Nat64(val)))};//will throw on overflow
+      case(#Nat32(val)){Int16.fromNat16(candySharedToNat16(#Nat32(val)))};//will throw on overflow
+      case(#Nat64(val)){Int16.fromNat16(candySharedToNat16(#Nat64(val)))};//will throw on overflow
       case(#Float(val)){ Int16.fromInt(Float.toInt(Float.nearest(val)))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Int32`.
+  /// Convert a `CandyShared` to `Int32`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Nat32(1111);
-  /// let converted_value = Conversion.valueSharedToInt32(value);
+  /// let value: CandyShared = #Nat32(1111);
+  /// let converted_value = Conversion.candySharedToInt32(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueSharedToInt32(val : CandyValueShared) : Int32 {
+  public func candySharedToInt32(val : CandyShared) : Int32 {
     switch(val){
       case(#Int32(val)){ val};
       case(#Int16(val)){ Int32.fromInt(Int16.toInt(val))};
       case(#Int8(val)){ Int32.fromInt(Int8.toInt(val))};
       case(#Int(val)){ Int32.fromInt(val)};//will throw on overflow
-      case(#Nat8(val)){Int32.fromNat32(valueSharedToNat32(#Nat8(val)))};
-      case(#Nat(val)){Int32.fromNat32(valueSharedToNat32(#Nat(val)))};//will throw on overflow
-      case(#Nat16(val)){Int32.fromNat32(valueSharedToNat32(#Nat16(val)))};
+      case(#Nat8(val)){Int32.fromNat32(candySharedToNat32(#Nat8(val)))};
+      case(#Nat(val)){Int32.fromNat32(candySharedToNat32(#Nat(val)))};//will throw on overflow
+      case(#Nat16(val)){Int32.fromNat32(candySharedToNat32(#Nat16(val)))};
       case(#Nat32(val)){ Int32.fromNat32(val)};
-      case(#Nat64(val)){Int32.fromNat32(valueSharedToNat32(#Nat64(val)))};//will throw on overflow
+      case(#Nat64(val)){Int32.fromNat32(candySharedToNat32(#Nat64(val)))};//will throw on overflow
       case(#Float(val)){ Int32.fromInt(Float.toInt(Float.nearest(val)))};//will throw on overflow
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Int64`.
+  /// Convert a `CandyShared` to `Int64`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Nat64(12345);
-  /// let converted_value = Conversion.valueSharedToInt64(value);
+  /// let value: CandyShared = #Nat64(12345);
+  /// let converted_value = Conversion.candySharedToInt64(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueSharedToInt64(val : CandyValueShared) : Int64 {
+  public func candySharedToInt64(val : CandyShared) : Int64 {
     switch(val){
       case(#Int64(val)){ val};
       case(#Int32(val)){ Int64.fromInt(Int32.toInt(val))};
       case(#Int16(val)){ Int64.fromInt(Int16.toInt(val))};
       case(#Int8(val)){ Int64.fromInt(Int8.toInt(val))};
       case(#Int(val)){ Int64.fromInt(val)};//will throw on overflow
-      case(#Nat8(val)){Int64.fromNat64(valueSharedToNat64(#Nat8(val)))};
-      case(#Nat(val)){Int64.fromNat64(valueSharedToNat64(#Nat(val)))};//will throw on overflow
-      case(#Nat16(val)){Int64.fromNat64(valueSharedToNat64(#Nat16(val)))};
-      case(#Nat32(val)){Int64.fromNat64(valueSharedToNat64(#Nat32(val)))};//will throw on overflow
+      case(#Nat8(val)){Int64.fromNat64(candySharedToNat64(#Nat8(val)))};
+      case(#Nat(val)){Int64.fromNat64(candySharedToNat64(#Nat(val)))};//will throw on overflow
+      case(#Nat16(val)){Int64.fromNat64(candySharedToNat64(#Nat16(val)))};
+      case(#Nat32(val)){Int64.fromNat64(candySharedToNat64(#Nat32(val)))};//will throw on overflow
       case(#Nat64(val)){ Int64.fromNat64(val)};
       case(#Float(val)){ Float.toInt64(Float.nearest(val))};
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Float`.
+  /// Convert a `CandyShared` to `Float`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Int16(11);
-  /// let converted_value = Conversion.valueSharedToFloat(value);
+  /// let value: CandyShared = #Int16(11);
+  /// let converted_value = Conversion.candySharedToFloat(value);
   /// ```
   /// Note: Throws if the underlying value overflows.
-  public func valueSharedToFloat(val : CandyValueShared) : Float {
+  public func candySharedToFloat(val : CandyShared) : Float {
     switch(val){
       case(#Float(val)){ val};
       case(#Int64(val)){ Float.fromInt64(val)};
-      case(#Int32(val)){valueSharedToFloat(#Int(Int32.toInt(val)))};
-      case(#Int16(val)){valueSharedToFloat(#Int(Int16.toInt(val)))};
-      case(#Int8(val)){valueSharedToFloat(#Int(Int8.toInt(val)))};
+      case(#Int32(val)){candySharedToFloat(#Int(Int32.toInt(val)))};
+      case(#Int16(val)){candySharedToFloat(#Int(Int16.toInt(val)))};
+      case(#Int8(val)){candySharedToFloat(#Int(Int8.toInt(val)))};
       case(#Int(val)){ Float.fromInt(val)};
-      case(#Nat8(val)){valueSharedToFloat(#Int(Nat8.toNat(val)))};
-      case(#Nat(val)){valueSharedToFloat(#Int(val))};//will throw on overflow
-      case(#Nat16(val)){valueSharedToFloat(#Int(Nat16.toNat(val)))};
-      case(#Nat32(val)){valueSharedToFloat(#Int(Nat32.toNat(val)))};//will throw on overflow
-      case(#Nat64(val)){valueSharedToFloat(#Int(Nat64.toNat(val)))};
+      case(#Nat8(val)){candySharedToFloat(#Int(Nat8.toNat(val)))};
+      case(#Nat(val)){candySharedToFloat(#Int(val))};//will throw on overflow
+      case(#Nat16(val)){candySharedToFloat(#Int(Nat16.toNat(val)))};
+      case(#Nat32(val)){candySharedToFloat(#Int(Nat32.toNat(val)))};//will throw on overflow
+      case(#Nat64(val)){candySharedToFloat(#Int(Nat64.toNat(val)))};
       case(_){assert(false);/*unreachable*/0;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Text`.
+  /// Convert a `CandyShared` to `Text`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Float(11);
-  /// let converted_value = Conversion.valueSharedToText(value);
+  /// let value: CandyShared = #Float(11);
+  /// let converted_value = Conversion.candySharedToText(value);
   /// ```
-  public func valueSharedToText(val : CandyValueShared) : Text {
+  public func candySharedToText(val : CandyShared) : Text {
     switch(val){
       case(#Text(val)){ val};
       case(#Nat64(val)){ Nat64.toText(val)};
@@ -925,19 +925,19 @@ module {
       case(#Option(val)){
           switch(val){
               case(null){ "null"};
-              case(?val){valueSharedToText(val)};
+              case(?val){candySharedToText(val)};
           };
       };
       //blob
       case(#Blob(val)){
-          valueToText(#Bytes(Blob.toArray(val)));
+          return Hex.encode(Blob.toArray(val));
       };
       //class
       case(#Class(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
 
           var t = "{";
           for(thisItem in val.vals()){
-              t := t # thisItem.name # ":" # (if(thisItem.immutable == false){"var "}else{""}) # valueSharedToText(thisItem.value) # "; ";
+              t := t # thisItem.name # ": " # (if(thisItem.immutable == false){"var "}else{""}) # candySharedToText(thisItem.value) # "; ";
           };
           
           return Text.trimEnd(t, #text(" ")) # "}";
@@ -950,8 +950,8 @@ module {
       case(#Array(val)){
 
         var t = "[";
-        for(thisItem in StableBuffer.vals(val)){
-            t := t # "{" # valueSharedToText(thisItem) # "} ";
+        for(thisItem in val.vals()){
+            t := t # "{" # candySharedToText(thisItem) # "} ";
         };
         
         return Text.trimEnd(t, #text(" ")) # "]";
@@ -961,7 +961,7 @@ module {
       case(#Floats(val)){
           
         var t = "[";
-        for(thisItem in StableBuffer.vals(val)){
+        for(thisItem in val.vals()){
             t := t # Float.format(#exact, thisItem) # " ";
         };
         
@@ -971,57 +971,56 @@ module {
       //bytes
       case(#Bytes(val)){
          
-        return Hex.encode(StableBuffer.toArray(val));
+        return Hex.encode(val);
             
       };
       case(_){assert(false);/*unreachable*/"";};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Principal`.
+  /// Convert a `CandyShared` to `Principal`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Principal(Principal.fromText("abc"));
-  /// let converted_value = Conversion.valueSharedToPrincipal(value);
+  /// let value: CandyShared = #Principal(Principal.fromText("abc"));
+  /// let converted_value = Conversion.candySharedToPrincipal(value);
   /// ```
   /// Note: Throws if the underlying value is not a `#Principal`.
-  public func valueSharedToPrincipal(val : CandyValueShared) : Principal {
+  public func candySharedToPrincipal(val : CandyShared) : Principal {
     switch(val){
       case(#Principal(val)){ val};
       case(_){assert(false);/*unreachable*/Principal.fromText("");};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Principal`.
+  /// Convert a `CandyShared` to `Principal`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Bool(true);
-  /// let converted_value = Conversion.valueSharedToPrincipal(value);
+  /// let value: CandyShared = #Bool(true);
+  /// let converted_value = Conversion.candySharedToPrincipal(value);
   /// ```
   /// Note: Throws if the underlying value is not a `#Bool`.
-  public func valueSharedToBool(val : CandyValueShared) : Bool {
+  public func candySharedToBool(val : CandyShared) : Bool {
     switch(val){
       case(#Bool(val)){ val};
       case(_){assert(false);/*unreachable*/false;};
     };
   };
 
-  /// Convert a `CandyValueShared` to `Blob`.
+  /// Convert a `CandyShared` to `Blob`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Principal(Principal.fromText("abc"));
-  /// let converted_value = Conversion.valueSharedToBlob(value);
+  /// let value: CandyShared = #Principal(Principal.fromText("abc"));
+  /// let converted_value = Conversion.candySharedToBlob(value);
   /// ```
-  public func valueSharedToBlob(val : CandyValueShared) : Blob {
+  public func candySharedToBlob(val : CandyShared) : Blob {
     switch(val){
 
       case(#Blob(val)){ val};
       case(#Bytes(val)){
-          
-          Blob.fromArray(StableBuffer.toArray(val));
+          Blob.fromArray(val);
       };
         case(#Text(val)){
           Blob.fromArray(textToBytes(val))
@@ -1054,75 +1053,40 @@ module {
     };
   };
 
-  /// Convert a `CandyValueShared` to `[CandyValueShared]`
+  /// Convert a `CandyShared` to `[CandyShared]`
   ///
   /// The conversion is done by getting the array of candy values of the #Array.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Array([1, 2, 3]);
-  /// let converted_value = Conversion.valueSharedToValueArray(value);
+  /// let value: CandyShared = #Array([1, 2, 3]);
+  /// let converted_value = Conversion.candySharedToValueArray(value);
   /// ```
   /// Note: Throws if the underlying value is not an `#Array`.
-  public func valueSharedToValueArray(val : CandyValueShared) : [CandyValueShared] {
+  public func candySharedToValueArray(val : CandyShared) : [CandyShared] {
 
     switch(val){
-      case(#Array(val)){StableBuffer.toArray(val)};
+      case(#Array(val)){val};
       //todo: could add all conversions here
       case(_){assert(false);/*unreachable*/[];};
     };
   };
 
-  /// Convert a `CandyValue` to Bytes(`[Nat8]`)
+  /// Convert a `Candy` to Bytes(`[Nat8]`)
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValue = #Principal(Principal.fromText("abc"));
-  /// let value_as_bytes = Conversion.valueToBytes(value);
+  /// let value: Candy = #Principal(Principal.fromText("abc"));
+  /// let value_as_bytes = Conversion.candyToBytes(value);
   /// ```
-  public func valueToBytes(val : CandyValue) : [Nat8]{
+  public func candyToBytes(val : Candy) : [Nat8]{
     switch(val){
       case(#Int(val)){intToBytes(val)};
-      case(#Int8(val)){valueToBytes(#Int(valueToInt(#Int8(val))))};
-      case(#Int16(val)){valueToBytes(#Int(valueToInt(#Int16(val))))};
-      case(#Int32(val)){valueToBytes(#Int(valueToInt(#Int32(val))))};
-      case(#Int64(val)){valueToBytes(#Int(valueToInt(#Int64(val))))};
+      case(#Int8(val)){candyToBytes(#Int(candyToInt(#Int8(val))))};
+      case(#Int16(val)){candyToBytes(#Int(candyToInt(#Int16(val))))};
+      case(#Int32(val)){candyToBytes(#Int(candyToInt(#Int32(val))))};
+      case(#Int64(val)){candyToBytes(#Int(candyToInt(#Int64(val))))};
       case(#Nat(val)){natToBytes(val)};
-      case(#Nat8(val)){ [val]};
-      case(#Nat16(val)){nat16ToBytes(val)};
-      case(#Nat32(val)){nat32ToBytes(val)};
-      case(#Nat64(val)){nat64ToBytes(val)};
-      case(#Float(val)){Prelude.nyi()};
-      case(#Text(val)){textToBytes(val)};
-      case(#Bool(val)){boolToBytes(val)};
-      case(#Blob(val)){ Blob.toArray(val)};
-      case(#Class(val)){Prelude.nyi()};
-      case(#Principal(val)){principalToBytes(val)};
-      case(#Option(val)){Prelude.nyi()};
-      case(#Array(val)){Prelude.nyi()};
-      case(#Bytes(val)){val};
-      case(#Floats(val)){Prelude.nyi()};
-      case(#Nats(val)){Prelude.nyi()};
-      case(#Map(val)){Prelude.nyi()};
-      case(#Set(val)){Prelude.nyi()};
-    }
-  };
-
-  /// Convert a `CandyValueShared` to Bytes(`[Nat8]`)
-  ///
-  /// Example:
-  /// ```motoko include=import
-  /// let value: CandyValueShared = #Principal(Principal.fromText("abc"));
-  /// let value_as_bytes = Conversion.valueSharedToBytes(value);
-  /// ```
-  public func valueSharedToBytes(val : CandyValueShared) : [Nat8]{
-    switch(val){
-      case(#Int(val)){intToBytes(val)};
-      case(#Int8(val)){valueSharedToBytes(#Int(valueSharedToInt(#Int8(val))))};
-      case(#Int16(val)){valueSharedToBytes(#Int(valueSharedToInt(#Int16(val))))};
-      case(#Int32(val)){valueSharedToBytes(#Int(valueSharedToInt(#Int32(val))))};
-      case(#Int64(val)){valueSharedToBytes(#Int(valueSharedToInt(#Int64(val))))};
-      case(#Nat(val)){ natToBytes(val)};
       case(#Nat8(val)){ [val]};
       case(#Nat16(val)){nat16ToBytes(val)};
       case(#Nat32(val)){nat32ToBytes(val)};
@@ -1143,60 +1107,112 @@ module {
     }
   };
 
-  /// Convert a `CandyValueShared` to `Buffer<Nat8>`
+  /// Convert a `CandyShared` to Bytes(`[Nat8]`)
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Principal(Principal.fromText("abc"));
-  /// let value_as_buffer = Conversion.valueSharedToBytes(value);
+  /// let value: CandyShared = #Principal(Principal.fromText("abc"));
+  /// let value_as_bytes = Conversion.candySharedToBytes(value);
+  /// ```
+  public func candySharedToBytes(val : CandyShared) : [Nat8]{
+    switch(val){
+      case(#Int(val)){intToBytes(val)};
+      case(#Int8(val)){candySharedToBytes(#Int(candySharedToInt(#Int8(val))))};
+      case(#Int16(val)){candySharedToBytes(#Int(candySharedToInt(#Int16(val))))};
+      case(#Int32(val)){candySharedToBytes(#Int(candySharedToInt(#Int32(val))))};
+      case(#Int64(val)){candySharedToBytes(#Int(candySharedToInt(#Int64(val))))};
+      case(#Nat(val)){ natToBytes(val)};
+      case(#Nat8(val)){ [val]};
+      case(#Nat16(val)){nat16ToBytes(val)};
+      case(#Nat32(val)){nat32ToBytes(val)};
+      case(#Nat64(val)){nat64ToBytes(val)};
+      case(#Float(val)){Prelude.nyi()};
+      case(#Text(val)){textToBytes(val)};
+      case(#Bool(val)){boolToBytes(val)};
+      case(#Blob(val)){ Blob.toArray(val)};
+      case(#Class(val)){Prelude.nyi()};
+      case(#Principal(val)){principalToBytes(val)};
+      case(#Option(val)){Prelude.nyi()};
+      case(#Array(val)){Prelude.nyi()};
+      case(#Bytes(val)){val};
+      case(#Floats(val)){Prelude.nyi()};
+      case(#Nats(val)){Prelude.nyi()};
+      case(#Map(val)){Prelude.nyi()};
+      case(#Set(val)){Prelude.nyi()};
+    }
+  };
+
+  /// Convert a `CandyShared` to `Buffer<Nat8>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: CandyShared = #Principal(Principal.fromText("abc"));
+  /// let value_as_buffer = Conversion.candySharedToBytes(value);
   /// ```
   ///
   /// Note: Throws if the underlying value isn't convertible.
-  public func valueSharedToBytesBuffer(val : CandyValueShared) : Buffer.Buffer<Nat8>{
+  public func candySharedToBytesBuffer(val : CandyShared) : Buffer.Buffer<Nat8>{
     switch (val){
-      case(#Bytes(val)){toBuffer(StableBuffer.toArray(val))};
+      case(#Bytes(val)){toBuffer(val)};
       case(_){
-          toBuffer<Nat8>(valueSharedToBytes(val));//may throw for uncovertable types
+          toBuffer<Nat8>(candySharedToBytes(val));//may throw for uncovertable types
       };
     };
   };
 
-  /// Convert a `CandyValueShared` to `Buffer<Float>`
+
+  /// Convert a `Candy` to `Buffer<Nat8>`
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Nat(102);
-  /// let value_as_floats_buffer = Conversion.valueSharedToFloatsBuffer(value);
+  /// let value: Candy = #Principal(Principal.fromText("abc"));
+  /// let value_as_buffer = Conversion.candyToBytesBuffer(value);
+  /// ```
+  ///
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToBytesBuffer(val : Candy) : Buffer.Buffer<Nat8>{
+    switch (val){
+      case(#Bytes(val)){Buffer.fromArray(StableBuffer.toArray(val))};
+      case(_){
+          toBuffer<Nat8>(candyToBytes(val));//may throw for uncovertable types
+      };
+    };
+  };
+
+  /// Convert a `CandyShared` to `Buffer<Float>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: CandyShared = #Nat(102);
+  /// let value_as_floats_buffer = Conversion.candySharedToFloatsBuffer(value);
   /// ```
   /// Note: Throws if the underlying value isn't convertible.
-  public func valueSharedToFloatsBuffer(val : CandyValueShared) : Buffer.Buffer<Float>{
+  public func candySharedToFloatsBuffer(val : CandyShared) : Buffer.Buffer<Float>{
     switch (val){
       case(#Floats(val)){
-          
-                  toBuffer(StableBuffer.toArray(val));
+        toBuffer(val);
       };
       case(_){
-          toBuffer([valueSharedToFloat(val)]); //may throw for unconvertable types
+          toBuffer([candySharedToFloat(val)]); //may throw for unconvertable types
       };
     };
   };
 
-  /// Convert a `CandyValueShared` to `Buffer<Nat>`
+  /// Convert a `CandyShared` to `Buffer<Nat>`
   ///
   /// Example:
   /// ```motoko include=import
-  /// let value: CandyValueShared = #Nat(102);
-  /// let value_as_nats_buffer = Conversion.valueSharedToNatsBuffer(value);
+  /// let value: CandyShared = #Nat(102);
+  /// let value_as_nats_buffer = Conversion.candySharedToNatsBuffer(value);
   /// ```
   /// Note: Throws if the underlying value isn't convertible.
-  public func valueSharedToNatsBuffer(val : CandyValueShared) : Buffer.Buffer<Nat>{
+  public func candySharedToNatsBuffer(val : CandyShared) : Buffer.Buffer<Nat>{
     switch (val){
       case(#Nats(val)){
-          
-                  toBuffer(StableBuffer.toArray(val));
+        toBuffer(val);
       };
       case(_){
-          toBuffer([valueSharedToNat(val)]); //may throw for unconvertable types
+          toBuffer([candySharedToNat(val)]); //may throw for unconvertable types
       };
     };
   };
@@ -1448,13 +1464,27 @@ module {
   /// };
   /// let prop_as_text = Conversion.propertyToText(t);
   /// ```
-  public func propertyToText(a:Types.Property):Text{valueToText(a.value)};
+  public func propertyToText(a: Types.Property):Text{candyToText(a.value)};
 
-  /// Convert `CandyValue` to `Properties`
+
+  /// Convert `PropertyShared` to a `Text`
   ///
   /// Example:
   /// ```motoko include=import
-  ///  let val: CandyValue = #Class([
+  /// let prop: PropertyShared = {
+  ///    name = "name";
+  ///    value = #Principal(Principal.fromText("abc"));
+  ///    immutable = true;
+  /// };
+  /// let prop_as_text = Conversion.propertyToText(t);
+  /// ```
+  public func propertySharedToText(a: Types.Property):Text{candyToText(a.value)};
+
+  /// Convert `Candy` to `Properties`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  ///  let val: Candy = #Class([
   ///    {
   ///      name = "prop1";
   ///      value = #Principal(Principal.fromText("abc"));
@@ -1466,13 +1496,16 @@ module {
   ///      immutable = false;
   ///    }
   ///  ]);
-  ///  let props = Conversion.valueToProperties(val);
+  ///  let props = Conversion.candyToProperties(val);
   /// ```
   /// Note: throws if the underlying value is not `#Class`.
-  public func valueToProperties(val : CandyValue) : Types.Properties {
+  public func candyToProperties(val : Candy) : Types.Properties {
     switch(val){
-      case(#Class(val)){ val};
-      case(_){assert(false);/*unreachable*/[];};
+      case(#Class(val)){
+        Map.fromIter<Text, Property>(
+          Map.entries(val)
+        , Map.thash)};
+      case(_){assert(false);/*unreachable*/Map.new<Text, Property>();};
     };
   };
 
@@ -1614,10 +1647,10 @@ module {
   ///
   /// Example:
   /// ```motoko include=import
-  /// let val: CandyValue = #Option(?#Principal(Principal.fromText("xyz")));
-  /// let unwrapped_val = Conversion.unwrapOptionValue(val);
+  /// let val: Candy = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let unwrapped_val = Conversion.unwrapOptionCandy(val);
   /// ```
-  public func unwrapOptionValue(val : CandyValue): CandyValue{
+  public func unwrapOptionCandy(val : Candy): Candy{
     switch(val){
       case(#Option(val)){
           switch(val){
@@ -1640,10 +1673,10 @@ module {
   ///
   /// Example:
   /// ```motoko include=import
-  /// let val: CandyValueShared = #Option(?#Principal(Principal.fromText("xyz")));
-  /// let unwrapped_val = Conversion.unwrapOptionValue(val);
+  /// let val: CandyShared = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let unwrapped_val = Conversion.unwrapOptionCandy(val);
   /// ```
-  public func unwrapOptionValueShared(val : CandyValueShared): CandyValueShared{
+  public func unwrapOptionCandyShared(val : CandyShared): CandyShared{
     
     switch(val){
       case(#Option(val)){

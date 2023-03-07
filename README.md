@@ -15,55 +15,55 @@ properties.mo - property and class functions for updating and manipulating class
 
 workspace.mo - useful for keeping workable data in chunks that can be moved around canisters.
 
-CandyValue and CandyValueShared allow you to specify your variables in a variant class that makes keeping arrays and buffers of different types managable.  ie stable var myCollection : [CandyValueStable] = [#Int(0), #Text("second value"), #Float(3.14)]
+CandyShared and Candy allow you to specify your variables in a variant class that makes keeping arrays and buffers of different types managable.  ie stable var myCollection : [CandySharedStable] = [#Int(0), #Text("second value"), #Float(3.14)]
 
 The property objects (adapted from https://github.com/DepartureLabsIC/non-fungible-token/blob/main/src/property.mo with copyright DepartureLabs and under MIT License, included here for compilability reasons.) allow for Key/Value collections that can be easily created, queried, and updated.  We include conversions between stable and unstable properties.
 
 We provide the following conversion methods.  Most will assert(false if you try to output an impossible conversion.):
 
-* CandyValue -> Nat
-* CandyValue -> Nat8
-* CandyValue -> Nat16
-* CandyValue -> Nat32
-* CandyValue -> Nat64
-* CandyValue -> Int
-* CandyValue -> Int8
-* CandyValue -> Int16
-* CandyValue -> Int32
-* CandyValue -> Int64
-* CandyValue -> Float
-* CandyValue -> Text
-* CandyValue -> Principal
-* CandyValue -> Bool
-* CandyValue -> Blob
-* CandyValue -> CandyValue Array
-* CandyValue -> Byte Array [Nat8]
+* CandyShared -> Nat
+* CandyShared -> Nat8
+* CandyShared -> Nat16
+* CandyShared -> Nat32
+* CandyShared -> Nat64
+* CandyShared -> Int
+* CandyShared -> Int8
+* CandyShared -> Int16
+* CandyShared -> Int32
+* CandyShared -> Int64
+* CandyShared -> Float
+* CandyShared -> Text
+* CandyShared -> Principal
+* CandyShared -> Bool
+* CandyShared -> Blob
+* CandyShared -> CandyShared Array
+* CandyShared -> Byte Array [Nat8]
 
-* CandyValueShared -> Nat
-* CandyValueShared -> Nat8
-* CandyValueShared -> Nat16
-* CandyValueShared -> Nat32
-* CandyValueShared -> Nat64
-* CandyValueShared -> Int
-* CandyValueShared -> Int8
-* CandyValueShared -> Int16
-* CandyValueShared -> Int32
-* CandyValueShared -> Int64
-* CandyValueShared -> Float
-* CandyValueShared -> Text
-* CandyValueShared -> Principal
-* CandyValueShared -> Bool
-* CandyValueShared -> Blob
-* CandyValueShared -> CandyValueShared Array
-* CandyValueShared -> Byte Array [Nat8]
-* CandyValueShared -> Byte Buffer Buffer.Buffer<Nat8>
-* CandyValueShared -> Float Buffer Buffer.Buffer<Float>
+* Candy -> Nat
+* Candy -> Nat8
+* Candy -> Nat16
+* Candy -> Nat32
+* Candy -> Nat64
+* Candy -> Int
+* Candy -> Int8
+* Candy -> Int16
+* Candy -> Int32
+* Candy -> Int64
+* Candy -> Float
+* Candy -> Text
+* Candy -> Principal
+* Candy -> Bool
+* Candy -> Blob
+* Candy -> Candy Array
+* Candy -> Byte Array [Nat8]
+* Candy -> Byte Buffer Buffer.Buffer<Nat8>
+* Candy -> Float Buffer Buffer.Buffer<Float>
 
 Clone Functions exist to clone unstable values into new variables, 
 
-#Option variant types can be unwrapped with unwrapOptionValue and unwrapOptionValueShared and will return #Empty if the option was null.
+#Option variant types can be unwrapped with unwrapOptionCandy and unwrapOptionCandyShared and will return #Empty if the option was null.
 
-Stabalize and Destablaize functions are provided for both CandyValue <> CandyValueShared, Properties <> PropertyShared, [CandyValue] <> [CandyValueShared].
+Stabalize and Destablaize functions are provided for both CandyShared <> Candy, Properties <> Property, [CandyShared] <> [Candy].
 
 A toBuffer function will convert an Array to a Buffer of the same type.  The is a n on n function and will iterate through each item in the array.
 

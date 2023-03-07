@@ -22,18 +22,28 @@ import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Map "mo:Map/Map";
 import Set "mo:Map/Set";
+import Text "mo:base/Text";
 import Blob "mo:base/Blob";
+import Nat "mo:base/Nat";
+import Nat8 "mo:base/Nat8";
+import Nat16 "mo:base/Nat16";
 import Nat32 "mo:base/Nat32";
+import Nat64 "mo:base/Nat64";
 import Principal "mo:base/Principal";
 import Int "mo:base/Int";
+import Int8 "mo:base/Int8";
+import Int16 "mo:base/Int16";
+import Int32 "mo:base/Int32";
+import Int64 "mo:base/Int64";
+import Float "mo:base/Float";
 
 
 module {
-  /// A collection of `PropertyShared`.
-  public type PropertiesShared = [PropertyShared];
+  /// A collection of `Property`.
+  public type Properties = Map.Map<Text, Property>;
 
   /// Specifies a single unstable property.
-  public type PropertyShared = {name : Text; value : CandyValueShared; immutable : Bool};
+  public type Property = {name : Text; value : Candy; immutable : Bool};
 
   /// Specifies the unstable properties that should be updated to a certain value.
   public type UpdateRequestShared = {
@@ -49,15 +59,15 @@ module {
 
   /// Mode for the update operation.
   public type UpdateModeShared = {
-    #Set    : CandyValueShared;
-    #Lock    : CandyValueShared;
+    #Set    : CandyShared;
+    #Lock    : CandyShared;
     #Next   : [UpdateShared];
   };
 
   ////////////////////////////////////
   //
   // The the following stable types were copied from departurelabs' property.mo.  They work as a plug and play
-  // here with CandyValue.
+  // here with CandyShared.
   //
   // https://github.com/DepartureLabsIC/non-fungible-token/blob/main/src/property.mo
   //
@@ -65,13 +75,13 @@ module {
   ///////////////////////////////////
 
   /// Specifies a single property.
-  public type Property = {name : Text; value : CandyValue; immutable : Bool};
+  public type PropertyShared = {name : Text; value : CandyShared; immutable : Bool};
 
-  /// A collection of `Property`.
-  public type Properties = [Property];
+  /// A collection of `PropertyShared`.
+  public type PropertiesShared = [PropertyShared];
 
-  /// Specifies an error which occurred during an operation on a `Property`.
-  public type PropertyError = {
+  /// Specifies an error which occurred during an operation on a `PropertyShared`.
+  public type PropertySharedError = {
     #Unauthorized;
     #NotFound;
     #InvalidRequest;
@@ -105,8 +115,8 @@ module {
 
   /// Mode for the update operation.
   public type UpdateMode = {
-    #Set    : CandyValue;
-    #Lock    : CandyValue;
+    #Set    : Candy;
+    #Lock    : Candy;
     #Next   : [Update];
   };
 
@@ -118,36 +128,9 @@ module {
   //
   ///////////////////////////////////
 
-  /// The Stable CandyValue.
-  public type CandyValue = {
+  /// The Stable CandyShared.
+  public type CandyShared = {
     #Int : Int;
-    #Int8: Int8;
-    #Int16: Int16;
-    #Int32: Int32;
-    #Int64: Int64;
-    #Nat : Nat;
-    #Nat8 : Nat8;
-    #Nat16 : Nat16;
-    #Nat32 : Nat32;
-    #Nat64 : Nat64;
-    #Float : Float;
-    #Text : Text;
-    #Bool : Bool;
-    #Blob : Blob;
-    #Class : [Property];
-    #Principal : Principal;
-    #Option : ?CandyValue;
-    #Array :  [CandyValue];
-    #Nats: [Nat];
-    #Floats: [Float]; 
-    #Bytes : [Nat8];
-    #Map : [(CandyValue, CandyValue)];
-    #Set : [CandyValue];
-  };
-
-  /// The Shared CandyValue.
-  public type CandyValueShared = {
-    #Int :  Int;
     #Int8: Int8;
     #Int16: Int16;
     #Int32: Int32;
@@ -163,35 +146,62 @@ module {
     #Blob : Blob;
     #Class : [PropertyShared];
     #Principal : Principal;
+    #Option : ?CandyShared;
+    #Array :  [CandyShared];
+    #Nats: [Nat];
+    #Floats: [Float]; 
+    #Bytes : [Nat8];
+    #Map : [(CandyShared, CandyShared)];
+    #Set : [CandyShared];
+  };
+
+  /// The Shared CandyShared.
+  public type Candy = {
+    #Int :  Int;
+    #Int8: Int8;
+    #Int16: Int16;
+    #Int32: Int32;
+    #Int64: Int64;
+    #Nat : Nat;
+    #Nat8 : Nat8;
+    #Nat16 : Nat16;
+    #Nat32 : Nat32;
+    #Nat64 : Nat64;
+    #Float : Float;
+    #Text : Text;
+    #Bool : Bool;
+    #Blob : Blob;
+    #Class : Map.Map<Text, Property>;
+    #Principal : Principal;
     #Floats : StableBuffer.StableBuffer<Float>;
     #Nats: StableBuffer.StableBuffer<Nat>; 
-    #Array : StableBuffer.StableBuffer<CandyValueShared>;
-    #Option : ?CandyValueShared;
+    #Array : StableBuffer.StableBuffer<Candy>;
+    #Option : ?Candy;
     #Bytes : StableBuffer.StableBuffer<Nat8>; 
-    #Map : Map.Map<CandyValueShared, CandyValueShared>;
-    #Set : Set.Set<CandyValueShared>;
+    #Map : Map.Map<Candy, Candy>;
+    #Set : Set.Set<Candy>;
   };
 
   /// Note: A `DataChunk` should be no larger than 2MB so that it can be shipped to other canisters.
-  public type DataChunk = CandyValueShared;
+  public type DataChunk = Candy;
   public type DataZone = StableBuffer.StableBuffer<DataChunk>;
 
   /// Workspaces are valueble when using orthogonal persistance to keep track of data in a format 
   /// that is easily transmitable across the wire given IC restrictions
   public type Workspace = StableBuffer.StableBuffer<DataZone>;
 
-  public type AddressedChunk = (Nat, Nat, CandyValue);
+  public type AddressedChunk = (Nat, Nat, CandyShared);
   public type AddressedChunkArray = [AddressedChunk];
   public type AddressedChunkBuffer = StableBuffer.StableBuffer<AddressedChunk>;
 
-  /// Convert a `CandyValueShared` to `CandyValue`.
+  /// Convert a `Candy` to `CandyShared`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let unstable: CandyValueShared = #Principal(Principal.fromText("abc"));
-  /// let stableValue = Types.shareValue(unstable);
+  /// let unstable: Candy = #Principal(Principal.fromText("abc"));
+  /// let shareCandy = Types.shareCandy(unstable);
   /// ```
-  public func shareValue(item : CandyValueShared) : CandyValue{
+  public func shareCandy(item : Candy) : CandyShared{
     switch(item){
       case(#Int(val)){ #Int(val)};
       case(#Int8(val)){ #Int8(val)};
@@ -209,51 +219,50 @@ module {
       case(#Blob(val)){ #Blob(val)};
       case(#Class(val)){
         #Class(
-          Array.tabulate<Property>(val.size(), func(idx){
-              shareProperty(val[idx]);
-          }));
+          Iter.toArray<PropertyShared>(Iter.map<Property, PropertyShared>(Map.vals<Text, Property>(val), func(x : Property){shareProperty(x)}))
+        );
       };
       case(#Principal(val)){ #Principal(val)};
-      case(#Array(val)){ #Array(shareValueArray(StableBuffer.toArray(val)))};
+      case(#Array(val)){ #Array(shareCandyArray(StableBuffer.toArray(val)))};
       case(#Option(val)){
         switch(val){
           case(null){ #Option(null)};
-          case(?val){#Option(?shareValue(val))};
+          case(?val){#Option(?shareCandy(val))};
         };
       };
       case(#Bytes(val)){ #Bytes(StableBuffer.toArray<Nat8>(val))};
       case(#Floats(val)){#Floats(StableBuffer.toArray(val))};
       case(#Nats(val)){#Nats(StableBuffer.toArray(val))};
       case(#Map(val)){
-        let entries = Map.entries<CandyValueShared, CandyValueShared>(val);
-        let stableEntries = Iter.map<(CandyValueShared, CandyValueShared), (CandyValue, CandyValue)>(
+        let entries = Map.entries<Candy, Candy>(val);
+        let stableEntries = Iter.map<(Candy, Candy), (CandyShared, CandyShared)>(
           entries,
-          func (x : (CandyValueShared, CandyValueShared)){
-            (shareValue(x.0), shareValue(x.1))
+          func (x : (Candy, Candy)){
+            (shareCandy(x.0), shareCandy(x.1))
           });
       
-        #Map(Iter.toArray<(CandyValue,CandyValue)>(stableEntries));
+        #Map(Iter.toArray<(CandyShared,CandyShared)>(stableEntries));
       };
       case(#Set(val)){
-        let entries = Set.keys<CandyValueShared>(val);
-        let stableEntries = Iter.map<(CandyValueShared), (CandyValue)>(
+        let entries = Set.keys<Candy>(val);
+        let stableEntries = Iter.map<(Candy), (CandyShared)>(
           entries,
-          func (x : (CandyValueShared)){
-            (shareValue(x))
+          func (x : (Candy)){
+            (shareCandy(x))
           });
-        #Set(Iter.toArray<(CandyValue)>(stableEntries));
+        #Set(Iter.toArray<(CandyShared)>(stableEntries));
       };
     }
   };
 
-  /// Convert a `CandyValue` to `CandyValueShared`.
+  /// Convert a `CandyShared` to `Candy`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let stable: CandyValue = #Principal(Principal.fromText("abc"));
-  /// let unstableValue = Types.unshareValue(unstable);
+  /// let stable: CandyShared = #Principal(Principal.fromText("abc"));
+  /// let unsharedValue = Types.unshare(unstable);
   /// ```
-  public func unshareValue(item : CandyValue) : CandyValueShared{
+  public func unshare(item : CandyShared) : Candy{
       switch(item){
         case(#Int(val)){ #Int(val)};
         case(#Int8(val)){ #Int8(val)};
@@ -271,127 +280,127 @@ module {
         case(#Blob(val)){ #Blob(val)};
         case(#Class(val)){
           #Class(
-            Array.tabulate<PropertyShared>(val.size(), func(idx){
-                unshareProperty(val[idx]);
-            }));
+            Map.fromIter<Text, Property>(Iter.map<PropertyShared, (Text, Property)>(val.vals(), 
+              func(x : PropertyShared) : (Text, Property){
+                  (x.name, {name = x.name; value = unshare(x.value); immutable = x.immutable})
+            }), Map.thash)
+          );
         };
         case(#Principal(val)){#Principal(val)};
-        case(#Array(val)){#Array(toBuffer<CandyValueShared>(unshareValueArray(val)))};
+        case(#Array(val)){#Array(toBuffer<Candy>(unshareArray(val)))};
         case(#Option(val)){
           switch(val){
             case(null){ #Option(null)};
-            case(?val){#Option(?unshareValue(val))};
+            case(?val){#Option(?unshare(val))};
           };
         };
         case(#Bytes(val)){#Bytes(toBuffer<Nat8>(val))};
         case(#Floats(val)){#Floats(toBuffer<Float>(val))};
         case(#Nats(val)){#Nats(toBuffer<Nat>(val))};
         case(#Map(val)){
-          //let entries = Map.entries<CandyValue, CandyValue>(val);
-          let unstableEntries = Iter.map<(CandyValue, CandyValue), (CandyValueShared, CandyValueShared)>(
+          //let entries = Map.entries<CandyShared, CandyShared>(val);
+          let unstableEntries = Iter.map<(CandyShared, CandyShared), (Candy, Candy)>(
             val.vals(),
-            func (x : (CandyValue, CandyValue)){
-              (unshareValue(x.0), unshareValue(x.1))
+            func (x : (CandyShared, CandyShared)){
+              (unshare(x.0), unshare(x.1))
             });
         
-          #Map(Map.fromIter<CandyValueShared, CandyValueShared>(unstableEntries, candyValueSharedMapHashTool));
+          #Map(Map.fromIter<Candy, Candy>(unstableEntries, candyMapHashTool));
         };
         case(#Set(val)){
-          //let entries = Set.keys<CandyValueShared>(val);
-          let unstableEntries = Iter.map<(CandyValue), (CandyValueShared)>(
+          //let entries = Set.keys<Candy>(val);
+          let unstableEntries = Iter.map<(CandyShared), (Candy)>(
             val.vals(),
-            func (x : (CandyValue)){
-              (unshareValue(x))
+            func (x : (CandyShared)){
+              (unshare(x))
             });
-          #Set(Set.fromIter<(CandyValueShared)>(unstableEntries, candyValueSharedMapHashTool));
+          #Set(Set.fromIter<(Candy)>(unstableEntries, candyMapHashTool));
         };
       }
-  };
-
-  /// Convert a `PropertyShared` to `Property`.
-  ///
-  /// Example:
-  /// ```motoko include=import
-  /// let unstable: PropertyShared = {
-  ///    name = "name";
-  ///    value = #Principal(Principal.fromText("abc"));
-  ///    immutable = false;
-  ///  };
-  /// let stableProperty = Types.shareProperty(unstable);
-  /// ```
-  public func shareProperty(item : PropertyShared) : Property{
-    return {
-      name = item.name;
-      value = shareValue(item.value);
-      immutable = item.immutable;
-    }
   };
 
   /// Convert a `Property` to `PropertyShared`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let stableProperty: Property = {
+  /// let unstable: Property = {
   ///    name = "name";
   ///    value = #Principal(Principal.fromText("abc"));
-  ///    immutable = true;
+  ///    immutable = false;
   ///  };
-  /// let unstableProperty = Types.unshareProperty(stableProperty);
+  /// let stablePropertyShared = Types.shareProperty(unstable);
   /// ```
-  public func unshareProperty(item : Property) : PropertyShared{
+  public func shareProperty(item : Property) : PropertyShared{
     return {
       name = item.name;
-      value = unshareValue(item.value);
+      value = shareCandy(item.value);
       immutable = item.immutable;
     }
   };
 
-  /// Convert a `[CandyValueShared]` to `[CandyValue]`.
+  /// Convert a `PropertyShared` to `Property`.
   ///
   /// Example:
   /// ```motoko include=import
-  ///  let array: [CandyValueShared] = [#Principal(Principal.fromText("abc")), #Int(1)];
-  ///  let arrayStable = Types.shareValueArray(array);
+  /// let stablePropertyShared: PropertyShared = {
+  ///    name = "name";
+  ///    value = #Principal(Principal.fromText("abc"));
+  ///    immutable = true;
+  ///  };
+  /// let unstablePropertyShared = Types.unshareProperty(stablePropertyShared);
   /// ```
-  public func shareValueArray(items : [CandyValueShared]) : [CandyValue]{
+  public func unshareProperty(item : PropertyShared) : Property {
+    return {
+      name = item.name;
+      value = unshare(item.value);
+      immutable = item.immutable;
+    }
+  };
 
-    let finalItems = Buffer.Buffer<CandyValue>(items.size());
+  /// Convert a `[Candy]` to `[CandyShared]`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  ///  let array: [Candy] = [#Principal(Principal.fromText("abc")), #Int(1)];
+  ///  let arrayStable = Types.shareCandyArray(array);
+  /// ```
+  public func shareCandyArray(items : [Candy]) : [CandyShared]{
+    let finalItems = Buffer.Buffer<CandyShared>(items.size());
     for(thisItem in items.vals()){
-      finalItems.add(shareValue(thisItem));
+      finalItems.add(shareCandy(thisItem));
+    };
+    return Buffer.toArray(finalItems);
+  };
+
+  /// Convert a `[CandyShared]` to `[Candy]`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  ///  let arrayStable: [CandyShared] = [#Principal(Principal.fromText("abc")), #Int(1)];
+  ///  let array = Types.unshareArray(arrayStable);
+  /// ```
+  public func unshareArray(items : [CandyShared]) : [Candy]{
+    
+    let finalItems = Buffer.Buffer<Candy>(items.size());
+    for(thisItem in items.vals()){
+      finalItems.add(unshare(thisItem));
     };
     
     return Buffer.toArray(finalItems);
   };
 
-  /// Convert a `[CandyValue]` to `[CandyValueShared]`.
-  ///
-  /// Example:
-  /// ```motoko include=import
-  ///  let arrayStable: [CandyValue] = [#Principal(Principal.fromText("abc")), #Int(1)];
-  ///  let array = Types.unshareValueArray(arrayStable);
-  /// ```
-  public func unshareValueArray(items : [CandyValue]) : [CandyValueShared]{
-    
-    let finalItems = Buffer.Buffer<CandyValueShared>(items.size());
-    for(thisItem in items.vals()){
-      finalItems.add(unshareValue(thisItem));
-    };
-    
-    return Buffer.toArray(finalItems);
-  };
-
-  /// Convert a `DataZone` to `[CandyValue]`.
+  /// Convert a `DataZone` to `[CandyShared]`.
   ///
   /// Example:
   /// ```motoko include=import
   ///  let dataZone = Types.toBuffer<DataChunk>([#Int32(5), #Int(1)]);
-  ///  let sharedValues = Types.shareValueBuffer(dataZone);
+  ///  let sharedValues = Types.shareCandyBuffer(dataZone);
   /// ```
-  public func shareValueBuffer(items : DataZone) : [CandyValue]{
+  public func shareCandyBuffer(items : DataZone) : [CandyShared]{
 
-    let finalItems = Buffer.Buffer<CandyValue>(StableBuffer.size(items));
+    let finalItems = Buffer.Buffer<CandyShared>(StableBuffer.size(items));
     for(thisItem in StableBuffer.vals(items)){
-      finalItems.add(shareValue(thisItem));
+      finalItems.add(shareCandy(thisItem));
     };
     
     return Buffer.toArray(finalItems);
@@ -412,57 +421,224 @@ module {
     return thisBuffer;
   };
 
-  /// Get the hash of the `CandyValue`.
+  /// Get the hash of the `CandyShared`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let x: CandyValue = #Principal(Principal.fromText("abc"));
+  /// let x: CandyShared = #Principal(Principal.fromText("abc"));
   /// let h = Types.hash(x);
   /// ```
-  public func hash(x :CandyValue) : Nat {
-    Nat32.toNat(Blob.hash(to_candid(x)));
+  public func hash(x :Candy) : Nat {
+    
+    let thisHash = switch(x){
+        case(#Int(val)) Map.ihash.0(val);
+        case(#Int8(val)) Map.ihash.0(Int8.toInt(val));
+        case(#Int16(val)) Map.ihash.0(Int16.toInt(val));
+        case(#Int32(val)) Map.ihash.0(Int32.toInt(val));
+        case(#Int64(val)) Map.ihash.0(Int64.toInt(val));
+        case(#Nat(val)) Map.nhash.0(val);
+        case(#Nat8(val)) Map.nhash.0(Nat8.toNat(val));
+        case(#Nat16(val)) Map.nhash.0(Nat16.toNat(val));
+        case(#Nat32(val)) Map.nhash.0(Nat32.toNat(val));
+        case(#Nat64(val)) Map.nhash.0(Nat64.toNat(val));
+        case(#Float(val)) Map.thash.0(Float.format(#exact, val));
+        case(#Text(val)) Map.thash.0(val);
+        case(#Bool(val)) Map.lhash.0(val);
+        case(#Blob(val)) Map.bhash.0(val);
+        case(#Class(val)){
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in Iter.sort<Property>(Map.vals(val), func(x, y){Text.compare(x.name, y.name)})){
+            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.thash.0(thisItem.name)))));
+            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(hash(thisItem.value)))));
+            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.lhash.0(thisItem.immutable)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Principal(val)) Map.phash.0(val);
+        case(#Array(val)){ 
+          
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in StableBuffer.vals(val)){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        
+        case(#Option(val)){
+          var result : Nat32 = 0;
+          switch(val){
+            case(null){ 
+              result  -%= 1 : Nat32;
+              return Nat32.toNat(result);
+            };
+            case(?val){hash(val)};
+          };
+         
+        };
+        case(#Bytes(val)) Map.bhash.0(Blob.fromArray(StableBuffer.toArray<Nat8>(val)));
+        case(#Floats(val)){ //arrays must be in the same order so we add index
+          
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in StableBuffer.vals(val)){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(#Float(thisItem))))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Nats(val)){
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in StableBuffer.vals(val)){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(#Nat(thisItem))))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Map(val)){
+          //this map takes insertion order into account
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in Map.entries(val)){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem.0)))));
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem.1)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Set(val)){
+          //this set takes insertion order into account
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in Set.keys(val)){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+      };
   };
 
-  /// Checks the two `CandyValue` params for equality.
+  private func nat32ToBytes(x : Nat32) : [Nat8] {
+    
+    [ Nat8.fromNat(Nat32.toNat((x >> 24) & (255))),
+    Nat8.fromNat(Nat32.toNat((x >> 16) & (255))),
+    Nat8.fromNat(Nat32.toNat((x >> 8) & (255))),
+    Nat8.fromNat(Nat32.toNat((x & 255))) ];
+  };
+
+  /// Checks the two `CandyShared` params for equality.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let x: CandyValue = #Int(1);
-  /// let y: CandyValue = #Int(2);
-  /// let z: CandyValue = #Int(1);
+  /// let x: CandyShared = #Int(1);
+  /// let y: CandyShared = #Int(2);
+  /// let z: CandyShared = #Int(1);
   /// let x_y = Types.eq(x, y); // false
   /// let x_z = Types.eq(x, z); // true
   /// ```
-  public func eq(x :CandyValue, y: CandyValue) : Bool {
+  public func eq(x :Candy, y: Candy) : Bool {
+    Blob.equal(to_candid(shareCandy(x)), to_candid(shareCandy(y)));
+  };
+
+  /// Get the hash of the `Candy`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let x: Candy = #Principal(Principal.fromText("abc"));
+  /// let h = Types.hashShared(x);  
+  /// ```
+  public func hashShared(x :CandyShared) : Nat {
+
+    let thisHash = switch(x){
+        case(#Int(val)) Map.ihash.0(val);
+        case(#Int8(val)) Map.ihash.0(Int8.toInt(val));
+        case(#Int16(val)) Map.ihash.0(Int16.toInt(val));
+        case(#Int32(val)) Map.ihash.0(Int32.toInt(val));
+        case(#Int64(val)) Map.ihash.0(Int64.toInt(val));
+        case(#Nat(val)) Map.nhash.0(val);
+        case(#Nat8(val)) Map.nhash.0(Nat8.toNat(val));
+        case(#Nat16(val)) Map.nhash.0(Nat16.toNat(val));
+        case(#Nat32(val)) Map.nhash.0(Nat32.toNat(val));
+        case(#Nat64(val)) Map.nhash.0(Nat64.toNat(val));
+        case(#Float(val)) Map.thash.0(Float.format(#exact, val));
+        case(#Text(val)) Map.thash.0(val);
+        case(#Bool(val)) Map.lhash.0(val);
+        case(#Blob(val)) Map.bhash.0(val);
+        case(#Class(val)){
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in Iter.sort<PropertyShared>(val.vals(), func(x, y){Text.compare(x.name, y.name)})){
+            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.thash.0(thisItem.name)))));
+            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(hashShared(thisItem.value)))));
+            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.lhash.0(thisItem.immutable)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Principal(val)) Map.phash.0(val);
+        
+        case(#Array(val)){ //arrays must be in the same order so we add index
+          
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in val.vals()){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Option(val)){
+          var result : Nat32 = 0;
+          switch(val){
+            case(null){ 
+              result  -%= 1 : Nat32;
+              return Nat32.toNat(result);
+            };
+            case(?val){hashShared(val)};
+          };
+         
+        };
+        case(#Bytes(val)) Map.bhash.0(Blob.fromArray(val));
+        case(#Floats(val)){ //arrays must be in the same order so we add index
+          
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in val.vals()){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(#Float(thisItem))))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Nats(val)){
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in val.vals()){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(#Nat(thisItem))))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Map(val)){
+          //this map takes insertion order into account
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in val.vals()){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem.0)))));
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem.1)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+        case(#Set(val)){
+          //this set takes insertion order into account
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in val.vals()){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem)))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
+      };
+  };
+
+  /// Checks the two `CandyShared` params for equality.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let x: Candy = #Int(1);
+  /// let y: Candy = #Int(2);
+  /// let z: Candy = #Int(1);
+  /// let x_y = Types.eq(x, y); // false
+  /// let x_z = Types.eq(x, z); // true
+  /// ```
+  public func eqShared(x :CandyShared, y: CandyShared) : Bool {
+    
     Blob.equal(to_candid(x), to_candid(y));
   };
 
-  /// Get the hash of the `CandyValueShared`.
-  ///
-  /// Example:
-  /// ```motoko include=import
-  /// let x: CandyValueShared = #Principal(Principal.fromText("abc"));
-  /// let h = Types.hashShared(x);  
-  /// ```
-  public func hashShared(x :CandyValueShared) : Nat {
-    Nat32.toNat(Blob.hash(to_candid(shareValue(x))));
-  };
-
-  /// Checks the two `CandyValue` params for equality.
-  ///
-  /// Example:
-  /// ```motoko include=import
-  /// let x: CandyValueShared = #Int(1);
-  /// let y: CandyValueShared = #Int(2);
-  /// let z: CandyValueShared = #Int(1);
-  /// let x_y = Types.eq(x, y); // false
-  /// let x_z = Types.eq(x, z); // true
-  /// ```
-  public func eqShared(x :CandyValueShared, y: CandyValueShared) : Bool {
-    Blob.equal(to_candid(shareValue(x)), to_candid(shareValue(y)));
-  };
-
-  public let candyValuyMapHashTool = (hash, eq);
-  public let candyValueSharedMapHashTool = (hashShared, eqShared);
+  public let candyMapHashTool = (hash, eq);
+  public let candySharedMapHashTool = (hashShared, eqShared);
 
 }

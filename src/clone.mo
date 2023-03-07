@@ -21,31 +21,32 @@ import Set "mo:Map/Set";
 
 module {
 
-  type CandyValue = Types.CandyValue;
-  type CandyValueShared = Types.CandyValueShared;
-  type PropertyShared = Types.PropertyShared;
+  type CandyShared = Types.CandyShared;
+  type Candy = Types.Candy;
+  type Property = Types.Property;
 
-  /// Deep clone a `CandyValueShared`.
+  /// Deep clone a `Candy`.
   ///
   /// Example:
   /// ```motoko include=import
-  /// let val: CandyValueShared = #Option(?#Principal(Principal.fromText("xyz")));
-  /// let cloned_val = Clone.cloneValueShared(val);
+  /// let val: Candy = #Option(?#Principal(Principal.fromText("xyz")));
+  /// let cloned_val = Clone.cloneCandy(val);
   /// ```
-  public func cloneValueShared(val : CandyValueShared) : CandyValueShared{
+  public func cloneCandy(val : Candy) : Candy {
     switch(val){
       case(#Class(val)){
-
-        return #Class(Array.tabulate<PropertyShared>(val.size(), func(idx){
-            {name= val[idx].name; value=cloneValueShared(val[idx].value); immutable = val[idx].immutable};
-        }));
+        return #Class(
+          Map.fromIter<Text, Property>(
+            Map.entries(val)
+          , Map.thash)
+        );
       };
       case(#Bytes(val)){#Bytes(StableBuffer.clone(val))};
       case(#Nats(val)){#Nats(StableBuffer.clone(val))};
       case(#Floats(val)){#Floats(StableBuffer.clone(val))};
       case(#Array(val)){#Array(StableBuffer.clone(val))};
-      case(#Map(val)){#Map(Map.fromIter<CandyValueShared,CandyValueShared>(Map.entries(val), Types.candyValueSharedMapHashTool))};
-      case(#Set(val)){#Set(Set.fromIter<CandyValueShared>(Set.keys(val), Types.candyValueSharedMapHashTool))};
+      case(#Map(val)){#Map(Map.fromIter<Candy,Candy>(Map.entries(val), Types.candyMapHashTool))};
+      case(#Set(val)){#Set(Set.fromIter<Candy>(Set.keys(val), Types.candyMapHashTool))};
       case(_) val;
     };
   };

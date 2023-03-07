@@ -29,8 +29,8 @@ import Conversion "conversion";
 import Clone "clone";
 
 module {
-  type CandyValue = Types.CandyValue;
-  type CandyValueShared = Types.CandyValueShared;
+  type CandyShared = Types.CandyShared;
+  type Candy = Types.Candy;
   type Workspace = Types.Workspace;
   type DataZone = Types.DataZone;
   type AddressedChunkArray = Types.AddressedChunkArray;
@@ -66,8 +66,8 @@ module {
     return StableBuffer.initPresized<DataZone>(size);
   };
 
-  /// Get the size in bytes taken up by the `CandyValue`.
-  public func getValueSize(item : CandyValue) : Nat{
+  /// Get the size in bytes taken up by the `CandyShared`.
+  public func getCandySize(item : Candy) : Nat{
     let varSize = switch(item){
       case(#Int(val)){
         var a : Nat = 0;
@@ -105,8 +105,8 @@ module {
       case(#Blob(val)){val.size()};
       case(#Class(val)){
         var size = 0;
-        for(thisItem in val.vals()){
-          size += 1 + (thisItem.name.size() * 4) + getValueSize(thisItem.value);
+        for(thisItem in Map.entries(val)){
+          size += 1 + (thisItem.1.name.size() * 4) + getCandySize(thisItem.1.value) + (thisItem.1.name.size() * 4); //name + name + value + bit
         };
         
         return size;
@@ -115,37 +115,37 @@ module {
       case(#Option(val)){
         switch val{
           case(null){0};
-          case(?val){getValueSize(val)}
+          case(?val){getCandySize(val)}
         }
       };
       case(#Array(val)){
        
             var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueSize(thisItem);
+            for(thisItem in StableBuffer.vals(val)){
+              size += 1 + getCandySize(thisItem);
             };
             
             return size;
           
       };
       case(#Bytes(val)){
-        val.size() + 2
+        StableBuffer.size(val) + 2
       };
       case(#Floats(val)){
-        (val.size() * 4) + 2
+        (StableBuffer.size(val) * 4) + 2
       };
       case(#Nats(val)){
             var size = 0;
-            for(thisItem in val.vals()){
-              size += 1 + getValueSize(#Nat(thisItem));
+            for(thisItem in StableBuffer.vals(val)){
+              size += 1 + getCandySize(#Nat(thisItem));
             };
             
             return size;
       };
       case(#Map(val)){
         var size = 0;
-        for(thisItem in val.vals()){
-          size += getValueSize(thisItem.0) + getValueSize(thisItem.1) + 2;
+        for(thisItem in Map.entries(val)){
+          size += getCandySize(thisItem.0) + getCandySize(thisItem.1) + 2;
         };
         
         return size;
@@ -153,8 +153,8 @@ module {
       };
       case(#Set(val)){
         var size = 0;
-        for(thisItem in val.vals()){
-          size += getValueSize(thisItem) + 2;
+        for(thisItem in Set.keys(val)){
+          size += getCandySize(thisItem) + 2;
         };
         return size;  
       };
@@ -163,8 +163,8 @@ module {
     return varSize;
   };
 
-  /// Get the size in bytes taken up by the `CandyValueShared`.
-  public func getValueSharedSize(item : CandyValueShared) : Nat{
+  /// Get the size in bytes taken up by the `Candy`.
+  public func getCandySharedSize(item : CandyShared) : Nat{
     let varSize = switch(item){
       case(#Int(val)){
         var a : Nat = 0;
@@ -203,7 +203,7 @@ module {
       case(#Class(val)){
         var size = 0;
         for(thisItem in val.vals()){
-          size += 1 + (thisItem.name.size() * 4) + getValueSharedSize(thisItem.value);
+          size += 1 + (thisItem.name.size() * 4) + getCandySharedSize(thisItem.value);
         };
 
         return size;
@@ -212,36 +212,36 @@ module {
       case(#Option(val)){
         switch val{
           case(null){0};
-          case(?val){ getValueSharedSize(val)}
+          case(?val){ getCandySharedSize(val)}
         }
       };
       case(#Array(val)){
         
         var size = 0;
-        for(thisItem in StableBuffer.vals(val)){
-          size += 1 + getValueSharedSize(thisItem);
+        for(thisItem in val.vals()){
+          size += 1 + getCandySharedSize(thisItem);
         };
         
         return size;
           
       };
       case(#Bytes(val)){
-        StableBuffer.size(val) + 2;
+        val.size() + 2;
       };
       case(#Floats(val)){
-        (StableBuffer.size(val) * 4) + 2;
+        (val.size() * 4) + 2;
       };
       case(#Nats(val)){
         var size = 0;
-        for(thisItem in StableBuffer.vals(val)){
-          size += 1 + getValueSharedSize(#Nat(thisItem));
+        for(thisItem in val.vals()){
+          size += 1 + getCandySharedSize(#Nat(thisItem));
         };
         return size;
       };
       case(#Map(val)){
         var size = 0;
-        for(thisItem in Map.entries<CandyValueShared, CandyValueShared>(val)){
-          size += getValueSharedSize(thisItem.0) + getValueSharedSize(thisItem.1) + 2;
+        for(thisItem in val.vals()){
+          size += getCandySharedSize(thisItem.0) + getCandySharedSize(thisItem.1) + 2;
         };
         
         return size;
@@ -249,8 +249,8 @@ module {
       };
       case(#Set(val)){
         var size = 0;
-        for(thisItem in Set.keys<CandyValueShared>(val)){
-          size += getValueSharedSize(thisItem) + 2;
+        for(thisItem in val.vals()){
+          size += getCandySharedSize(thisItem) + 2;
         };
         return size;  
       };
@@ -272,7 +272,7 @@ module {
     var currentZone = 0;
     var currentChunk = 0;
     let result = Array.tabulate<AddressedChunk>(countAddressedChunksInWorkspace(x), func(thisChunk){
-      let thisChunk = (currentZone, currentChunk, Types.shareValue(StableBuffer.get(StableBuffer.get(x,currentZone),currentChunk)));
+      let thisChunk = (currentZone, currentChunk, Types.shareCandy(StableBuffer.get(StableBuffer.get(x,currentZone),currentChunk)));
       if(currentChunk == Nat.sub(StableBuffer.size(StableBuffer.get(x, currentZone)),1)){
         currentZone += 1;
         currentChunk := 0;
@@ -304,7 +304,7 @@ module {
       let tz = StableBuffer.initPresized<DataChunk>(StableBuffer.size(thisZone));
       StableBuffer.add<DataZone>(ws, tz);
       for(thisDataChunk in StableBuffer.vals(thisZone)){
-        StableBuffer.add(tz,Clone.cloneValueShared(thisDataChunk));
+        StableBuffer.add(tz, Clone.cloneCandy(thisDataChunk));
       };
         
     };
@@ -339,7 +339,7 @@ module {
 
       if(thisChunk.1 + 1  <= StableBuffer.size(thisZone)){
         //zone exists
-        StableBuffer.put(thisZone, thisChunk.1, Types.unshareValue(thisChunk.2));
+        StableBuffer.put(thisZone, thisChunk.1, Types.unshare(thisChunk.2));
       } else {
         //append zone
 
@@ -348,7 +348,7 @@ module {
           let newBuffer = if(thisChunk.1 == newChunk){
           //we know the size
 
-            Types.unshareValue(thisChunk.2);
+            Types.unshare(thisChunk.2);
           } else {
             #Option(null);
           };
@@ -367,7 +367,7 @@ module {
   public func getDataZoneSize(dz: DataZone) : Nat {
     var size : Nat = 0;
     for(thisChunk in StableBuffer.vals(dz)){
-      size += getValueSharedSize(thisChunk);
+      size += getCandySize(thisChunk);
     };
     return size;
   };
@@ -390,7 +390,7 @@ module {
 
           let thisItem = StableBuffer.get(StableBuffer.get(_workspace,thisZone),thisChunk);
 
-          let newSize = foundBytes + getValueSharedSize(thisItem);
+          let newSize = foundBytes + getCandySize(thisItem);
           
           if( newSize > _maxChunkSize)
           {
@@ -433,7 +433,7 @@ module {
 
               let thisItem = StableBuffer.get(StableBuffer.get(_workspace, thisZone), thisChunk);
 
-              let newSize = foundBytes + getValueSharedSize(thisItem);
+              let newSize = foundBytes + getCandySize(thisItem);
               if( newSize > _maxChunkSize)
               {
                   //went over bytes
@@ -447,7 +447,7 @@ module {
               };
               if(currentChunk == _chunkID){
                   //add it to our return
-                  StableBuffer.add(resultBuffer, (thisZone, thisChunk, Types.shareValue(thisItem)));
+                  StableBuffer.add(resultBuffer, (thisZone, thisChunk, Types.shareCandy(thisItem)));
 
               };
 
@@ -465,13 +465,13 @@ module {
     
     var size : Nat = 0;
     for(thisItem in item.vals()){
-      size += getValueSize(thisItem.2) + 4 + 4; //only works for up to 32 byte adresess...should be fine but verify and document.
+      size += getCandySharedSize(thisItem.2) + 4 + 4; //only works for up to 32 byte adresess...should be fine but verify and document.
     };
     
     return size;
   };
 
-  public func getDataChunkFromAddressedChunkArray(item : AddressedChunkArray, dataZone: Nat, dataChunk: Nat) : CandyValue{
+  public func getDataChunkFromAddressedChunkArray(item : AddressedChunkArray, dataZone: Nat, dataChunk: Nat) : CandyShared{
     
     var size : Nat = 0;
     for(thisItem in item.vals()){
@@ -486,15 +486,15 @@ module {
     
     let result = Buffer.Buffer<Buffer.Buffer<Nat8>>(StableBuffer.size(dz));
     for(thisItem in StableBuffer.vals(dz)){
-      result.add(Conversion.valueSharedToBytesBuffer(thisItem));
+      result.add(Conversion.candyToBytesBuffer(thisItem));
     };
     
     return result;
   };
 
-  public func byteBufferChunksToValueSharedBufferDataZone(buffer : Buffer.Buffer<Buffer.Buffer<Nat8>>): DataZone {
+  public func byteBufferChunksToCandyBufferDataZone(buffer : Buffer.Buffer<Buffer.Buffer<Nat8>>): DataZone {
     
-    let result = StableBuffer.initPresized<CandyValueShared>(buffer.size());
+    let result = StableBuffer.initPresized<Candy>(buffer.size());
     for(thisItem in buffer.vals()){
       StableBuffer.add(result, #Bytes(Types.toBuffer<Nat8>(Buffer.toArray(thisItem))));
     };
@@ -503,8 +503,8 @@ module {
   };
 
   /// Initialize a `DataZone` with the given value.
-  public func initDataZone(val : CandyValueShared) : DataZone{
-    let result = StableBuffer.init<CandyValueShared>();
+  public func initDataZone(val : Candy) : DataZone{
+    let result = StableBuffer.init<Candy>();
     StableBuffer.add(result, val);
     return result;
   };
@@ -521,7 +521,7 @@ module {
       for(thisbyte in Conversion.natToBytes(thisItem.1).vals()){
         accumulator.add(thisbyte);
       };
-      for(thisbyte in Conversion.valueToBytes(thisItem.2).vals()){
+      for(thisbyte in Conversion.candySharedToBytes(thisItem.2).vals()){
         accumulator.add(thisbyte);
       };
     };

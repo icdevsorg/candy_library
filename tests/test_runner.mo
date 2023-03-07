@@ -42,7 +42,7 @@ shared (deployer) actor class test_runner() = this {
 
         let suite = S.suite("test conversion", [
 
-            S.test("Nat32 is Nat", Conversion.valueSharedToNat(#Nat32(10)), M.equals<Nat>(T.nat(10)))
+            S.test("Nat32 is Nat", Conversion.candySharedToNat(#Nat32(10)), M.equals<Nat>(T.nat(10)))
         ]);
 
         S.run(suite);

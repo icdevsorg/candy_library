@@ -15,34 +15,35 @@
 /// manipulating classes.
 
 import Buffer "mo:base/Buffer";
-import HashMap "mo:base/HashMap";
+import Map "mo:Map/Map";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Result "mo:base/Result";
+import Iter "mo:base/Iter";
 import Types "types";
 
 module {
 
   type PropertiesShared = Types.PropertiesShared;
   type Query = Types.Query;
-  type PropertyError = Types.PropertyError;
+  type PropertySharedError = Types.PropertySharedError;
   type UpdateShared = Types.UpdateShared;
-  type Property = Types.Property;
   type PropertyShared = Types.PropertyShared;
-  type CandyValue = Types.CandyValue;
+  type Property = Types.Property;
+  type CandyShared = Types.CandyShared;
   type Properties = Types.Properties;
   type Update = Types.Update;
 
-  private func toPropertySharedMap(ps : PropertiesShared) : HashMap.HashMap<Text,PropertyShared> {
-    let m = HashMap.HashMap<Text,PropertyShared>(ps.size(), Text.equal, Text.hash);
-    for (property in ps.vals()) m.put(property.name, property);
+  private func toPropertyMap(ps : PropertiesShared) : Map.Map<Text, PropertyShared> {
+    let m = Map.fromIter<Text,PropertyShared>(Iter.map<PropertyShared, (Text,PropertyShared)>(ps.vals(), func(x){
+      (x.name, x)
+    }), Map.thash);
+   
     m;
   };
 
-  private func fromPropertySharedMap(m : HashMap.HashMap<Text,PropertyShared>) : PropertiesShared {
-    var ps : Buffer.Buffer<PropertyShared> = Buffer.Buffer<PropertyShared>(m.size());
-    for ((_, p) in m.entries()) ps.add(p);
-    Buffer.toArray(ps);
+  private func fromPropertyMap(m : Map.Map<Text,PropertyShared>) : PropertiesShared {
+    Iter.toArray<PropertyShared>(Map.vals<Text, PropertyShared>(m));
   };
 
   /// Get a subset of fields from the `PropertiesShared` based on the given query.
@@ -94,11 +95,11 @@ module {
   /// let subset_result = Properties.getPropertiesShared(properties, qs);
   /// ```
   /// Note: Ignores unknown properties.
-  public func getPropertiesShared(properties : PropertiesShared, qs : [Query]) : Result.Result<PropertiesShared, PropertyError> {    
-    let m = toPropertySharedMap(properties);
-    var ps : Buffer.Buffer<PropertyShared> = Buffer.Buffer<PropertyShared>(m.size());
+  public func getPropertiesShared(properties : PropertiesShared, qs : [Query]) : Result.Result<PropertiesShared, PropertySharedError> {    
+    let m = toPropertyMap(properties);
+    var ps : Buffer.Buffer<PropertyShared> = Buffer.Buffer<PropertyShared>(Map.size(m));
     for (q in qs.vals()) {
-      switch (m.get(q.name)) {
+      switch (Map.get(m, Map.thash, q.name)) {
         case (null) return #err(#NotFound); // Query contained an unknown property.
         case (? p)  {
           switch (p.value) {
@@ -184,10 +185,10 @@ module {
   /// Note:
   /// - Creates unknown properties.
   /// - Returns error if the query tries to update an immutable property.
-  public func updatePropertiesShared(properties : PropertiesShared, us : [UpdateShared]) : Result.Result<PropertiesShared, PropertyError> {
-    let m = toPropertySharedMap(properties);
+  public func updatePropertiesShared(properties : PropertiesShared, us : [UpdateShared]) : Result.Result<PropertiesShared, PropertySharedError> {
+    let m = toPropertyMap(properties);
     for (u in us.vals()) {
-      switch (m.get(u.name)) {
+      switch (Map.get(m, Map.thash, u.name)) {
         case (null) {
           // Update contained an unknown property, so it gets created.
           switch (u.mode) {
@@ -197,21 +198,21 @@ module {
                     case (#ok(v)) v;
                 };
                 
-                m.put(u.name, {
+                ignore Map.put(m, Map.thash, u.name, {
                   name      = u.name;
                   value     = #Class(sps);
                   immutable = false;
                 });
               };
               case (#Set(v)) {
-                m.put(u.name, {
+                ignore Map.put(m, Map.thash, u.name, {
                   name      = u.name;
                   value     = v;
                   immutable = false;
                 });
               };
               case (#Lock(v)) {
-                m.put(u.name, {
+                ignore Map.put(m, Map.thash, u.name, {
                   name      = u.name;
                   value     = v;
                   immutable = true;
@@ -233,7 +234,7 @@ module {
                     case (#ok(v)) v;
                   };
                   
-                  m.put(u.name, {
+                  ignore Map.put(m, Map.thash, u.name, {
                     name      = p.name;
                     value     = #Class(sps);
                     immutable = false;
@@ -244,14 +245,14 @@ module {
               return #err(#NotFound);
             };
             case (#Set(v)) {
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                   name      = p.name;
                   value     = v;
                   immutable = false;
               });
             };
             case (#Lock(v)) {
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                   name      = p.name;
                   value     = v;
                   immutable = true;
@@ -262,7 +263,7 @@ module {
       };
     };
       
-    #ok(fromPropertySharedMap(m));
+    #ok(fromPropertyMap(m));
   };
 
   /// Updates the given properties based on the given update query.
@@ -281,12 +282,12 @@ module {
   ///    immutable = true;
   ///  }
   /// );
-  /// let prop = Properties.getClassProperty(c, "class_field1");
+  /// let prop = Properties.getClassPropertyShared(c, "class_field1");
   /// ```
   /// Note: Returns null if:
   /// - The underlying value isn't a #Class.
   /// - The property with the given name wasn't found inside the class.
-  public func getClassProperty(val: CandyValue, name : Text) : ?Property{   
+  public func getClassPropertyShared(val: CandyShared, name : Text) : ?PropertyShared{   
     switch(val){
       case(#Class(val)){
         for(thisItem in val.vals()){
@@ -309,7 +310,7 @@ module {
   ////////////////////////////////////
   //
   // The following functions were copied from departurelabs' property.mo.  They work as a plug and play
-  // here with CandyValue and CandyValueShared.
+  // here with CandyShared and Candy.
   //
   // https://github.com/DepartureLabsIC/non-fungible-token/blob/main/src/property.mo
   //
@@ -317,20 +318,16 @@ module {
   //
   ///////////////////////////////////
 
-  private func toPropertyMap(ps : Properties) : HashMap.HashMap<Text,Property> {
-    let m = HashMap.HashMap<Text,Property>(ps.size(), Text.equal, Text.hash);
-    for (property in ps.vals()) {
-      m.put(property.name, property);
+  private func toPropertySharedMap(ps : Properties) : Map.Map<Text,PropertyShared> {
+    let m = Map.new<Text, PropertyShared>();
+    for (property in Map.vals(ps)) {
+      ignore Map.put(m, Map.thash, property.name, Types.shareProperty(property));
     };
     m;
   };
 
-  private func fromPropertyMap(m : HashMap.HashMap<Text,Property>) : Properties { 
-    var ps : Buffer.Buffer<Property> = Buffer.Buffer(m.size());
-    for ((_, p) in m.entries()) {
-      ps.add(p);
-    };
-    Buffer.toArray(ps);
+  private func fromPropertySharedMap(m : Map.Map<Text, PropertyShared>) : Properties { 
+    Map.fromIter<Text, Property>(Iter.map<PropertyShared, (Text, Property)>(Map.vals(m), func(x){(x.name, Types.unshareProperty(x))}), Map.thash);
   };
 
   /// Get a subset of fields from the `Properties` based on the given query.
@@ -382,11 +379,11 @@ module {
   /// let subset_result = Properties.getProperties(properties, qs);
   /// ```
   /// Note: Ignores unknown properties.
-  public func getProperties(properties : Properties, qs : [Query]) : Result.Result<Properties, PropertyError> {
-    let m = toPropertyMap(properties);
-    var ps : Buffer.Buffer<Property> = Buffer.Buffer<Property>(m.size());
+  public func getProperties(properties : Properties, qs : [Query]) : Result.Result<Properties, PropertySharedError> {
+    let m = properties;
+    var ps : Buffer.Buffer<Property> = Buffer.Buffer<Property>(1);
     for (q in qs.vals()) {
-      switch (m.get(q.name)) {
+      switch (Map.get(m, Map.thash, q.name)) {
         case (null) {
           // Query contained an unknown property.
           //return #err(#NotFound);
@@ -420,7 +417,11 @@ module {
         };
       };
     };
-    #ok(Buffer.toArray(ps));
+    #ok(Map.fromIter<Text, Property>(
+      Iter.map<Property, (Text, Property)>(ps.vals(), 
+      func(x){(x.name, x)}
+      ), Map.thash
+    ));
   };
 
   /// Updates the given properties based on the given update query.
@@ -476,34 +477,34 @@ module {
   /// Note: 
   /// - Creates unknown properties.
   /// - Returns error if the query tries to update an immutable property.
-  public func updateProperties(properties : Properties, us : [Update]) : Result.Result<Properties, PropertyError> {
-    let m = toPropertyMap(properties);
+  public func updateProperties(properties : Properties, us : [Update]) : Result.Result<Properties, PropertySharedError> {
+    let m = properties;
     for (u in us.vals()) {
-      switch (m.get(u.name)) {
+      switch (Map.get(m, Map.thash, u.name)) {
         case (null) {
           // Update contained an unknown property, so it gets created.
           switch (u.mode) {
             case (#Next(sus)) {
-              let sps = switch(updateProperties([], sus)) {
+              let sps = switch(updateProperties(Map.new<Text,Property>(), sus)) {
                 case (#err(e)) return #err(e);
                 case (#ok(v)) v;
               };
               
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                 name      = u.name;
                 value     = #Class(sps);
                 immutable = false;
               });
             };
             case (#Set(v)) {
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                   name      = u.name;
                   value     = v;
                   immutable = false;
               });
             };
             case (#Lock(v)) {
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                 name      = u.name;
                 value     = v;
                 immutable = true;
@@ -524,7 +525,7 @@ module {
                     case (#ok(v)) v;
                   };
                   
-                  m.put(u.name, {
+                  ignore Map.put(m, Map.thash, u.name, {
                     name      = p.name;
                     value     = #Class(sps);
                     immutable = false;
@@ -535,14 +536,14 @@ module {
               return #err(#NotFound);
             };
             case (#Set(v)) {
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                 name      = p.name;
                 value     = v;
                 immutable = false;
               });
             };
             case (#Lock(v)) {
-              m.put(u.name, {
+              ignore Map.put(m, Map.thash, u.name, {
                 name      = p.name;
                 value     = v;
                 immutable = true;
@@ -553,7 +554,7 @@ module {
       };
     };
     
-    #ok(fromPropertyMap(m));
+    #ok(m);
   };
 
   ////////////////////////////////////

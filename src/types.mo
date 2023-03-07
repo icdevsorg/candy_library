@@ -634,7 +634,6 @@ module {
   /// let x_z = Types.eq(x, z); // true
   /// ```
   public func eqShared(x :CandyShared, y: CandyShared) : Bool {
-    
     Blob.equal(to_candid(x), to_candid(y));
   };
 

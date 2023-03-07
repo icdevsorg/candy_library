@@ -95,6 +95,14 @@ Note: This project was a part of the [ARAMAKME expirament](https://hwqwz-ryaaa-a
 
 ## Release
 
+v0.2.0
+
+* Major breaking changes
+* Value is now CandyShared
+* ValueUnstable is now Candy
+* Added a stable hash
+* Todo: fund a better eq function than to_candid, from_candid
+
 v0.1.12
 
 * Refactor - Cleaned up code

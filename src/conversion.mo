@@ -39,8 +39,8 @@ import List "mo:base/List";
 import Types "types";
 import Hex "hex";
 import Properties "properties";
-import StableBuffer "mo:stable_buffer/StableBuffer";
-import Map "mo:Map/Map";
+import StableBuffer "mo:stablebuffer/StableBuffer";
+import Map "mo:map/Map";
 
 
 module {

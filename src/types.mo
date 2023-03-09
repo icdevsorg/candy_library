@@ -17,11 +17,11 @@
 /// & stabilize/destabilize candy values.
 
 import Buffer "mo:base/Buffer";
-import StableBuffer "mo:stable_buffer/StableBuffer";
+import StableBuffer "mo:stablebuffer/StableBuffer";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
-import Map "mo:Map/Map";
-import Set "mo:Map/Set";
+import Map "mo:map/Map";
+import Set "mo:map/Set";
 import Text "mo:base/Text";
 import Blob "mo:base/Blob";
 import Nat "mo:base/Nat";

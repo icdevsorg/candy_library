@@ -580,6 +580,60 @@ module {
     };
   };
 
+  /// Convert a `Candy` to Bytes(`[Nat8]`)
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: Candy = #Principal(Principal.fromText("abc"));
+  /// let value_as_bytes = Conversion.candyToBytes(value);
+  /// ```
+  public func candyToBytes(val : Candy) : [Nat8]{
+    switch(val){
+      case(#Int(val)){intToBytes(val)};
+      case(#Int8(val)){candyToBytes(#Int(candyToInt(#Int8(val))))};
+      case(#Int16(val)){candyToBytes(#Int(candyToInt(#Int16(val))))};
+      case(#Int32(val)){candyToBytes(#Int(candyToInt(#Int32(val))))};
+      case(#Int64(val)){candyToBytes(#Int(candyToInt(#Int64(val))))};
+      case(#Nat(val)){natToBytes(val)};
+      case(#Nat8(val)){ [val]};
+      case(#Nat16(val)){nat16ToBytes(val)};
+      case(#Nat32(val)){nat32ToBytes(val)};
+      case(#Nat64(val)){nat64ToBytes(val)};
+      case(#Float(val)){Prelude.nyi()};
+      case(#Text(val)){textToBytes(val)};
+      case(#Bool(val)){boolToBytes(val)};
+      case(#Blob(val)){ Blob.toArray(val)};
+      case(#Class(val)){Prelude.nyi()};
+      case(#Principal(val)){principalToBytes(val)};
+      case(#Option(val)){Prelude.nyi()};
+      case(#Array(val)){Prelude.nyi()};
+      case(#Bytes(val)){StableBuffer.toArray(val)};
+      case(#Floats(val)){Prelude.nyi()};
+      case(#Nats(val)){Prelude.nyi()};
+      case(#Ints(val)){Prelude.nyi()};
+      case(#Map(val)){Prelude.nyi()};
+      case(#Set(val)){Prelude.nyi()};
+    }
+  };
+
+  /// Convert a `Candy` to `Buffer<Nat8>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: Candy = #Principal(Principal.fromText("abc"));
+  /// let value_as_buffer = Conversion.candyToBytesBuffer(value);
+  /// ```
+  ///
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToBytesBuffer(val : Candy) : Buffer.Buffer<Nat8>{
+    switch (val){
+      case(#Bytes(val)){Buffer.fromArray(StableBuffer.toArray(val))};
+      case(_){
+          toBuffer<Nat8>(candyToBytes(val));//may throw for uncovertable types
+      };
+    };
+  };
+
   /// Convert a `CandyShared` to `Nat`.
   ///
   /// Example:
@@ -779,7 +833,6 @@ module {
   /// ```
   /// Note: Throws if the underlying value overflows.
   public func candySharedToInt(val : CandyShared) : Int {
-
     switch(val){
       case(#Int(val)){val};
       case(#Int8(val)){ Int8.toInt(val)};
@@ -805,7 +858,6 @@ module {
   /// ```
   /// Note: Throws if the underlying value overflows.
   public func candySharedToInt8(val : CandyShared) : Int8 {
-
     switch(val){
       case(#Int8(val)){ val};
       case(#Int(val)){ Int8.fromInt(val)};//will throw on overflow
@@ -831,7 +883,6 @@ module {
   /// ```
   /// Note: Throws if the underlying value overflows.
   public func candySharedToInt16(val : CandyShared) : Int16 {
-
     switch(val){
       case(#Int16(val)){ val};
       case(#Int8(val)){ Int16.fromInt(Int8.toInt(val))};
@@ -1061,7 +1112,6 @@ module {
   /// ```
   public func candySharedToBlob(val : CandyShared) : Blob {
     switch(val){
-
       case(#Blob(val)){ val};
       case(#Bytes(val)){
           Blob.fromArray(val);
@@ -1108,48 +1158,11 @@ module {
   /// ```
   /// Note: Throws if the underlying value is not an `#Array`.
   public func candySharedToValueArray(val : CandyShared) : [CandyShared] {
-
     switch(val){
       case(#Array(val)){val};
       //todo: could add all conversions here
       case(_){assert(false);/*unreachable*/[];};
     };
-  };
-
-  /// Convert a `Candy` to Bytes(`[Nat8]`)
-  ///
-  /// Example:
-  /// ```motoko include=import
-  /// let value: Candy = #Principal(Principal.fromText("abc"));
-  /// let value_as_bytes = Conversion.candyToBytes(value);
-  /// ```
-  public func candyToBytes(val : Candy) : [Nat8]{
-    switch(val){
-      case(#Int(val)){intToBytes(val)};
-      case(#Int8(val)){candyToBytes(#Int(candyToInt(#Int8(val))))};
-      case(#Int16(val)){candyToBytes(#Int(candyToInt(#Int16(val))))};
-      case(#Int32(val)){candyToBytes(#Int(candyToInt(#Int32(val))))};
-      case(#Int64(val)){candyToBytes(#Int(candyToInt(#Int64(val))))};
-      case(#Nat(val)){natToBytes(val)};
-      case(#Nat8(val)){ [val]};
-      case(#Nat16(val)){nat16ToBytes(val)};
-      case(#Nat32(val)){nat32ToBytes(val)};
-      case(#Nat64(val)){nat64ToBytes(val)};
-      case(#Float(val)){Prelude.nyi()};
-      case(#Text(val)){textToBytes(val)};
-      case(#Bool(val)){boolToBytes(val)};
-      case(#Blob(val)){ Blob.toArray(val)};
-      case(#Class(val)){Prelude.nyi()};
-      case(#Principal(val)){principalToBytes(val)};
-      case(#Option(val)){Prelude.nyi()};
-      case(#Array(val)){Prelude.nyi()};
-      case(#Bytes(val)){StableBuffer.toArray(val)};
-      case(#Floats(val)){Prelude.nyi()};
-      case(#Nats(val)){Prelude.nyi()};
-      case(#Ints(val)){Prelude.nyi()};
-      case(#Map(val)){Prelude.nyi()};
-      case(#Set(val)){Prelude.nyi()};
-    }
   };
 
   /// Convert a `CandyShared` to Bytes(`[Nat8]`)
@@ -1202,25 +1215,6 @@ module {
       case(#Bytes(val)){toBuffer(val)};
       case(_){
           toBuffer<Nat8>(candySharedToBytes(val));//may throw for uncovertable types
-      };
-    };
-  };
-
-
-  /// Convert a `Candy` to `Buffer<Nat8>`
-  ///
-  /// Example:
-  /// ```motoko include=import
-  /// let value: Candy = #Principal(Principal.fromText("abc"));
-  /// let value_as_buffer = Conversion.candyToBytesBuffer(value);
-  /// ```
-  ///
-  /// Note: Throws if the underlying value isn't convertible.
-  public func candyToBytesBuffer(val : Candy) : Buffer.Buffer<Nat8>{
-    switch (val){
-      case(#Bytes(val)){Buffer.fromArray(StableBuffer.toArray(val))};
-      case(_){
-          toBuffer<Nat8>(candyToBytes(val));//may throw for uncovertable types
       };
     };
   };
@@ -1282,9 +1276,6 @@ module {
     };
   };
 
-  
-
-
   //////////////////////////////////////////////////////////////////////
   // The following functions easily creates a buffer from an arry of any type
   //////////////////////////////////////////////////////////////////////
@@ -1318,7 +1309,6 @@ module {
   ///  let bytes = Conversion.nat64ToBytes(value);
   /// ```
   public func nat64ToBytes(x : Nat64) : [Nat8] {
-    
     [ Nat8.fromNat(Nat64.toNat((x >> 56) & (255))),
     Nat8.fromNat(Nat64.toNat((x >> 48) & (255))),
     Nat8.fromNat(Nat64.toNat((x >> 40) & (255))),
@@ -1337,7 +1327,6 @@ module {
   ///  let bytes = Conversion.nat32ToBytes(value);
   /// ```
   public func nat32ToBytes(x : Nat32) : [Nat8] {
-    
     [ Nat8.fromNat(Nat32.toNat((x >> 24) & (255))),
     Nat8.fromNat(Nat32.toNat((x >> 16) & (255))),
     Nat8.fromNat(Nat32.toNat((x >> 8) & (255))),
@@ -1352,7 +1341,6 @@ module {
   ///  let bytes = Conversion.nat16ToBytes(value);
   /// ```
   public func nat16ToBytes(x : Nat16) : [Nat8] {
-    
     [ Nat8.fromNat(Nat16.toNat((x >> 8) & (255))),
     Nat8.fromNat(Nat16.toNat((x & 255))) ];
   };
@@ -1365,7 +1353,6 @@ module {
   ///  let value = Conversion.bytesToNat16(bytes);
   /// ```
   public func bytesToNat16(bytes: [Nat8]) : Nat16{
-    
     (Nat16.fromNat(Nat8.toNat(bytes[0])) << 8) +
     (Nat16.fromNat(Nat8.toNat(bytes[1])));
   };
@@ -1378,7 +1365,6 @@ module {
   ///  let value = Conversion.bytesToNat32(bytes);
   /// ```
   public func bytesToNat32(bytes: [Nat8]) : Nat32{
-    
     (Nat32.fromNat(Nat8.toNat(bytes[0])) << 24) +
     (Nat32.fromNat(Nat8.toNat(bytes[1])) << 16) +
     (Nat32.fromNat(Nat8.toNat(bytes[2])) << 8) +
@@ -1412,7 +1398,6 @@ module {
   ///  let bytes = Conversion.natToBytes(value);
   /// ```
   public func natToBytes(n : Nat) : [Nat8] {
-    
     var a : Nat8 = 0;
     var b : Nat = n;
     var bytes = List.nil<Nat8>();
@@ -1434,7 +1419,6 @@ module {
   ///  let value = Conversion.bytesToNat(bytes);
   /// ```
   public func bytesToNat(bytes : [Nat8]) : Nat {
-    
     var n : Nat = 0;
     var i = 0;
     Array.foldRight<Nat8, ()>(bytes, (), func (byte, _) {
@@ -1453,7 +1437,6 @@ module {
   ///  let buf = Conversion.textToByteBuffer(t);
   /// ```
   public func textToByteBuffer(_text : Text) : Buffer.Buffer<Nat8>{
-    
     let result : Buffer.Buffer<Nat8> = Buffer.Buffer<Nat8>((_text.size() * 4) +4);
     for(thisChar in _text.chars()){
       for(thisByte in nat32ToBytes(Char.toNat32(thisChar)).vals()){
@@ -1471,7 +1454,6 @@ module {
   ///  let bytes = Conversion.textToBytes(t);
   /// ```
   public func textToBytes(_text : Text) : [Nat8]{
-    
     return Buffer.toArray(textToByteBuffer(_text));
   };
 
@@ -1582,7 +1564,6 @@ module {
   /// let bytes_as_text = Conversion.bytesToText(bytes);
   /// ```
   public func bytesToText(_bytes : [Nat8]) : Text{
-    
     var result : Text = "";
     var aChar : [var Nat8] = [var 0, 0, 0, 0];
 
@@ -1606,7 +1587,6 @@ module {
   /// let principal_as_bytes = Conversion.principalToBytes(p);
   /// ```
   public func principalToBytes(_principal: Principal) : [Nat8]{
-    
     return Blob.toArray(Principal.toBlob(_principal));
   };
 
@@ -1618,7 +1598,6 @@ module {
   /// let p = Conversion.bytesToPrincipal(bytes);
   /// ```
   public func bytesToPrincipal(_bytes: [Nat8]) : Principal{
-    
     return Principal.fromBlob(Blob.fromArray(_bytes));
   };
 
@@ -1630,7 +1609,6 @@ module {
   /// let bool_as_bytes = Conversion.boolToBytes(b);
   /// ```
   public func boolToBytes(_bool : Bool) : [Nat8]{
-    
     if(_bool == true){
       return [1:Nat8];
     } else {
@@ -1646,7 +1624,6 @@ module {
   /// let b = Conversion.bytesToBool(bytes); // true
   /// ```
   public func bytesToBool(_bytes : [Nat8]) : Bool{
-    
     if(_bytes[0] == 0){
       return false;
     } else {
@@ -1662,7 +1639,6 @@ module {
   /// let int_as_bytes = Conversion.intToBytes(b); // [0, 2, 10]
   /// ```
   public func intToBytes(n : Int) : [Nat8]{
-    
     var a : Nat8 = 0;
     var c : Nat8 = if(n < 0){1}else{0};
     var b : Nat = Int.abs(n);
@@ -1688,7 +1664,6 @@ module {
   /// let b = Conversion.bytesToBool(bytes); // 266
   /// ```
   public func bytesToInt(_bytes : [Nat8]) : Int{
-    
     var n : Int = 0;
     var i = 0;
     let natBytes = Array.tabulate<Nat8>(_bytes.size() - 2, func(idx){_bytes[idx+1]});
@@ -1742,7 +1717,6 @@ module {
   /// let unwrapped_val = Conversion.unwrapOptionCandy(val);
   /// ```
   public func unwrapOptionCandyShared(val : CandyShared): CandyShared{
-    
     switch(val){
       case(#Option(val)){
           switch(val){
@@ -1757,5 +1731,4 @@ module {
       case(_){val};
     };
   };
-
 }

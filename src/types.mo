@@ -519,6 +519,11 @@ module {
     Nat8.fromNat(Nat32.toNat((x & 255))) ];
   };
 
+
+  
+  
+
+
   /// Checks the two `CandyShared` params for equality.
   ///
   /// Example:
@@ -530,8 +535,129 @@ module {
   /// let x_z = Types.eq(x, z); // true
   /// ```
   public func eq(x :Candy, y: Candy) : Bool {
-    Blob.equal(to_candid(shareCandy(x)), to_candid(shareCandy(y)));
+
+    let thisCandyMapTool = (hash, eq);
+
+    switch(x, y){
+      case(#Int(x),#Int(y)) Int.equal(x,y);
+      case(#Int8(x),#Int8(y)) Int8.equal(x,y);
+      case(#Int16(x),#Int16(y)) Int16.equal(x,y);
+      case(#Int32(x),#Int32(y)) Int32.equal(x,y);
+      case(#Int64(x),#Int64(y)) Int64.equal(x,y);
+      case(#Nat(x),#Nat(y)) Nat.equal(x,y);
+      case(#Nat8(x),#Nat8(y))Nat8.equal(x,y);
+      case(#Nat16(x),#Nat16(y)) Nat16.equal(x,y);
+      case(#Nat32(x),#Nat32(y)) Nat32.equal(x,y);
+      case(#Nat64(x), #Nat64(y)) Nat64.equal(x,y);
+      case(#Float(x),#Float(y)) Float.equalWithin(x,y, 0.00000001);
+      case(#Text(x),#Text(y)) Text.equal(x,y);
+      case(#Bool(x),#Bool(y)) x == y;
+      case(#Blob(x),#Blob(y)) Blob.equal(x,y);
+      case(#Class(x),#Class(y)){
+        if(Map.size(x) != Map.size(y)){
+          return false;
+        } else{
+          for(thisItem in Map.vals(x)){
+            switch(Map.get(y, Map.thash, thisItem.name)){
+              case(null){
+                return false;
+              };
+              case(?val){
+                if(val.immutable != thisItem.immutable or eq(val.value, thisItem.value) == false){
+                  return false;
+                }
+              }
+            };
+          };
+          return true;
+        }
+      };
+      case(#Principal(x), #Principal(y)) Principal.equal(x,y);
+      case(#Array(x), #Array(y)){ 
+        
+        if(StableBuffer.size(x) != StableBuffer.size(y)) return false;
+
+        var tracker = 0;
+        for(thisItem in StableBuffer.vals(x)){
+          if(eq(StableBuffer.get(y, tracker), thisItem) == false) return false;
+          tracker += 1;
+        };
+        return true;
+      };
+      
+      case(#Option(x), #Option(y)){
+        switch(x,y){
+          case(null, null){
+            return true;
+          };
+          case(?x, ?y){
+            return eq(x,y);
+          };
+          case(_,_){
+            return false;
+          };
+        }
+      };
+      case(#Bytes(x), #Bytes(y)) Blob.equal(Blob.fromArray(StableBuffer.toArray<Nat8>(x)), Blob.fromArray(StableBuffer.toArray<Nat8>(y)));
+      case(#Floats(x), #Floats(y)){ //arrays must be in the same order so we add index
+        
+        if(StableBuffer.size(x) != StableBuffer.size(y)) return false;
+
+        var tracker = 0;
+        for(thisItem in StableBuffer.vals(x)){
+          if(Float.equalWithin(StableBuffer.get(y, tracker), thisItem, 0.00000001) == false) return false;
+          tracker += 1;
+        };
+        return true;
+      };
+      case(#Nats(x), #Nats(y)){
+        if(StableBuffer.size(x) != StableBuffer.size(y)) return false;
+
+        var tracker = 0;
+        for(thisItem in StableBuffer.vals(x)){
+          if(Nat.equal(StableBuffer.get(y, tracker), thisItem) == false) return false;
+          tracker +=1;
+        };
+        return true;
+      };
+      case(#Map(x), #Map(y)){
+        //this map takes insertion order into account
+       
+        if(Map.size(x) != Map.size(y)) return false;
+
+        for(thisItem in Map.entries(x)){
+
+          switch(Map.get(y, thisCandyMapTool, thisItem.0)){
+              case(null){
+                return false;
+              };
+              case(?val){
+                if(eq(val, thisItem.1) == false){
+                  return false;
+                }
+              }
+            };
+        };
+        return true;
+      };
+      case(#Set(x), #Set(y)){
+       //this set takes insertion order into account
+       if(Set.size(x) != Set.size(y)) return false;
+
+        for(thisItem in Set.keys(x)){
+
+          if(Set.has(y, thisCandyMapTool, thisItem) == false) return false;
+        };
+
+        return true;
+      };
+      case(_,_){
+        false;
+      };
+    };
   };
+
+  public let candyMapHashTool = (hash, eq);
 
   /// Get the hash of the `Candy`.
   ///
@@ -634,10 +760,115 @@ module {
   /// let x_z = Types.eq(x, z); // true
   /// ```
   public func eqShared(x :CandyShared, y: CandyShared) : Bool {
-    Blob.equal(to_candid(x), to_candid(y));
+    switch(x, y){
+      case(#Int(x),#Int(y)) Int.equal(x,y);
+      case(#Int8(x),#Int8(y)) Int8.equal(x,y);
+      case(#Int16(x),#Int16(y)) Int16.equal(x,y);
+      case(#Int32(x),#Int32(y)) Int32.equal(x,y);
+      case(#Int64(x),#Int64(y)) Int64.equal(x,y);
+      case(#Nat(x),#Nat(y)) Nat.equal(x,y);
+      case(#Nat8(x),#Nat8(y))Nat8.equal(x,y);
+      case(#Nat16(x),#Nat16(y)) Nat16.equal(x,y);
+      case(#Nat32(x),#Nat32(y)) Nat32.equal(x,y);
+      case(#Nat64(x), #Nat64(y)) Nat64.equal(x,y);
+      case(#Float(x),#Float(y)) Float.equalWithin(x,y, 0.00000001);
+      case(#Text(x),#Text(y)) Text.equal(x,y);
+      case(#Bool(x),#Bool(y)) x == y;
+      case(#Blob(x),#Blob(y)) Blob.equal(x,y);
+      case(#Class(x),#Class(y)){
+        if(x.size() != y.size()){
+          return false;
+        } else{
+          var tracker = 0;
+          for(thisItem in x.vals()){
+            if(y[tracker].name != thisItem.name or eqShared(y[tracker].value, thisItem.value) == false or y[tracker].immutable != thisItem.immutable) return false;
+            tracker += 1;
+          };
+          return true;
+        }
+      };
+      case(#Principal(x), #Principal(y)) Principal.equal(x,y);
+      case(#Array(x), #Array(y)){ 
+        
+        if(x.size() != y.size()) return false;
+
+        var tracker = 0;
+        for(thisItem in x.vals()){
+          if(eqShared(y[tracker], thisItem) == false) return false;
+          tracker += 1;
+        };
+        return true;
+      };
+      
+      case(#Option(x), #Option(y)){
+        switch(x,y){
+          case(null, null){
+            return true;
+          };
+          case(?x, ?y){
+            return eqShared(x,y);
+          };
+          case(_,_){
+            return false;
+          };
+        }
+      };
+      case(#Bytes(x), #Bytes(y)) Blob.equal(Blob.fromArray(x), Blob.fromArray(y));
+      case(#Floats(x), #Floats(y)){ //arrays must be in the same order so we add index
+        
+        if(x.size() != y.size()) return false;
+
+        var tracker = 0;
+        for(thisItem in x.vals()){
+          if(Float.equalWithin(y[tracker], thisItem, 0.00000001) == false) return false;
+          tracker += 1;
+        };
+        return true;
+      };
+      case(#Nats(x), #Nats(y)){
+        if(x.size() != y.size()) return false;
+
+        var tracker = 0;
+        for(thisItem in x.vals()){
+          if(Nat.equal(y[tracker], thisItem) == false) return false;
+          tracker += 1;
+        };
+        return true;
+      };
+      case(#Map(x), #Map(y)){
+        //this map takes insertion order into account
+       
+        if(x.size() != y.size()) return false;
+
+        var tracker = 0;
+        for(thisItem in x.vals()){
+          if(eqShared(y[tracker].0, thisItem.0) == false or eqShared(y[tracker].1, thisItem.1)){
+            return false;
+          };
+          tracker +=1;
+        };
+        return true;
+      };
+      case(#Set(x), #Set(y)){
+       //this set takes insertion order into account
+       if(x.size() != y.size()) return false;
+
+        var tracker = 0;
+        for(thisItem in x.vals()){
+          if(eqShared(y[tracker] ,thisItem) == false) return false;
+          tracker += 1;
+        };
+
+        return true;
+      };
+      case(_,_){
+        false;
+      };
+    };
   };
 
-  public let candyMapHashTool = (hash, eq);
   public let candySharedMapHashTool = (hashShared, eqShared);
+
+  
 
 }

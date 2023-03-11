@@ -1352,6 +1352,27 @@ module {
   // From there you can easily get to blobs if necessary with the Blob package
   //////////////////////////////////////////////////////////////////////
 
+  /// Convert a `Nat` to Bytes(`[Nat8]`)
+  ///
+  /// Example:
+  /// ```motoko include=import
+  ///  let value: Nat = 150;
+  ///  let bytes = Conversion.natToBytes(value);
+  /// ```
+  public func natToBytes(n : Nat) : [Nat8] {
+    var a : Nat8 = 0;
+    var b : Nat = n;
+    var bytes = List.nil<Nat8>();
+    var test = true;
+    while test {
+      a := Nat8.fromNat(b % 256);
+      b := b / 256;
+      bytes := List.push<Nat8>(a, bytes);
+      test := b > 0;
+    };
+    List.toArray<Nat8>(bytes);
+  };
+
   /// Convert a `Nat64` to Bytes(`[Nat8]`)
   ///
   /// Example:
@@ -1439,27 +1460,6 @@ module {
     (Nat64.fromNat(Nat8.toNat(bytes[5])) << 16) +
     (Nat64.fromNat(Nat8.toNat(bytes[6])) << 8) +
     (Nat64.fromNat(Nat8.toNat(bytes[7])));
-  };
-
-  /// Convert a `Nat` to Bytes(`[Nat8]`)
-  ///
-  /// Example:
-  /// ```motoko include=import
-  ///  let value: Nat = 150;
-  ///  let bytes = Conversion.natToBytes(value);
-  /// ```
-  public func natToBytes(n : Nat) : [Nat8] {
-    var a : Nat8 = 0;
-    var b : Nat = n;
-    var bytes = List.nil<Nat8>();
-    var test = true;
-    while test {
-      a := Nat8.fromNat(b % 256);
-      b := b / 256;
-      bytes := List.push<Nat8>(a, bytes);
-      test := b > 0;
-    };
-    List.toArray<Nat8>(bytes);
   };
 
   /// Convert Bytes(`[Nat8]`) to `Nat`
@@ -1564,7 +1564,6 @@ module {
   /// ```
   public func propertyToText(a: Types.Property):Text{candyToText(a.value)};
 
-
   /// Convert `PropertyShared` to a `Text`
   ///
   /// Example:
@@ -1576,7 +1575,7 @@ module {
   /// };
   /// let prop_as_text = Conversion.propertyToText(t);
   /// ```
-  public func propertySharedToText(a: Types.Property):Text{candyToText(a.value)};
+  public func propertySharedToText(a: Types.PropertyShared):Text{candySharedToText(a.value)};
 
   /// Convert `Candy` to `Properties`
   ///

@@ -7,7 +7,6 @@ This library provides for both Stable and Shared collections and conversions.  T
 - [ ] Tests  
 - [ ] Examples
 
-
 ## Structure
 The provided functionality is divided into separate libraries to silo some of the functionality.
 
@@ -16,7 +15,7 @@ Holds most types and few conversion functions to stabilize/destabilize candy val
 
 `CandyShared` and `Candy` allow you to specify your variables in a variant class that makes keeping arrays and buffers of different types managable.  i.e. stable var `myCollection : [CandySharedStable] = [#Int(0), #Text("second value"), #Float(3.14)]`.
 
-Stabalize and Destablaize functions are provided for both CandyShared <> Candy, Properties <> Property, [CandyShared] <> [Candy].
+Stabalize and Destablaize functions are provided for both `CandyShared <> Candy`, `Properties <> Property`, `[CandyShared] <> [Candy]`.
 
 #### conversion.mo
 Holds most of the conversion functions.
@@ -80,7 +79,7 @@ Useful for keeping workable data in chunks that can be moved around canisters.
 
 Workspace collections help manage data and can help chunk data into chunks sized to send across another canister or return to a calling client. These calls are limited to ~2MB and this library can help you keep chunks of data together for easy monitoring. Workspaces can be deconstructed into `AddressedChunckArrays` that can be shipped elsewhere and reassembled using the address of the chunks on the other side of an async call. For more information and helper libraries see the pipelinify project. 
 
-* `workspaceToAddressedChunkArray` - convert a workspace to an AddressedChunkArray
+* `workspaceToAddressedChunkArray` - convert a workspace to an `AddressedChunkArray`
 * `workspaceDeepClone` - clone a workspace
 * `fromAddressedChunks` - reconsitute a workspace from and `AddressedChunkArray`
 * `getDataZoneSize` - inspects the size of the datazone. 

@@ -50,7 +50,7 @@ module {
   type DataZone = Types.DataZone;
   type PropertyShared = Types.PropertyShared;
   type Property = Types.Property;
-
+  type StableBuffer<T> = StableBuffer.StableBuffer<T>;
 
   //todo: generic accesors
 
@@ -497,7 +497,6 @@ module {
   /// ```
   /// Note: Throws if the underlying value is not a `#Principal`.
   public func candyToPrincipal(val : Candy) : Principal {
-   
     switch(val){
       case(#Principal(val)){val};
       case(_){assert(false);/*unreachable*/Principal.fromText("");};
@@ -630,6 +629,44 @@ module {
       case(#Bytes(val)){Buffer.fromArray(StableBuffer.toArray(val))};
       case(_){
           toBuffer<Nat8>(candyToBytes(val));//may throw for uncovertable types
+      };
+    };
+  };
+
+  /// Convert a `Candy` to `Buffer<Float>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: Candy = #Nat(102);
+  /// let value_as_floats_buffer = Conversion.candyToFloatsBuffer(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToFloatsBuffer(val : Candy) : Buffer.Buffer<Float>{
+    switch (val){
+      case(#Floats(val)){
+        stableBufferToBuffer(val);
+      };
+      case(_){
+        toBuffer([candyToFloat(val)]); //may throw for unconvertable types
+      };
+    };
+  };
+
+  /// Convert a `Candy` to `Buffer<Nat>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: Candy = #Nat(102);
+  /// let value_as_nats_buffer = Conversion.candyToNatsBuffer(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToNatsBuffer(val : Candy) : Buffer.Buffer<Nat>{
+    switch (val){
+      case(#Nats(val)){
+        stableBufferToBuffer(val);
+      };
+      case(_){
+          toBuffer([candyToNat(val)]); //may throw for unconvertable types
       };
     };
   };
@@ -1288,9 +1325,23 @@ module {
   ///  let buf = Conversion.toBuffer<Nat>(array);
   /// ```
   public func toBuffer<T>(x :[T]) : Buffer.Buffer<T>{
-    
     let thisBuffer = Buffer.Buffer<T>(x.size());
     for(thisItem in x.vals()){
+      thisBuffer.add(thisItem);
+    };
+    return thisBuffer;
+  };
+
+  /// Create a `Buffer<T>` from `StableBuffer<T>` where T can be of any type.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let stable_buff = StableBuffer.fromArray([1, 2, 3]);
+  /// let buff = Conversion.stableBufferToBuffer(stable_buff);
+  /// ```
+  public func stableBufferToBuffer<T>(x : StableBuffer<T>) : Buffer.Buffer<T>{
+    let thisBuffer = Buffer.Buffer<T>(StableBuffer.size(x));
+    for(thisItem in StableBuffer.vals(x)){
       thisBuffer.add(thisItem);
     };
     return thisBuffer;

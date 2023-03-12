@@ -95,6 +95,7 @@ module {
         };
         a;
       };
+    
       case(#Nat8(val)){1};
       case(#Nat16(val)){2};
       case(#Nat32(val)){3};
@@ -138,6 +139,14 @@ module {
             var size = 0;
             for(thisItem in StableBuffer.vals(val)){
               size += 1 + getCandySize(#Nat(thisItem));
+            };
+            
+            return size;
+      };
+      case(#Ints(val)){
+            var size = 0;
+            for(thisItem in StableBuffer.vals(val)){
+              size += 1 + getCandySize(#Int(thisItem));
             };
             
             return size;
@@ -235,6 +244,13 @@ module {
         var size = 0;
         for(thisItem in val.vals()){
           size += 1 + getCandySharedSize(#Nat(thisItem));
+        };
+        return size;
+      };
+      case(#Ints(val)){
+        var size = 0;
+        for(thisItem in val.vals()){
+          size += 1 + getCandySharedSize(#Int(thisItem));
         };
         return size;
       };

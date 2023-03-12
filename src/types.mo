@@ -135,6 +135,7 @@ module {
     #Int16: Int16;
     #Int32: Int32;
     #Int64: Int64;
+    #Ints: [Int];
     #Nat : Nat;
     #Nat8 : Nat8;
     #Nat16 : Nat16;
@@ -162,6 +163,7 @@ module {
     #Int16: Int16;
     #Int32: Int32;
     #Int64: Int64;
+    #Ints: StableBuffer.StableBuffer<Int>;
     #Nat : Nat;
     #Nat8 : Nat8;
     #Nat16 : Nat16;
@@ -208,6 +210,7 @@ module {
       case(#Int16(val)){ #Int16(val)};
       case(#Int32(val)){ #Int32(val)};
       case(#Int64(val)){ #Int64(val)};
+      case(#Ints(val)){ #Ints(StableBuffer.toArray(val))};
       case(#Nat(val)){ #Nat(val)};
       case(#Nat8(val)){ #Nat8(val)};
       case(#Nat16(val)){ #Nat16(val)};
@@ -297,6 +300,7 @@ module {
         case(#Bytes(val)){#Bytes(toBuffer<Nat8>(val))};
         case(#Floats(val)){#Floats(toBuffer<Float>(val))};
         case(#Nats(val)){#Nats(toBuffer<Nat>(val))};
+        case(#Ints(val)){#Ints(toBuffer<Int>(val))};
         case(#Map(val)){
           //let entries = Map.entries<CandyShared, CandyShared>(val);
           let unstableEntries = Iter.map<(CandyShared, CandyShared), (Candy, Candy)>(
@@ -491,6 +495,13 @@ module {
           };
           Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
         };
+        case(#Ints(val)){
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in StableBuffer.vals(val)){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(#Int(thisItem))))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
         case(#Map(val)){
           //this map takes insertion order into account
           var accumulator = Buffer.Buffer<Nat8>(1);
@@ -620,6 +631,16 @@ module {
         };
         return true;
       };
+      case(#Ints(x), #Ints(y)){
+        if(StableBuffer.size(x) != StableBuffer.size(y)) return false;
+
+        var tracker = 0;
+        for(thisItem in StableBuffer.vals(x)){
+          if(Int.equal(StableBuffer.get(y, tracker), thisItem) == false) return false;
+          tracker +=1;
+        };
+        return true;
+      };
       case(#Map(x), #Map(y)){
         //this map takes insertion order into account
        
@@ -729,6 +750,13 @@ module {
           };
           Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
         };
+        case(#Ints(val)){
+          var accumulator = Buffer.Buffer<Nat8>(1);
+          for(thisItem in val.vals()){
+            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(#Int(thisItem))))));
+          };
+          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+        };
         case(#Map(val)){
           //this map takes insertion order into account
           var accumulator = Buffer.Buffer<Nat8>(1);
@@ -831,6 +859,16 @@ module {
         var tracker = 0;
         for(thisItem in x.vals()){
           if(Nat.equal(y[tracker], thisItem) == false) return false;
+          tracker += 1;
+        };
+        return true;
+      };
+      case(#Ints(x), #Ints(y)){
+        if(x.size() != y.size()) return false;
+
+        var tracker = 0;
+        for(thisItem in x.vals()){
+          if(Int.equal(y[tracker], thisItem) == false) return false;
           tracker += 1;
         };
         return true;

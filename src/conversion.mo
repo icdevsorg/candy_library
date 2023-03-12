@@ -456,6 +456,28 @@ module {
           return Text.trimEnd(t, #text(" ")) # "]";
 
       };
+      //floats
+      case(#Nats(val)){
+        
+          var t = "[";
+          for(thisItem in StableBuffer.vals(val)){
+            t := t # Nat.toText(thisItem) # " ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "]";
+
+      };
+      //floats
+      case(#Ints(val)){
+        
+          var t = "[";
+          for(thisItem in StableBuffer.vals(val)){
+            t := t # Int.toText(thisItem) # " ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "]";
+
+      };
       //bytes
       case(#Bytes(val)){
        
@@ -968,6 +990,28 @@ module {
         return Text.trimEnd(t, #text(" ")) # "]";
              
       };
+      //Nats
+      case(#Nats(val)){
+          
+        var t = "[";
+        for(thisItem in val.vals()){
+            t := t # Nat.toText(thisItem) # " ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "]";
+             
+      };
+      //Ints
+      case(#Ints(val)){
+          
+        var t = "[";
+        for(thisItem in val.vals()){
+            t := t # Int.toText(thisItem) # " ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "]";
+             
+      };
       //bytes
       case(#Bytes(val)){
          
@@ -1102,6 +1146,7 @@ module {
       case(#Bytes(val)){StableBuffer.toArray(val)};
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
+      case(#Ints(val)){Prelude.nyi()};
       case(#Map(val)){Prelude.nyi()};
       case(#Set(val)){Prelude.nyi()};
     }
@@ -1137,6 +1182,7 @@ module {
       case(#Bytes(val)){val};
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
+      case(#Ints(val)){Prelude.nyi()};
       case(#Map(val)){Prelude.nyi()};
       case(#Set(val)){Prelude.nyi()};
     }
@@ -1213,6 +1259,25 @@ module {
       };
       case(_){
           toBuffer([candySharedToNat(val)]); //may throw for unconvertable types
+      };
+    };
+  };
+
+  /// Convert a `CandyShared` to `Buffer<Int>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let value: CandyShared = #Int(102);
+  /// let value_as_nats_buffer = Conversion.candySharedToIntsBuffer(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candySharedToIntsBuffer(val : CandyShared) : Buffer.Buffer<Int>{
+    switch (val){
+      case(#Ints(val)){
+        toBuffer(val);
+      };
+      case(_){
+          toBuffer([candySharedToInt(val)]); //may throw for unconvertable types
       };
     };
   };

@@ -55,5 +55,16 @@ shared (deployer) actor class test_runner() = this {
 
     };
 
+    public shared func testRefernece() : async Types.CandyShared {
+        Debug.print("running testRefernece");
+
+     
+        
+
+        return #Option(null);
+          
+
+    };
+
     
 }

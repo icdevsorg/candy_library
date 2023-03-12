@@ -43,6 +43,7 @@ module {
       };
       case(#Bytes(val)){#Bytes(StableBuffer.clone(val))};
       case(#Nats(val)){#Nats(StableBuffer.clone(val))};
+      case(#Ints(val)){#Ints(StableBuffer.clone(val))};
       case(#Floats(val)){#Floats(StableBuffer.clone(val))};
       case(#Array(val)){#Array(StableBuffer.clone(val))};
       case(#Map(val)){#Map(Map.fromIter<Candy,Candy>(Map.entries(val), Types.candyMapHashTool))};

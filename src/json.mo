@@ -69,6 +69,13 @@ module {
           };
           return "[" # Text.join(",", body.vals()) # "]";
         };
+        case(#Ints(val)){
+          var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
+          for(this_item in val.vals()){
+              body.add(Int.toText(this_item));
+          };
+          return "[" # Text.join(",", body.vals()) # "]";
+        };
         case(#Floats(val)){
           var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
           for(this_item in val.vals()){

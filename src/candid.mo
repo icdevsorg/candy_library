@@ -119,6 +119,15 @@ module {
               };
               buffer.add({_type=#vector(#nat); value = #vector(Buffer.toArray(values))});
           };
+          case(#Ints(val)){
+              let list = val;
+              
+              let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
+              for(this_item in list.vals()){
+                  values.add(#int(this_item));
+              };
+              buffer.add({_type=#vector(#int); value = #vector(Buffer.toArray(values))});
+          };
           case(#Floats(val)){
               let list = val;
               

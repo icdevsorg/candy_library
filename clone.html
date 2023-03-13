@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html><head title="Doc"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><body><nav class="sidebar"><h3>Modules</h3><ul><li><li><a href="candid.html">candid</a></li></li><li><li><a href="clone.html">clone</a></li></li><li><li><a href="conversion.html">conversion</a></li></li><li><li><a href="hex.html">hex</a></li></li><li><li><a href="json.html">json</a></li></li><li><li><a href="properties.html">properties</a></li></li><li><li><a href="types.html">types</a></li></li><li><li><a href="upgrade.html">upgrade</a></li></li><li><li><a href="workspace.html">workspace</a></li></li></ul><h3>Declarations</h3><ul><li><li><a href="#cloneCandy">cloneCandy</a></li></li></ul></nav><div class="documentation"><h1>clone</h1><p>Cloning support for the candy values.</p>
+<p>This module contains a few utilities for deep cloning candy values.</p>
+<div class="declaration"><h4 class="function" id="cloneCandy"><code><span class="keyword">public func </span><span class="fnname">cloneCandy</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <a href="#type.Candy"><span class="type">Candy</span></a></code></h4><p><p>Deep clone a <code>Candy</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let val: Candy = #Option(?#Principal(Principal.fromText(&quot;xyz&quot;)));
+let cloned_val = Clone.cloneCandy(val);</code></pre></p></div></div></body></html>

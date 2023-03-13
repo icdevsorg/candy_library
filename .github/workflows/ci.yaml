@@ -44,5 +44,8 @@ jobs:
     - name: "check"
       run: make check
 
+    - name: "check-mops"
+      run: make check-mops
+
     - name: "docs"
       run: make docs

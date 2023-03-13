@@ -1,15 +1,24 @@
 .PHONY: check docs test
 
-check:
-	find src -type f -name '*.mo' -print0 | xargs -0 $(shell vessel bin)/moc $(shell vessel sources) --check
+install-dfx-cache: 
+	dfx cache install
 
-all: check-strict docs test
+check: install-dfx-cache
+	find src -type f -name '*.mo' -print0 | xargs -0 $(shell dfx cache show)/moc $(shell vessel sources) --check
 
-check-strict:
-	find src -type f -name '*.mo' -print0 | xargs -0 $(shell vessel bin)/moc $(shell vessel sources) -Werror --check
+check-mops: install-dfx-cache
+	find src -type f -name '*.mo' -print0 | xargs -0 $(shell dfx cache show)/moc $(shell mops sources) --check
 
-docs:
-	$(shell vessel bin)/mo-doc
+all: check-strict check-strict-mops docs test
+
+check-strict: install-dfx-cache
+	find src -type f -name '*.mo' -print0 | xargs -0 $(shell dfx cache show)/moc $(shell vessel sources) -Werror --check
+
+check-strict-mops: install-dfx-cache
+	find src -type f -name '*.mo' -print0 | xargs -0 $(shell dfx cache show)/moc $(shell mops sources) -Werror --check
+
+docs: install-dfx-cache
+	$(shell dfx cache show)/mo-doc
 
 test:
-	make -C test
+	printf "yes" | bash test_runner.sh

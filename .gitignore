@@ -1,4 +1,4 @@
 .dfx/
 .vessel/
+.mops/
 *.wasm
-docs/

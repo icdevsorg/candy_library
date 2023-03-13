@@ -21,17 +21,17 @@ let
       , repo = "https://github.com/gekctek/motoko_numbers"
       , dependencies = [] : List Text
       },
-       { name = "stablebuffer"
-  , repo = "https://github.com/skilesare/StableBuffer"
-  , version = "v0.2.0"
-  , dependencies = [ "base"]
-  },
-  { name = "base", repo = "https://github.com/dfinity/motoko-base.git", version = "moc-0.8.1", dependencies = []: List Text },
-  { name = "map"
-  , repo = "https://github.com/ZhenyaUsenko/motoko-hash-map"
-  , version = "v7.0.0"
-  , dependencies = [ "base"]
-  },] : List Package
+      { name = "stablebuffer"
+      , repo = "https://github.com/skilesare/StableBuffer"
+      , version = "v0.2.0"
+      , dependencies = [ "base"]
+      },
+      { name = "base", repo = "https://github.com/dfinity/motoko-base.git", version = "moc-0.8.1", dependencies = []: List Text },
+      { name = "map"
+      , repo = "https://github.com/ZhenyaUsenko/motoko-hash-map"
+      , version = "v7.0.0"
+      , dependencies = [ "base"]
+      },] : List Package
 
   
 

@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html><head title="Doc"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><body><nav class="sidebar"><h3>Modules</h3><ul><li><li><a href="candid.html">candid</a></li></li><li><li><a href="clone.html">clone</a></li></li><li><li><a href="conversion.html">conversion</a></li></li><li><li><a href="hex.html">hex</a></li></li><li><li><a href="json.html">json</a></li></li><li><li><a href="properties.html">properties</a></li></li><li><li><a href="types.html">types</a></li></li><li><li><a href="upgrade.html">upgrade</a></li></li><li><li><a href="workspace.html">workspace</a></li></li></ul><h3>Declarations</h3><ul><li><li><a href="#value_to_candid">value_to_candid</a></li></li></ul></nav><div class="documentation"><h1>candid</h1><p>Candid support for the candy values.</p>
+<div class="declaration"><h4 class="function" id="value_to_candid"><code><span class="keyword">public func </span><span class="fnname">value_to_candid</span>(<span class="parameter">val</span> : <a href="types.html#type.CandyShared"><span class="type">Types.CandyShared</span></a>) : [<span class="type">Arg.Arg</span>]</code></h4><p><p>Convert a <code>CandyShared</code> to an Array of Candid <code>Arg</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let val: CandyShared = #Option(?#Principal(Principal.fromText(&quot;xyz&quot;)));
+let candid = Candid.value_to_candid(val);</code></pre></p></div></div></body></html>

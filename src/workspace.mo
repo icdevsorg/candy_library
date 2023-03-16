@@ -489,6 +489,13 @@ module {
     return #Option(null);
   };
 
+  /// Convert the `DataZone` into a `Buffer<Buffer<Nat8>>`.
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let dz = Workspace.initDataZone(#Nat(24));
+  /// let buff = Workspace.byteBufferDataZoneToBuffer(dz);
+  /// ```
   public func byteBufferDataZoneToBuffer(dz : DataZone) : Buffer.Buffer<Buffer.Buffer<Nat8>> {
     let result = Buffer.Buffer<Buffer.Buffer<Nat8>>(StableBuffer.size(dz));
     for (thisItem in StableBuffer.vals(dz)) {

@@ -130,7 +130,7 @@ module {
             case(#Bool(val)){ "\"" # Bool.toText(val) # "\"";};	
             
             //float	
-            case(#Float(val)){ Float.format(#exact, val) ;};
+            case(#Float(val)){ Float.toText(val) ;};
             case(#Empty){ "null";};
             case(#Int(val)){Int.toText(val);};
             case(#Int64(val)){Int64.toText(val);};

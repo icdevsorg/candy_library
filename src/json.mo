@@ -96,7 +96,7 @@ module {
         //bool	
         case(#Bool(val)){ "\"" # Bool.toText(val) # "\"";};	
         //float	
-        case(#Float(val)){ Float.format(#exact, val) ;};
+        case(#Float(val)){ Float.format(#fix 8, val)) ;};
         case(#Int(val)){Int.toText(val);};
         case(#Int64(val)){Int64.toText(val);};
         case(#Int32(val)){Int32.toText(val);};

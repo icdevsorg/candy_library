@@ -1605,6 +1605,34 @@ module {
       case(_){assert(false);/*unreachable*/Map.new<Text, Property>();};
     };
   };
+  
+  /// Convert `Candy` to `Properties`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  ///  let val: Candy = #Class([
+  ///    {
+  ///      name = "prop1";
+  ///      value = #Principal(Principal.fromText("abc"));
+  ///      immutable = true;
+  ///    },
+  ///    {
+  ///      name = "prop2";
+  ///      value = #Principal(Principal.fromText("abc"));
+  ///      immutable = false;
+  ///    }
+  ///  ]);
+  ///  let props = Conversion.candyToProperties(val);
+  /// ```
+  /// Note: throws if the underlying value is not `#Class`.
+  public func candySharedToProperties(val : CandyShared) : Types.PropertiesShared {
+    switch(val){
+      case(#Class(val)){
+        val;
+      };
+      case(_){assert(false);/*unreachable*/[];};
+    };
+  };
 
   /// Convert `[Nat8]` to a `Text`
   ///

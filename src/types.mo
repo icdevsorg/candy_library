@@ -463,7 +463,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
             let ahash = Nat32.fromNat(hash(thisItem));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -484,7 +484,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
             let ahash = Nat32.fromNat(hash(#Float(thisItem)));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -492,7 +492,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
             let ahash = Nat32.fromNat(hash(#Nat(thisItem)));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -500,7 +500,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
             let ahash = Nat32.fromNat(hash(#Int(thisItem)));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -663,19 +663,15 @@ module {
        
         if(Map.size(x) != Map.size(y)) return false;
 
-        let yit = Iter.sort<(Candy, Candy)>(Map.entries(y), func(x, y){Nat.compare(hash(x.0), hash(y.0))});
+        for(thisItem in Map.entries(x)){
 
-        for(thisItem in Iter.sort<(Candy, Candy)>(Map.entries(x), func(x, y){Nat.compare(hash(x.0), hash(y.0))})){
-
-          switch(yit.next()){
+          switch(Map.get(y, thisCandyMapTool, thisItem.0)){
+        
               case(null){
                 return false;
               };
               case(?val){
-                if(eq(val.0, thisItem.0) == false){
-                  return false;
-                };
-                if(eq(val.1, thisItem.1) == false){
+                if(eq(val, thisItem.1) == false){
                   return false;
                 };
               }
@@ -687,19 +683,9 @@ module {
        //this set takes insertion order into account
        if(Set.size(x) != Set.size(y)) return false;
 
-        let yit = Iter.sort<(Candy)>(Set.keys(y), func(x, y){Nat.compare(hash(x), hash(y))});
+         for(thisItem in Set.keys(x)){
 
-        for(thisItem in Iter.sort<(Candy)>(Set.keys(x), func(x, y){Nat.compare(hash(x), hash(y))})){
-          switch(yit.next()){
-              case(null){
-                return false;
-              };
-              case(?val){
-                if(eq(val, thisItem) == false){
-                  return false;
-                };
-              }
-            };
+           if(Set.has(y, thisCandyMapTool, thisItem) == false) return false;
         };
 
         return true;
@@ -752,7 +738,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
             let ahash = Nat32.fromNat(hashShared(thisItem));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -773,7 +759,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
             let ahash = Nat32.fromNat(hashShared(#Float(thisItem)));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -781,7 +767,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
             let ahash = Nat32.fromNat(hashShared(#Nat(thisItem)));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -789,7 +775,7 @@ module {
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
             let ahash = Nat32.fromNat(hashShared(#Int(thisItem)));
-            accumulator := (accumulator * 3) +% ahash;
+            accumulator := (accumulator *% 3) +% ahash;
           };
           Nat32.toNat(accumulator);
         };
@@ -924,29 +910,41 @@ module {
         return true;
       };
       case(#Map(x), #Map(y)){
-        //this map takes insertion order into account
+        //this map IGNORES insertion order 
        
         if(x.size() != y.size()) return false;
 
-        var tracker = 0;
-        for(thisItem in x.vals()){
-          if(eqShared(y[tracker].0, thisItem.0) == false or eqShared(y[tracker].1, thisItem.1)){
-            return false;
+        let yit = Iter.sort<(CandyShared, CandyShared)>(y.vals(), func(x, y){Nat.compare(hashShared(x.0), hashShared(y.0))});
+
+        for(thisItem in Iter.sort<(CandyShared, CandyShared)>(x.vals(), func(x, y){Nat.compare(hashShared(x.0), hashShared(y.0))})){
+          switch(yit.next()){
+            case(null) return false;
+            case(?val){
+               if(eqShared(val.0, thisItem.0) == false){
+                   return false;
+                };
+                if(eqShared(val.1, thisItem.1) == false){
+                  return false;
+                };
+            };
           };
-          tracker +=1;
         };
         return true;
       };
       case(#Set(x), #Set(y)){
        //this set takes insertion order into account
-       if(x.size() != y.size()) return false;
+       let yit = Iter.sort<CandyShared>(y.vals(), func(x, y){Nat.compare(hashShared(x), hashShared(y))});
 
-        var tracker = 0;
-        for(thisItem in x.vals()){
-          if(eqShared(y[tracker] ,thisItem) == false) return false;
-          tracker += 1;
+        for(thisItem in Iter.sort<CandyShared>(x.vals(), func(x, y){Nat.compare(hashShared(x), hashShared(y))})){
+          switch(yit.next()){
+            case(null) return false;
+            case(?val){
+               if(eqShared(val, thisItem) == false){
+                   return false;
+                };
+            };
+          };
         };
-
         return true;
       };
       case(_,_){

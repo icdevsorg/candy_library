@@ -445,27 +445,27 @@ module {
         case(#Nat16(val)) Map.nhash.0(Nat16.toNat(val));
         case(#Nat32(val)) Map.nhash.0(Nat32.toNat(val));
         case(#Nat64(val)) Map.nhash.0(Nat64.toNat(val));
-        case(#Float(val)) Map.thash.0(Float.format(#exact, val));
+        case(#Float(val)) Map.thash.0(Float.format(#exact, Float.nearest(val * 100000000) / 100000000));
         case(#Text(val)) Map.thash.0(val);
         case(#Bool(val)) Map.lhash.0(val);
         case(#Blob(val)) Map.bhash.0(val);
         case(#Class(val)){
-          var accumulator = Buffer.Buffer<Nat8>(1);
-          for(thisItem in Iter.sort<Property>(Map.vals(val), func(x, y){Text.compare(x.name, y.name)})){
-            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.thash.0(thisItem.name)))));
-            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(hash(thisItem.value)))));
-            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.lhash.0(thisItem.immutable)))));
+          var accumulator = 0 : Nat32;
+          for(thisItem in Map.vals(val)){
+            accumulator +%= Nat32.fromNat(Map.thash.0(thisItem.name));
+            accumulator +%= Nat32.fromNat(hash(thisItem.value));
+            accumulator +%= Nat32.fromNat(Map.lhash.0(thisItem.immutable));
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Principal(val)) Map.phash.0(val);
         case(#Array(val)){ 
-          
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem)))));
+            let ahash = Nat32.fromNat(hash(thisItem));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         
         case(#Option(val)){
@@ -481,43 +481,46 @@ module {
         };
         case(#Bytes(val)) Map.bhash.0(Blob.fromArray(StableBuffer.toArray<Nat8>(val)));
         case(#Floats(val)){ //arrays must be in the same order so we add index
-          
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(#Float(thisItem))))));
+            let ahash = Nat32.fromNat(hash(#Float(thisItem)));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Nats(val)){
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(#Nat(thisItem))))));
+            let ahash = Nat32.fromNat(hash(#Nat(thisItem)));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Ints(val)){
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(#Int(thisItem))))));
+            let ahash = Nat32.fromNat(hash(#Int(thisItem)));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Map(val)){
-          //this map takes insertion order into account
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          //this map ignores insertion order
+          var accumulator = 0 : Nat32;
           for(thisItem in Map.entries(val)){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem.0)))));
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem.1)))));
+            accumulator +%= Nat32.fromNat(hash(thisItem.0));
+            accumulator +%= Nat32.fromNat(hash(thisItem.1));
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Set(val)){
-          //this set takes insertion order into account
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          //this set ignores insertion order
+
+          var accumulator = 0 : Nat32;
           for(thisItem in Set.keys(val)){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hash(thisItem)))));
+            accumulator +%= Nat32.fromNat(hash(thisItem));
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
       };
   };
@@ -560,7 +563,9 @@ module {
       case(#Nat16(x),#Nat16(y)) Nat16.equal(x,y);
       case(#Nat32(x),#Nat32(y)) Nat32.equal(x,y);
       case(#Nat64(x), #Nat64(y)) Nat64.equal(x,y);
-      case(#Float(x),#Float(y)) Float.equalWithin(x,y, 0.00000001);
+      case(#Float(x),#Float(y)){
+        (Float.nearest(x * 100000000) / 100000000) == (Float.nearest(y * 100000000) / 100000000)
+      };
       case(#Text(x),#Text(y)) Text.equal(x,y);
       case(#Bool(x),#Bool(y)) x == y;
       case(#Blob(x),#Blob(y)) Blob.equal(x,y);
@@ -609,14 +614,26 @@ module {
           };
         }
       };
-      case(#Bytes(x), #Bytes(y)) Blob.equal(Blob.fromArray(StableBuffer.toArray<Nat8>(x)), Blob.fromArray(StableBuffer.toArray<Nat8>(y)));
+      case(#Bytes(x), #Bytes(y)) {
+        if(StableBuffer.size(x) != StableBuffer.size(y)){
+          return false;
+        };
+        let itery = StableBuffer.vals(y);
+
+        for (thisx in StableBuffer.vals(x)) {
+          let ?thisy = itery.next() else return false;
+          if(thisx != thisy) return false;
+        };
+
+        return true;
+      };
       case(#Floats(x), #Floats(y)){ //arrays must be in the same order so we add index
         
         if(StableBuffer.size(x) != StableBuffer.size(y)) return false;
 
         var tracker = 0;
         for(thisItem in StableBuffer.vals(x)){
-          if(Float.equalWithin(StableBuffer.get(y, tracker), thisItem, 0.00000001) == false) return false;
+          if((Float.nearest(thisItem * 100000000) / 100000000) != (Float.nearest(StableBuffer.get(y, tracker) * 100000000) / 100000000)) return false;
           tracker += 1;
         };
         return true;
@@ -642,20 +659,21 @@ module {
         return true;
       };
       case(#Map(x), #Map(y)){
-        //this map takes insertion order into account
+        //this map ignores insertion order
        
         if(Map.size(x) != Map.size(y)) return false;
 
         for(thisItem in Map.entries(x)){
 
           switch(Map.get(y, thisCandyMapTool, thisItem.0)){
+        
               case(null){
                 return false;
               };
               case(?val){
                 if(eq(val, thisItem.1) == false){
                   return false;
-                }
+                };
               }
             };
         };
@@ -665,9 +683,9 @@ module {
        //this set takes insertion order into account
        if(Set.size(x) != Set.size(y)) return false;
 
-        for(thisItem in Set.keys(x)){
+         for(thisItem in Set.keys(x)){
 
-          if(Set.has(y, thisCandyMapTool, thisItem) == false) return false;
+           if(Set.has(y, thisCandyMapTool, thisItem) == false) return false;
         };
 
         return true;
@@ -700,28 +718,29 @@ module {
         case(#Nat16(val)) Map.nhash.0(Nat16.toNat(val));
         case(#Nat32(val)) Map.nhash.0(Nat32.toNat(val));
         case(#Nat64(val)) Map.nhash.0(Nat64.toNat(val));
-        case(#Float(val)) Map.thash.0(Float.format(#exact, val));
+        case(#Float(val)) Map.thash.0(Float.format(#exact, Float.nearest(val * 100000000)/ 100000000));
         case(#Text(val)) Map.thash.0(val);
         case(#Bool(val)) Map.lhash.0(val);
         case(#Blob(val)) Map.bhash.0(val);
         case(#Class(val)){
-          var accumulator = Buffer.Buffer<Nat8>(1);
-          for(thisItem in Iter.sort<PropertyShared>(val.vals(), func(x, y){Text.compare(x.name, y.name)})){
-            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.thash.0(thisItem.name)))));
-            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(hashShared(thisItem.value)))));
-            accumulator.append(Buffer.fromArray(nat32ToBytes(Nat32.fromNat(Map.lhash.0(thisItem.immutable)))));
+          var accumulator = 0 : Nat32;
+          for(thisItem in val.vals()){
+            accumulator +%= Nat32.fromNat(Map.thash.0(thisItem.name));
+            accumulator +%= Nat32.fromNat(hashShared(thisItem.value));
+            accumulator +%= Nat32.fromNat(Map.lhash.0(thisItem.immutable));
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Principal(val)) Map.phash.0(val);
         
         case(#Array(val)){ //arrays must be in the same order so we add index
           
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem)))));
+            let ahash = Nat32.fromNat(hashShared(thisItem));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Option(val)){
           var result : Nat32 = 0;
@@ -737,42 +756,45 @@ module {
         case(#Bytes(val)) Map.bhash.0(Blob.fromArray(val));
         case(#Floats(val)){ //arrays must be in the same order so we add index
           
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(#Float(thisItem))))));
+            let ahash = Nat32.fromNat(hashShared(#Float(thisItem)));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Nats(val)){
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(#Nat(thisItem))))));
+            let ahash = Nat32.fromNat(hashShared(#Nat(thisItem)));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Ints(val)){
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(#Int(thisItem))))));
+            let ahash = Nat32.fromNat(hashShared(#Int(thisItem)));
+            accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Map(val)){
           //this map takes insertion order into account
-          var accumulator = Buffer.Buffer<Nat8>(1);
+          var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem.0)))));
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem.1)))));
+            accumulator +%= Nat32.fromNat(hashShared(thisItem.0));
+            accumulator +%= Nat32.fromNat(hashShared(thisItem.1));
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
         case(#Set(val)){
           //this set takes insertion order into account
-          var accumulator = Buffer.Buffer<Nat8>(1);
+         var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator.append(Buffer.fromArray<Nat8>(nat32ToBytes(Nat32.fromNat(hashShared(thisItem)))));
+            accumulator +%= Nat32.fromNat(hashShared(thisItem));
           };
-          Nat32.toNat(Blob.hash(Blob.fromArray(Buffer.toArray(accumulator))));
+          Nat32.toNat(accumulator);
         };
       };
   };
@@ -799,7 +821,9 @@ module {
       case(#Nat16(x),#Nat16(y)) Nat16.equal(x,y);
       case(#Nat32(x),#Nat32(y)) Nat32.equal(x,y);
       case(#Nat64(x), #Nat64(y)) Nat64.equal(x,y);
-      case(#Float(x),#Float(y)) Float.equalWithin(x,y, 0.00000001);
+      case(#Float(x),#Float(y)){
+        Float.nearest(x * 100000000)/ 100000000 == Float.nearest(y * 100000000)/ 100000000
+      };
       case(#Text(x),#Text(y)) Text.equal(x,y);
       case(#Bool(x),#Bool(y)) x == y;
       case(#Blob(x),#Blob(y)) Blob.equal(x,y);
@@ -841,14 +865,26 @@ module {
           };
         }
       };
-      case(#Bytes(x), #Bytes(y)) Blob.equal(Blob.fromArray(x), Blob.fromArray(y));
+      case(#Bytes(x), #Bytes(y)) {
+        if(x.size() != y.size()){
+          return false;
+        };
+        let itery = y.vals();
+
+        for (thisx in x.vals()) {
+          let ?thisy = itery.next() else return false;
+          if(thisx != thisy) return false;
+        };
+
+        return true;
+      };
       case(#Floats(x), #Floats(y)){ //arrays must be in the same order so we add index
         
         if(x.size() != y.size()) return false;
 
         var tracker = 0;
         for(thisItem in x.vals()){
-          if(Float.equalWithin(y[tracker], thisItem, 0.00000001) == false) return false;
+          if(Float.nearest(thisItem * 100000000)/ 100000000 != Float.nearest(y[tracker] * 100000000)/ 100000000) return false;
           tracker += 1;
         };
         return true;
@@ -874,29 +910,41 @@ module {
         return true;
       };
       case(#Map(x), #Map(y)){
-        //this map takes insertion order into account
+        //this map IGNORES insertion order 
        
         if(x.size() != y.size()) return false;
 
-        var tracker = 0;
-        for(thisItem in x.vals()){
-          if(eqShared(y[tracker].0, thisItem.0) == false or eqShared(y[tracker].1, thisItem.1)){
-            return false;
+        let yit = Iter.sort<(CandyShared, CandyShared)>(y.vals(), func(x, y){Nat.compare(hashShared(x.0), hashShared(y.0))});
+
+        for(thisItem in Iter.sort<(CandyShared, CandyShared)>(x.vals(), func(x, y){Nat.compare(hashShared(x.0), hashShared(y.0))})){
+          switch(yit.next()){
+            case(null) return false;
+            case(?val){
+               if(eqShared(val.0, thisItem.0) == false){
+                   return false;
+                };
+                if(eqShared(val.1, thisItem.1) == false){
+                  return false;
+                };
+            };
           };
-          tracker +=1;
         };
         return true;
       };
       case(#Set(x), #Set(y)){
        //this set takes insertion order into account
-       if(x.size() != y.size()) return false;
+       let yit = Iter.sort<CandyShared>(y.vals(), func(x, y){Nat.compare(hashShared(x), hashShared(y))});
 
-        var tracker = 0;
-        for(thisItem in x.vals()){
-          if(eqShared(y[tracker] ,thisItem) == false) return false;
-          tracker += 1;
+        for(thisItem in Iter.sort<CandyShared>(x.vals(), func(x, y){Nat.compare(hashShared(x), hashShared(y))})){
+          switch(yit.next()){
+            case(null) return false;
+            case(?val){
+               if(eqShared(val, thisItem) == false){
+                   return false;
+                };
+            };
+          };
         };
-
         return true;
       };
       case(_,_){

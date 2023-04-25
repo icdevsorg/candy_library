@@ -1,9 +1,9 @@
 .PHONY: check docs test
 
-# install-dfx-cache: 
-# 	dfx cache install
+install-dfx-cache: 
+	dfx cache install
 
-check:
+check: install-dfx-cache
 	find src -type f -name '*.mo' -print0 | xargs -0 $(shell dfx cache show)/moc $(shell vessel sources) --check
 
 check-mops: install-dfx-cache

@@ -1,5 +1,5 @@
 let vessel_package_set =
-      https://github.com/dfinity/vessel-package-set/releases/download/mo-0.8.3-20230224/package-set.dhall
+      https://github.com/dfinity/vessel-package-set/releases/download/mo-0.8.7-20230406/package-set.dhall
 let Package =
     { name : Text, version : Text, repo : Text, dependencies : List Text }
 
@@ -26,7 +26,11 @@ let
       , version = "v0.2.0"
       , dependencies = [ "base"]
       },
-      { name = "base", repo = "https://github.com/dfinity/motoko-base.git", version = "moc-0.8.1", dependencies = []: List Text },
+      { name = "base"
+      , repo = "https://github.com/dfinity/motoko-base.git"
+      , version = "a867420b4c147c0df64e999fb11f0978e82e1d2a"
+      , dependencies = []: List Text 
+      },
       { name = "map"
       , repo = "https://github.com/ZhenyaUsenko/motoko-hash-map"
       , version = "v7.0.0"

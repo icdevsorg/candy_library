@@ -26,10 +26,11 @@ jobs:
 
     - name: "install Motoko binaries"
       run: |
-       dfx cache install
+       sudo dfx cache install
        wget https://github.com/dfinity/motoko/releases/download/${{ env.moc_version }}/motoko-linux64-${{ env.moc_version }}.tar.gz
        mkdir -p /home/runner/bin
        tar -xzf motoko-linux64-${{ env.moc_version }}.tar.gz -C /home/runner/bin
+       dfx cache show | xargs -n 1 -I{} mkdir -p {}
        dfx cache show | xargs -n 1 -I{} cp -r /home/runner/bin/* {}
        echo "/home/runner/bin" >> $GITHUB_PATH
 

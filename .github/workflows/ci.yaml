@@ -1,0 +1,58 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - 0.2.0
+  pull_request:
+
+# Remember to update me in package-set.yml as well
+env:
+  vessel_version: "v0.6.4"
+  moc_version: "0.8.7"
+
+jobs:
+  tests:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 14
+    - uses: aviate-labs/setup-dfx@v0.2.3
+      with:
+        dfx-version: 0.13.1
+
+    - name: "install Motoko binaries"
+      run: |
+       wget https://github.com/dfinity/motoko/releases/download/${{ env.moc_version }}/motoko-linux64-${{ env.moc_version }}.tar.gz
+       mkdir -p /home/runner/bin
+       tar -xzf motoko-linux64-${{ env.moc_version }}.tar.gz -C /home/runner/bin
+       echo "/home/runner/bin" >> $GITHUB_PATH
+
+    - name: "install vessel"
+      run: |
+       wget --output-document /home/runner/bin/vessel https://github.com/kritzcreek/vessel/releases/download/${{ env.vessel_version }}/vessel-linux64
+       chmod +x /home/runner/bin/vessel
+
+    - name: "install mops"
+      run: |
+        npm --yes -g i ic-mops
+        mops i
+
+    - name: "check"
+      run: make check
+
+    - name: "check-mops"
+      run: make check-mops
+
+    - name: "docs"
+      run: make docs
+
+    - name: Deploy to GH Pages
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs

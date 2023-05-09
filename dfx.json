@@ -1,6 +1,5 @@
 {
   "canisters": {
-    
     "test_runner": {
       "main": "tests/test_runner.mo",
       "type": "motoko"
@@ -9,10 +8,10 @@
   "defaults": {
     "build": {
       "args": "",
-      "packtool": "vessel sources"
+      "packtool": "mops sources"
     }
   },
-  "dfx": "0.12.1",
+  "dfx": "0.14.0",
   "networks": {
     "local": {
       "bind": "127.0.0.1:8000",

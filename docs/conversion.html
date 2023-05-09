@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html><head title="Doc"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><body><nav class="sidebar"><h3>Modules</h3><ul><li><li><a href="candid.html">candid</a></li></li><li><li><a href="clone.html">clone</a></li></li><li><li><a href="conversion.html">conversion</a></li></li><li><li><a href="hex.html">hex</a></li></li><li><li><a href="json.html">json</a></li></li><li><li><a href="properties.html">properties</a></li></li><li><li><a href="types.html">types</a></li></li><li><li><a href="upgrade.html">upgrade</a></li></li><li><li><a href="workspace.html">workspace</a></li></li></ul><h3>Declarations</h3><ul><li><li><a href="#candyToNat">candyToNat</a></li></li><li><li><a href="#candyToNat8">candyToNat8</a></li></li><li><li><a href="#candyToNat16">candyToNat16</a></li></li><li><li><a href="#candyToNat32">candyToNat32</a></li></li><li><li><a href="#candyToNat64">candyToNat64</a></li></li><li><li><a href="#candyToInt">candyToInt</a></li></li><li><li><a href="#candyToInt8">candyToInt8</a></li></li><li><li><a href="#candyToInt16">candyToInt16</a></li></li><li><li><a href="#candyToInt32">candyToInt32</a></li></li><li><li><a href="#candyToInt64">candyToInt64</a></li></li><li><li><a href="#candyToFloat">candyToFloat</a></li></li><li><li><a href="#candyToText">candyToText</a></li></li><li><li><a href="#candyToPrincipal">candyToPrincipal</a></li></li><li><li><a href="#candyToBool">candyToBool</a></li></li><li><li><a href="#candyToBlob">candyToBlob</a></li></li><li><li><a href="#candyToValueArray">candyToValueArray</a></li></li><li><li><a href="#candyToBytes">candyToBytes</a></li></li><li><li><a href="#candyToBytesBuffer">candyToBytesBuffer</a></li></li><li><li><a href="#candyToFloatsBuffer">candyToFloatsBuffer</a></li></li><li><li><a href="#candyToNatsBuffer">candyToNatsBuffer</a></li></li><li><li><a href="#candySharedToNat">candySharedToNat</a></li></li><li><li><a href="#candySharedToNat8">candySharedToNat8</a></li></li><li><li><a href="#candySharedToNat16">candySharedToNat16</a></li></li><li><li><a href="#candySharedToNat32">candySharedToNat32</a></li></li><li><li><a href="#candySharedToNat64">candySharedToNat64</a></li></li><li><li><a href="#candySharedToInt">candySharedToInt</a></li></li><li><li><a href="#candySharedToInt8">candySharedToInt8</a></li></li><li><li><a href="#candySharedToInt16">candySharedToInt16</a></li></li><li><li><a href="#candySharedToInt32">candySharedToInt32</a></li></li><li><li><a href="#candySharedToInt64">candySharedToInt64</a></li></li><li><li><a href="#candySharedToFloat">candySharedToFloat</a></li></li><li><li><a href="#candySharedToText">candySharedToText</a></li></li><li><li><a href="#candySharedToPrincipal">candySharedToPrincipal</a></li></li><li><li><a href="#candySharedToBool">candySharedToBool</a></li></li><li><li><a href="#candySharedToBlob">candySharedToBlob</a></li></li><li><li><a href="#candySharedToValueArray">candySharedToValueArray</a></li></li><li><li><a href="#candySharedToBytes">candySharedToBytes</a></li></li><li><li><a href="#candySharedToBytesBuffer">candySharedToBytesBuffer</a></li></li><li><li><a href="#candySharedToFloatsBuffer">candySharedToFloatsBuffer</a></li></li><li><li><a href="#candySharedToNatsBuffer">candySharedToNatsBuffer</a></li></li><li><li><a href="#candySharedToIntsBuffer">candySharedToIntsBuffer</a></li></li><li><li><a href="#toBuffer">toBuffer</a></li></li><li><li><a href="#stableBufferToBuffer">stableBufferToBuffer</a></li></li><li><li><a href="#natToBytes">natToBytes</a></li></li><li><li><a href="#nat64ToBytes">nat64ToBytes</a></li></li><li><li><a href="#nat32ToBytes">nat32ToBytes</a></li></li><li><li><a href="#nat16ToBytes">nat16ToBytes</a></li></li><li><li><a href="#bytesToNat16">bytesToNat16</a></li></li><li><li><a href="#bytesToNat32">bytesToNat32</a></li></li><li><li><a href="#bytesToNat64">bytesToNat64</a></li></li><li><li><a href="#bytesToNat">bytesToNat</a></li></li><li><li><a href="#textToByteBuffer">textToByteBuffer</a></li></li><li><li><a href="#textToBytes">textToBytes</a></li></li><li><li><a href="#encodeTextAsNat">encodeTextAsNat</a></li></li><li><li><a href="#textToNat">textToNat</a></li></li><li><li><a href="#propertyToText">propertyToText</a></li></li><li><li><a href="#propertySharedToText">propertySharedToText</a></li></li><li><li><a href="#candyToProperties">candyToProperties</a></li></li><li><li><a href="#bytesToText">bytesToText</a></li></li><li><li><a href="#principalToBytes">principalToBytes</a></li></li><li><li><a href="#bytesToPrincipal">bytesToPrincipal</a></li></li><li><li><a href="#boolToBytes">boolToBytes</a></li></li><li><li><a href="#bytesToBool">bytesToBool</a></li></li><li><li><a href="#intToBytes">intToBytes</a></li></li><li><li><a href="#bytesToInt">bytesToInt</a></li></li><li><li><a href="#unwrapOptionCandy">unwrapOptionCandy</a></li></li><li><li><a href="#unwrapOptionCandyShared">unwrapOptionCandyShared</a></li></li></ul></nav><div class="documentation"><h1>conversion</h1><p>Conversion utilities for the candy library.</p>
+<p>This module contains the conversion functions to convert values to &amp; from 
+candy values.</p>
+<div class="declaration"><h4 class="function" id="candyToNat"><code><span class="keyword">public func </span><span class="fnname">candyToNat</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Nat</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Nat</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int16(15);
+let converted_value = Conversion.candyToNat(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToNat8"><code><span class="keyword">public func </span><span class="fnname">candyToNat8</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Nat8</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Nat8</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToNat8(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToNat16"><code><span class="keyword">public func </span><span class="fnname">candyToNat16</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Nat16</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Nat16</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToNat16(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToNat32"><code><span class="keyword">public func </span><span class="fnname">candyToNat32</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Nat32</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Nat32</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToNat32(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToNat64"><code><span class="keyword">public func </span><span class="fnname">candyToNat64</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Nat64</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Nat64</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToNat64(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToInt"><code><span class="keyword">public func </span><span class="fnname">candyToInt</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Int</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Int</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToInt(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToInt8"><code><span class="keyword">public func </span><span class="fnname">candyToInt8</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Int8</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Int8</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToInt8(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToInt16"><code><span class="keyword">public func </span><span class="fnname">candyToInt16</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Int16</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Int16</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToInt16(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToInt32"><code><span class="keyword">public func </span><span class="fnname">candyToInt32</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Int32</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Int32</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToInt32(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToInt64"><code><span class="keyword">public func </span><span class="fnname">candyToInt64</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Int64</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Int64</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToInt64(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToFloat"><code><span class="keyword">public func </span><span class="fnname">candyToFloat</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Float</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Float</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int16(2);
+let converted_value = Conversion.candyToFloat(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToText"><code><span class="keyword">public func </span><span class="fnname">candyToText</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Text</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Text</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Int8(2);
+let converted_value = Conversion.candyToText(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="candyToPrincipal"><code><span class="keyword">public func </span><span class="fnname">candyToPrincipal</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Principal</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Principal</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Principal(Principal.fromText(&quot;abc&quot;));
+let converted_value = Conversion.candyToPrincipal(value);</code></pre><p>Note: Throws if the underlying value is not a <code>#Principal</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToBool"><code><span class="keyword">public func </span><span class="fnname">candyToBool</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Bool</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Bool</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Bool(false);
+let converted_value = Conversion.candyToPBool(value);</code></pre><p>Note: Throws if the underlying value is not a <code>#Bool</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToBlob"><code><span class="keyword">public func </span><span class="fnname">candyToBlob</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Blob</span></code></h4><p><p>Convert a <code>Candy</code> to <code>Blob</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Principal(Principal.fromText(&quot;abc&quot;));
+let converted_value = Conversion.candyToBlob(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="candyToValueArray"><code><span class="keyword">public func </span><span class="fnname">candyToValueArray</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : [<a href="#type.Candy"><span class="type">Candy</span></a>]</code></h4><p><p>Convert a <code>Candy</code> to <code>[Candy]</code></p>
+<p>The conversion is done by getting the array of candy values of the #Array.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Array([1, 2, 3]);
+let converted_value = Conversion.candyToValueArray(value);</code></pre><p>Note: Throws if the underlying value is not an <code>#Array</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToBytes"><code><span class="keyword">public func </span><span class="fnname">candyToBytes</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert a <code>Candy</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Principal(Principal.fromText(&quot;abc&quot;));
+let value_as_bytes = Conversion.candyToBytes(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="candyToBytesBuffer"><code><span class="keyword">public func </span><span class="fnname">candyToBytesBuffer</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Nat8</span>&gt;</code></h4><p><p>Convert a <code>Candy</code> to <code>Buffer&lt;Nat8&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Principal(Principal.fromText(&quot;abc&quot;));
+let value_as_buffer = Conversion.candyToBytesBuffer(value);</code></pre>
+
+<p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToFloatsBuffer"><code><span class="keyword">public func </span><span class="fnname">candyToFloatsBuffer</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Float</span>&gt;</code></h4><p><p>Convert a <code>Candy</code> to <code>Buffer&lt;Float&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Nat(102);
+let value_as_floats_buffer = Conversion.candyToFloatsBuffer(value);</code></pre><p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="candyToNatsBuffer"><code><span class="keyword">public func </span><span class="fnname">candyToNatsBuffer</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Nat</span>&gt;</code></h4><p><p>Convert a <code>Candy</code> to <code>Buffer&lt;Nat&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: Candy = #Nat(102);
+let value_as_nats_buffer = Conversion.candyToNatsBuffer(value);</code></pre><p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToNat"><code><span class="keyword">public func </span><span class="fnname">candySharedToNat</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Nat</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Nat</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int16(15);
+let converted_value = Conversion.candySharedToNat(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToNat8"><code><span class="keyword">public func </span><span class="fnname">candySharedToNat8</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Nat8</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Nat8</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int8(15);
+let converted_value = Conversion.candySharedToNat8(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToNat16"><code><span class="keyword">public func </span><span class="fnname">candySharedToNat16</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Nat16</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Nat16</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int16(15);
+let converted_value = Conversion.candySharedToNat16(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToNat32"><code><span class="keyword">public func </span><span class="fnname">candySharedToNat32</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Nat32</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Nat32</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int32(15);
+let converted_value = Conversion.candySharedToNat(value);</code></pre><p>Note: Throws if the underlying value overflows or is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToNat64"><code><span class="keyword">public func </span><span class="fnname">candySharedToNat64</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Nat64</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Nat64</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int16(15);
+let converted_value = Conversion.candySharedToNat64(value);</code></pre><p>Note: Throws if the underlying value is negative.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToInt"><code><span class="keyword">public func </span><span class="fnname">candySharedToInt</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Int</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Int</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int16(15);
+let converted_value = Conversion.candySharedToInt(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToInt8"><code><span class="keyword">public func </span><span class="fnname">candySharedToInt8</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Int8</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Int8</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Nat8(11);
+let converted_value = Conversion.candySharedToInt8(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToInt16"><code><span class="keyword">public func </span><span class="fnname">candySharedToInt16</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Int16</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Int16</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Float(10);
+let converted_value = Conversion.candySharedToInt16(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToInt32"><code><span class="keyword">public func </span><span class="fnname">candySharedToInt32</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Int32</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Int32</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Nat32(1111);
+let converted_value = Conversion.candySharedToInt32(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToInt64"><code><span class="keyword">public func </span><span class="fnname">candySharedToInt64</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Int64</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Int64</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Nat64(12345);
+let converted_value = Conversion.candySharedToInt64(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToFloat"><code><span class="keyword">public func </span><span class="fnname">candySharedToFloat</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Float</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Float</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int16(11);
+let converted_value = Conversion.candySharedToFloat(value);</code></pre><p>Note: Throws if the underlying value overflows.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToText"><code><span class="keyword">public func </span><span class="fnname">candySharedToText</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Text</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Text</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Float(11);
+let converted_value = Conversion.candySharedToText(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="candySharedToPrincipal"><code><span class="keyword">public func </span><span class="fnname">candySharedToPrincipal</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Principal</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Principal</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Principal(Principal.fromText(&quot;abc&quot;));
+let converted_value = Conversion.candySharedToPrincipal(value);</code></pre><p>Note: Throws if the underlying value is not a <code>#Principal</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToBool"><code><span class="keyword">public func </span><span class="fnname">candySharedToBool</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Bool</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Principal</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Bool(true);
+let converted_value = Conversion.candySharedToPrincipal(value);</code></pre><p>Note: Throws if the underlying value is not a <code>#Bool</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToBlob"><code><span class="keyword">public func </span><span class="fnname">candySharedToBlob</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Blob</span></code></h4><p><p>Convert a <code>CandyShared</code> to <code>Blob</code>.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Principal(Principal.fromText(&quot;abc&quot;));
+let converted_value = Conversion.candySharedToBlob(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="candySharedToValueArray"><code><span class="keyword">public func </span><span class="fnname">candySharedToValueArray</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : [<a href="#type.CandyShared"><span class="type">CandyShared</span></a>]</code></h4><p><p>Convert a <code>CandyShared</code> to <code>[CandyShared]</code></p>
+<p>The conversion is done by getting the array of candy values of the #Array.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Array([1, 2, 3]);
+let converted_value = Conversion.candySharedToValueArray(value);</code></pre><p>Note: Throws if the underlying value is not an <code>#Array</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToBytes"><code><span class="keyword">public func </span><span class="fnname">candySharedToBytes</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert a <code>CandyShared</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Principal(Principal.fromText(&quot;abc&quot;));
+let value_as_bytes = Conversion.candySharedToBytes(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="candySharedToBytesBuffer"><code><span class="keyword">public func </span><span class="fnname">candySharedToBytesBuffer</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Nat8</span>&gt;</code></h4><p><p>Convert a <code>CandyShared</code> to <code>Buffer&lt;Nat8&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Principal(Principal.fromText(&quot;abc&quot;));
+let value_as_buffer = Conversion.candySharedToBytes(value);</code></pre>
+
+<p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToFloatsBuffer"><code><span class="keyword">public func </span><span class="fnname">candySharedToFloatsBuffer</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Float</span>&gt;</code></h4><p><p>Convert a <code>CandyShared</code> to <code>Buffer&lt;Float&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Nat(102);
+let value_as_floats_buffer = Conversion.candySharedToFloatsBuffer(value);</code></pre><p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToNatsBuffer"><code><span class="keyword">public func </span><span class="fnname">candySharedToNatsBuffer</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Nat</span>&gt;</code></h4><p><p>Convert a <code>CandyShared</code> to <code>Buffer&lt;Nat&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Nat(102);
+let value_as_nats_buffer = Conversion.candySharedToNatsBuffer(value);</code></pre><p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="candySharedToIntsBuffer"><code><span class="keyword">public func </span><span class="fnname">candySharedToIntsBuffer</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Int</span>&gt;</code></h4><p><p>Convert a <code>CandyShared</code> to <code>Buffer&lt;Int&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let value: CandyShared = #Int(102);
+let value_as_nats_buffer = Conversion.candySharedToIntsBuffer(value);</code></pre><p>Note: Throws if the underlying value isn't convertible.</p>
+</p></div><div class="declaration"><h4 class="function" id="toBuffer"><code><span class="keyword">public func </span><span class="fnname">toBuffer</span>&lt;<span class="type">T</span>&gt;(<span class="parameter">x</span> : [<span class="type">T</span>]) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">T</span>&gt;</code></h4><p><p>Create a <code>Buffer</code> from [T] where T can be of any type.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let array = [1, 2, 3];
+ let buf = Conversion.toBuffer&lt;Nat&gt;(array);</code></pre></p></div><div class="declaration"><h4 class="function" id="stableBufferToBuffer"><code><span class="keyword">public func </span><span class="fnname">stableBufferToBuffer</span>&lt;<span class="type">T</span>&gt;(<span class="parameter">x</span> : <a href="#type.StableBuffer"><span class="type">StableBuffer</span></a>&lt;<span class="type">T</span>&gt;) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">T</span>&gt;</code></h4><p><p>Create a <code>Buffer&lt;T&gt;</code> from <code>StableBuffer&lt;T&gt;</code> where T can be of any type.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let stable_buff = StableBuffer.fromArray([1, 2, 3]);
+let buff = Conversion.stableBufferToBuffer(stable_buff);</code></pre></p></div><div class="declaration"><h4 class="function" id="natToBytes"><code><span class="keyword">public func </span><span class="fnname">natToBytes</span>(<span class="parameter">n</span> : <span class="type">Nat</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert a <code>Nat</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let value: Nat = 150;
+ let bytes = Conversion.natToBytes(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="nat64ToBytes"><code><span class="keyword">public func </span><span class="fnname">nat64ToBytes</span>(<span class="parameter">x</span> : <span class="type">Nat64</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert a <code>Nat64</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let value: Nat64 = 150;
+ let bytes = Conversion.nat64ToBytes(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="nat32ToBytes"><code><span class="keyword">public func </span><span class="fnname">nat32ToBytes</span>(<span class="parameter">x</span> : <span class="type">Nat32</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert a <code>Nat32</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let value: Nat32 = 150;
+ let bytes = Conversion.nat32ToBytes(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="nat16ToBytes"><code><span class="keyword">public func </span><span class="fnname">nat16ToBytes</span>(<span class="parameter">x</span> : <span class="type">Nat16</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert a <code>Nat16</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let value: Nat16 = 150;
+ let bytes = Conversion.nat16ToBytes(value);</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToNat16"><code><span class="keyword">public func </span><span class="fnname">bytesToNat16</span>(<span class="parameter">bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Nat16</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Nat16</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let bytes: [Nat8] = [1, 2, 3, 4];
+ let value = Conversion.bytesToNat16(bytes);</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToNat32"><code><span class="keyword">public func </span><span class="fnname">bytesToNat32</span>(<span class="parameter">bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Nat32</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Nat32</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let bytes: [Nat8] = [1, 2, 3, 4];
+ let value = Conversion.bytesToNat32(bytes);</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToNat64"><code><span class="keyword">public func </span><span class="fnname">bytesToNat64</span>(<span class="parameter">bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Nat64</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Nat64</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let bytes: [Nat8] = [1, 2, 3, 4];
+ let value = Conversion.bytesToNat64(bytes);</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToNat"><code><span class="keyword">public func </span><span class="fnname">bytesToNat</span>(<span class="parameter">bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Nat</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Nat</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let bytes: [Nat8] = [1, 2, 3, 4];
+ let value = Conversion.bytesToNat(bytes);</code></pre></p></div><div class="declaration"><h4 class="function" id="textToByteBuffer"><code><span class="keyword">public func </span><span class="fnname">textToByteBuffer</span>(<span class="parameter">_text</span> : <span class="type">Text</span>) : <span class="type">Buffer.Buffer</span>&lt;<span class="type">Nat8</span>&gt;</code></h4><p><p>Convert <code>Text</code> to <code>Buffer&lt;Nat8&gt;</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let t = &quot;sample_text&quot;;
+ let buf = Conversion.textToByteBuffer(t);</code></pre></p></div><div class="declaration"><h4 class="function" id="textToBytes"><code><span class="keyword">public func </span><span class="fnname">textToBytes</span>(<span class="parameter">_text</span> : <span class="type">Text</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert <code>Text</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let t = &quot;sample_text&quot;;
+ let bytes = Conversion.textToBytes(t);</code></pre></p></div><div class="declaration"><h4 class="function" id="encodeTextAsNat"><code><span class="keyword">public func </span><span class="fnname">encodeTextAsNat</span>(<span class="parameter">phrase</span> : <span class="type">Text</span>) : ?<span class="type">Nat</span></code></h4><p><p>Encode <code>Text</code> to a giant int(<code>?Nat</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let t = &quot;sample_text&quot;;
+ let encoded_t = Conversion.encodeTextAsNat(t);</code></pre></p></div><div class="declaration"><h4 class="function" id="textToNat"><code><span class="keyword">public func </span><span class="fnname">textToNat</span>(<span class="parameter">txt</span> : <span class="type">Text</span>) : ?<span class="type">Nat</span></code></h4><p><p>Convert <code>Text</code> to a <code>?Nat</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let t = &quot;100&quot;;
+ let t_as_nat = Conversion.textToNat(t); // 100</code></pre>
+
+<p>Note: Returns <code>null</code> if the text is empty.</p>
+</p></div><div class="declaration"><h4 class="function" id="propertyToText"><code><span class="keyword">public func </span><span class="fnname">propertyToText</span>(<span class="parameter">a</span> : <a href="types.html#type.Property"><span class="type">Types.Property</span></a>) : <span class="type">Text</span></code></h4><p><p>Convert <code>Property</code> to a <code>Text</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let prop: Property = {
+   name = &quot;name&quot;;
+   value = #Principal(Principal.fromText(&quot;abc&quot;));
+   immutable = true;
+};
+let prop_as_text = Conversion.propertyToText(t);</code></pre></p></div><div class="declaration"><h4 class="function" id="propertySharedToText"><code><span class="keyword">public func </span><span class="fnname">propertySharedToText</span>(<span class="parameter">a</span> : <a href="types.html#type.PropertyShared"><span class="type">Types.PropertyShared</span></a>) : <span class="type">Text</span></code></h4><p><p>Convert <code>PropertyShared</code> to a <code>Text</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let prop: PropertyShared = {
+   name = &quot;name&quot;;
+   value = #Principal(Principal.fromText(&quot;abc&quot;));
+   immutable = true;
+};
+let prop_as_text = Conversion.propertyToText(t);</code></pre></p></div><div class="declaration"><h4 class="function" id="candyToProperties"><code><span class="keyword">public func </span><span class="fnname">candyToProperties</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <a href="types.html#type.Properties"><span class="type">Types.Properties</span></a></code></h4><p><p>Convert <code>Candy</code> to <code>Properties</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+ let val: Candy = #Class([
+   {
+     name = &quot;prop1&quot;;
+     value = #Principal(Principal.fromText(&quot;abc&quot;));
+     immutable = true;
+   },
+   {
+     name = &quot;prop2&quot;;
+     value = #Principal(Principal.fromText(&quot;abc&quot;));
+     immutable = false;
+   }
+ ]);
+ let props = Conversion.candyToProperties(val);</code></pre><p>Note: throws if the underlying value is not <code>#Class</code>.</p>
+</p></div><div class="declaration"><h4 class="function" id="bytesToText"><code><span class="keyword">public func </span><span class="fnname">bytesToText</span>(<span class="parameter">_bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Text</span></code></h4><p><p>Convert <code>[Nat8]</code> to a <code>Text</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let bytes: [Nat8] = [140, 145, 190, 192];
+let bytes_as_text = Conversion.bytesToText(bytes);</code></pre></p></div><div class="declaration"><h4 class="function" id="principalToBytes"><code><span class="keyword">public func </span><span class="fnname">principalToBytes</span>(<span class="parameter">_principal</span> : <span class="type">Principal</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert <code>Principal</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let p = Principal.fromText(&quot;xyz&quot;);
+let principal_as_bytes = Conversion.principalToBytes(p);</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToPrincipal"><code><span class="keyword">public func </span><span class="fnname">bytesToPrincipal</span>(<span class="parameter">_bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Principal</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Principal</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let bytes: [Nat8] = [140, 145, 190, 192];
+let p = Conversion.bytesToPrincipal(bytes);</code></pre></p></div><div class="declaration"><h4 class="function" id="boolToBytes"><code><span class="keyword">public func </span><span class="fnname">boolToBytes</span>(<span class="parameter">_bool</span> : <span class="type">Bool</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert <code>Principal</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let b = false;
+let bool_as_bytes = Conversion.boolToBytes(b);</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToBool"><code><span class="keyword">public func </span><span class="fnname">bytesToBool</span>(<span class="parameter">_bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Bool</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Bool</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let bytes: [Nat8] = [1:Nat8];
+let b = Conversion.bytesToBool(bytes); // true</code></pre></p></div><div class="declaration"><h4 class="function" id="intToBytes"><code><span class="keyword">public func </span><span class="fnname">intToBytes</span>(<span class="parameter">n</span> : <span class="type">Int</span>) : [<span class="type">Nat8</span>]</code></h4><p><p>Convert <code>Int</code> to Bytes(<code>[Nat8]</code>)</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let i = 266;
+let int_as_bytes = Conversion.intToBytes(b); // [0, 2, 10]</code></pre></p></div><div class="declaration"><h4 class="function" id="bytesToInt"><code><span class="keyword">public func </span><span class="fnname">bytesToInt</span>(<span class="parameter">_bytes</span> : [<span class="type">Nat8</span>]) : <span class="type">Int</span></code></h4><p><p>Convert Bytes(<code>[Nat8]</code>) to <code>Int</code></p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let bytes: [Nat8] = [0, 2, 10];
+let b = Conversion.bytesToBool(bytes); // 266</code></pre></p></div><div class="declaration"><h4 class="function" id="unwrapOptionCandy"><code><span class="keyword">public func </span><span class="fnname">unwrapOptionCandy</span>(<span class="parameter">val</span> : <a href="#type.Candy"><span class="type">Candy</span></a>) : <a href="#type.Candy"><span class="type">Candy</span></a></code></h4><p><p>Unwrap an Option value.</p>
+<p>If the underlying value is a #Option(T), T is returned,
+Otherwise, the parameter is returned as it is.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let val: Candy = #Option(?#Principal(Principal.fromText(&quot;xyz&quot;)));
+let unwrapped_val = Conversion.unwrapOptionCandy(val);</code></pre></p></div><div class="declaration"><h4 class="function" id="unwrapOptionCandyShared"><code><span class="keyword">public func </span><span class="fnname">unwrapOptionCandyShared</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>) : <a href="#type.CandyShared"><span class="type">CandyShared</span></a></code></h4><p><p>Unwrap an Option value.</p>
+<p>If the underlying value is a #Option(T), T is returned,
+Otherwise, the parameter is returned as it is.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let val: CandyShared = #Option(?#Principal(Principal.fromText(&quot;xyz&quot;)));
+let unwrapped_val = Conversion.unwrapOptionCandy(val);</code></pre></p></div></div></body></html>

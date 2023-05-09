@@ -42,7 +42,7 @@ shared (deployer) actor class test_runner() = this {
 
         let suite = S.suite("test conversion", [
 
-            S.test("Nat32 is Nat", Conversion.valueUnstableToNat(#Nat32(10)), M.equals<Nat>(T.nat(10)))
+            S.test("Nat32 is Nat", Conversion.candySharedToNat(#Nat32(10)), M.equals<Nat>(T.nat(10)))
         ]);
 
         S.run(suite);
@@ -51,6 +51,17 @@ shared (deployer) actor class test_runner() = this {
         
 
         return #success;
+          
+
+    };
+
+    public shared func testRefernece() : async Types.CandyShared {
+        Debug.print("running testRefernece");
+
+     
+        
+
+        return #Option(null);
           
 
     };

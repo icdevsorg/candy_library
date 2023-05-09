@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html><head title="Doc"><meta charset="UTF-8"/><link href="styles.css" rel="stylesheet"/></head><body><nav class="sidebar"><h3>Modules</h3><ul><li><li><a href="candid.html">candid</a></li></li><li><li><a href="clone.html">clone</a></li></li><li><li><a href="conversion.html">conversion</a></li></li><li><li><a href="hex.html">hex</a></li></li><li><li><a href="json.html">json</a></li></li><li><li><a href="properties.html">properties</a></li></li><li><li><a href="types.html">types</a></li></li><li><li><a href="upgrade.html">upgrade</a></li></li><li><li><a href="workspace.html">workspace</a></li></li></ul><h3>Declarations</h3><ul><li><li><a href="#getPropertiesShared">getPropertiesShared</a></li></li><li><li><a href="#updatePropertiesShared">updatePropertiesShared</a></li></li><li><li><a href="#getClassPropertyShared">getClassPropertyShared</a></li></li><li><li><a href="#getProperties">getProperties</a></li></li><li><li><a href="#updateProperties">updateProperties</a></li></li></ul></nav><div class="documentation"><h1>properties</h1><p>Properties for the candy library.</p>
+<p>This module contains the properties and class functions for updating and 
+manipulating classes.</p>
+<div class="declaration"><h4 class="function" id="getPropertiesShared"><code><span class="keyword">public func </span><span class="fnname">getPropertiesShared</span>(<span class="parameter">properties</span> : <a href="#type.PropertiesShared"><span class="type">PropertiesShared</span></a>, <span class="parameter">qs</span> : [<a href="#type.Query"><span class="type">Query</span></a>]) : <span class="type">Result.Result</span>&lt;<a href="#type.PropertiesShared"><span class="type">PropertiesShared</span></a>, <a href="#type.PropertySharedError"><span class="type">PropertySharedError</span></a>&gt;</code></h4><p><p>Get a subset of fields from the <code>PropertiesShared</code> based on the given query.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let properties: PropertiesShared = [
+  {
+   name = &quot;prop1&quot;;
+   value = #Principal(Principal.fromText(&quot;abc&quot;));
+   immutable = false;
+  },
+  {
+   name = &quot;prop2&quot;;
+   value = #Nat8(44);
+   immutable = true;
+  },
+  {
+   name = &quot;prop3&quot;;
+   value = #Class(
+    {
+      name = &quot;class_field1&quot;;
+      value = #Nat(222);
+      immutable = false;
+    },
+    {
+      name = &quot;class_field2&quot;;
+      value = #Text(&quot;sample&quot;);
+      immutable = true;
+    }
+   );
+   immutable = false;
+  }
+];
+let qs = [
+ {
+   name = &quot;prop2&quot;
+ },
+ {
+   name = &quot;prop3&quot;;
+   next = [
+     {
+       name = &quot;class_field2&quot;;
+     }
+   ];
+ }
+];
+// Will return prop2 and the class_field2 from prop3.
+let subset_result = Properties.getPropertiesShared(properties, qs);</code></pre><p>Note: Ignores unknown properties.</p>
+</p></div><div class="declaration"><h4 class="function" id="updatePropertiesShared"><code><span class="keyword">public func </span><span class="fnname">updatePropertiesShared</span>(<span class="parameter">properties</span> : <a href="#type.PropertiesShared"><span class="type">PropertiesShared</span></a>, <span class="parameter">us</span> : [<a href="#type.UpdateShared"><span class="type">UpdateShared</span></a>]) : <span class="type">Result.Result</span>&lt;<a href="#type.PropertiesShared"><span class="type">PropertiesShared</span></a>, <a href="#type.PropertySharedError"><span class="type">PropertySharedError</span></a>&gt;</code></h4><p><p>Updates the given properties based on the given update query.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let properties: PropertiesShared = [
+  {
+   name = &quot;prop1&quot;;
+   value = #Principal(Principal.fromText(&quot;abc&quot;));
+   immutable = true;
+  },
+  {
+   name = &quot;prop2&quot;;
+   value = #Nat8(44);
+   immutable = false;
+  },
+  {
+   name = &quot;prop3&quot;;
+   value = #Class(
+    {
+      name = &quot;class_field1&quot;;
+      value = #Nat(222);
+      immutable = false;
+    },
+    {
+      name = &quot;class_field2&quot;;
+      value = #Text(&quot;sample&quot;);
+      immutable = true;
+    }
+   );
+   immutable = false;
+  }
+];
+let us = [
+ {
+   name = &quot;prop1&quot;,
+   mode = #Set(#Nat8(66))
+ },
+ {
+   name = &quot;prop3&quot;;
+   mode = #Next([
+    {
+      name = &quot;class_field1&quot;;
+      mode = #Lock(#Nat(333)); 
+    }
+   ])
+ }
+];
+// Will update prop1 and the class_field1 from prop3 to new values.
+let updated_properties = Properties.updatePropertiesShared(properties, us);</code></pre><p>Note:</p>
+<ul><li>Creates unknown properties.</li><li>Returns error if the query tries to update an immutable property.</li></ul></p></div><div class="declaration"><h4 class="function" id="getClassPropertyShared"><code><span class="keyword">public func </span><span class="fnname">getClassPropertyShared</span>(<span class="parameter">val</span> : <a href="#type.CandyShared"><span class="type">CandyShared</span></a>, <span class="parameter">name</span> : <span class="type">Text</span>) : ?<a href="#type.PropertyShared"><span class="type">PropertyShared</span></a></code></h4><p><p>Updates the given properties based on the given update query.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let c  = #Class(
+ {
+   name = &quot;class_field1&quot;;
+   value = #Nat(222);
+   immutable = false;
+ },
+ {
+   name = &quot;class_field2&quot;;
+   value = #Text(&quot;sample&quot;);
+   immutable = true;
+ }
+);
+let prop = Properties.getClassPropertyShared(c, &quot;class_field1&quot;);</code></pre><p>Note: Returns null if:</p>
+<ul><li>The underlying value isn't a #Class.</li><li>The property with the given name wasn't found inside the class.</li></ul></p></div><div class="declaration"><h4 class="function" id="getProperties"><code><span class="keyword">public func </span><span class="fnname">getProperties</span>(<span class="parameter">properties</span> : <a href="#type.Properties"><span class="type">Properties</span></a>, <span class="parameter">qs</span> : [<a href="#type.Query"><span class="type">Query</span></a>]) : <span class="type">Result.Result</span>&lt;<a href="#type.Properties"><span class="type">Properties</span></a>, <a href="#type.PropertySharedError"><span class="type">PropertySharedError</span></a>&gt;</code></h4><p><p>Get a subset of fields from the <code>Properties</code> based on the given query.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let properties: Properties = [
+  {
+   name = &quot;prop1&quot;;
+   value = #Principal(Principal.fromText(&quot;abc&quot;));
+   immutable = false;
+  },
+  {
+   name = &quot;prop2&quot;;
+   value = #Nat8(44);
+   immutable = true;
+  },
+  {
+   name = &quot;prop3&quot;;
+   value = #Class(
+    {
+      name = &quot;class_field1&quot;;
+      value = #Nat(222);
+      immutable = false;
+    },
+    {
+      name = &quot;class_field2&quot;;
+      value = #Text(&quot;sample&quot;);
+      immutable = true;
+    }
+   );
+   immutable = false;
+  }
+];
+let qs = [
+ {
+   name = &quot;prop2&quot;
+ },
+ {
+   name = &quot;prop3&quot;;
+   next = [
+     {
+       name = &quot;class_field2&quot;;
+     }
+   ];
+ }
+];
+// Will return prop2 and the class_field2 from prop3.
+let subset_result = Properties.getProperties(properties, qs);</code></pre><p>Note: Ignores unknown properties.</p>
+</p></div><div class="declaration"><h4 class="function" id="updateProperties"><code><span class="keyword">public func </span><span class="fnname">updateProperties</span>(<span class="parameter">properties</span> : <a href="#type.Properties"><span class="type">Properties</span></a>, <span class="parameter">us</span> : [<a href="#type.Update"><span class="type">Update</span></a>]) : <span class="type">Result.Result</span>&lt;<a href="#type.Properties"><span class="type">Properties</span></a>, <a href="#type.PropertySharedError"><span class="type">PropertySharedError</span></a>&gt;</code></h4><p><p>Updates the given properties based on the given update query.</p>
+<p>Example:</p>
+<pre><code>motoko include=import
+let properties: Properties = [
+  {
+   name = &quot;prop1&quot;;
+   value = #Principal(Principal.fromText(&quot;abc&quot;));
+   immutable = true;
+  },
+  {
+   name = &quot;prop2&quot;;
+   value = #Nat8(44);
+   immutable = false;
+  },
+  {
+   name = &quot;prop3&quot;;
+   value = #Class(
+    {
+      name = &quot;class_field1&quot;;
+      value = #Nat(222);
+      immutable = false;
+    },
+    {
+      name = &quot;class_field2&quot;;
+      value = #Text(&quot;sample&quot;);
+      immutable = true;
+    }
+   );
+   immutable = false;
+  }
+];
+let us = [
+ {
+   name = &quot;prop1&quot;,
+   mode = #Set(#Nat8(66))
+ },
+ {
+   name = &quot;prop3&quot;;
+   mode = #Next([
+    {
+      name = &quot;class_field1&quot;;
+      mode = #Lock(#Nat(333)); 
+    }
+   ])
+ }
+];
+// Will update prop1 and the class_field1 from prop3 to new values.
+let updated_properties = Properties.updateProperties(properties, us);</code></pre><p>Note:</p>
+<ul><li>Creates unknown properties.</li><li>Returns error if the query tries to update an immutable property.</li></ul></p></div></div></body></html>

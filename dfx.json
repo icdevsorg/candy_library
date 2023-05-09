@@ -8,7 +8,7 @@
   "defaults": {
     "build": {
       "args": "",
-      "packtool": "vessel sources"
+      "packtool": "mops sources"
     }
   },
   "dfx": "0.13.1",

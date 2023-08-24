@@ -18,7 +18,7 @@ import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 
-import Map "mo:map/Map";
+import Map "mo:map7/Map";
 
 import Types "types";
 import CandyHex "hex";

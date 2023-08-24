@@ -40,7 +40,7 @@ import Types "types";
 import Hex "hex";
 import Properties "properties";
 import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map/Map";
+import Map "mo:map7/Map";
 
 
 module {

@@ -18,8 +18,8 @@
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
 import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map/Map";
-import Set "mo:map/Set";
+import Map "mo:map7/Map";
+import Set "mo:map7/Set";
 
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";

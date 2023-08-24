@@ -15,7 +15,7 @@
 /// manipulating classes.
 
 import Buffer "mo:base/Buffer";
-import Map "mo:map/Map";
+import Map "mo:map7/Map";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Result "mo:base/Result";

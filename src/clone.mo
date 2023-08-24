@@ -16,8 +16,8 @@
 import Types "types";
 import Array "mo:base/Array";
 import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map/Map";
-import Set "mo:map/Set";
+import Map "mo:map7/Map";
+import Set "mo:map7/Set";
 
 module {
 

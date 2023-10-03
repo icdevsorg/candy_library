@@ -1,14 +1,16 @@
 [dependencies]
-base = "https://github.com/dfinity/motoko-base#moc-0.8.1"
+base = "https://github.com/dfinity/motoko-base#moc-0.10.0"
 matchers = "https://github.com/kritzcreek/motoko-matchers#v1.3.0"
 candid = "https://github.com/gekctek/motoko_candid#v1.0.1"
 xtendedNumbers = "https://github.com/gekctek/motoko_numbers#v1.0.2"
 stablebuffer = "https://github.com/skilesare/StableBuffer#v0.2.0"
 map7 = "https://github.com/ZhenyaUsenko/motoko-hash-map#v7.0.0"
+map9 = "https://github.com/ZhenyaUsenko/motoko-hash-map#v9.0.1"
 candy_0_1_12 = "https://github.com/icdevs/candy_library#v0.1.12"
+candy_0_2_0 = "https://github.com/icdevs/candy_library#0.2.0"
 
 [package]
 name = "candy"
-version = "0.2.0"
+version = "0.3.0"
 description = "Library for Converting Types and Creating Workable Motoko Collections"
 repository = "https://github.com/icdevs/candy_library"

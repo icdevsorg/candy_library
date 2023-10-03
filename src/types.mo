@@ -20,8 +20,8 @@ import Buffer "mo:base/Buffer";
 import StableBuffer "mo:stablebuffer/StableBuffer";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
-import Map "mo:map7/Map";
-import Set "mo:map7/Set";
+import Map "mo:map9/Map";
+import Set "mo:map9/Set";
 import Text "mo:base/Text";
 import Blob "mo:base/Blob";
 import Nat "mo:base/Nat";
@@ -152,7 +152,8 @@ module {
     #Nats: [Nat];
     #Floats: [Float]; 
     #Bytes : [Nat8];
-    #Map : [(CandyShared, CandyShared)];
+    #ValueMap : [(CandyShared, CandyShared)];
+    #Map : [(Text, CandyShared)];
     #Set : [CandyShared];
   };
 
@@ -180,7 +181,8 @@ module {
     #Array : StableBuffer.StableBuffer<Candy>;
     #Option : ?Candy;
     #Bytes : StableBuffer.StableBuffer<Nat8>; 
-    #Map : Map.Map<Candy, Candy>;
+    #ValueMap : Map.Map<Candy, Candy>;
+    #Map : Map.Map<Text, Candy>;
     #Set : Set.Set<Candy>;
   };
 
@@ -236,7 +238,7 @@ module {
       case(#Bytes(val)){ #Bytes(StableBuffer.toArray<Nat8>(val))};
       case(#Floats(val)){#Floats(StableBuffer.toArray(val))};
       case(#Nats(val)){#Nats(StableBuffer.toArray(val))};
-      case(#Map(val)){
+      case(#ValueMap(val)){
         let entries = Map.entries<Candy, Candy>(val);
         let stableEntries = Iter.map<(Candy, Candy), (CandyShared, CandyShared)>(
           entries,
@@ -244,7 +246,17 @@ module {
             (shareCandy(x.0), shareCandy(x.1))
           });
       
-        #Map(Iter.toArray<(CandyShared,CandyShared)>(stableEntries));
+        #ValueMap(Iter.toArray<(CandyShared,CandyShared)>(stableEntries));
+      };
+      case(#Map(val)){
+        let entries = Map.entries<Text, Candy>(val);
+        let stableEntries = Iter.map<(Text, Candy), (Text, CandyShared)>(
+          entries,
+          func (x : (Text, Candy)){
+            (x.0, shareCandy(x.1))
+          });
+      
+        #Map(Iter.toArray<(Text,CandyShared)>(stableEntries));
       };
       case(#Set(val)){
         let entries = Set.keys<Candy>(val);
@@ -301,7 +313,7 @@ module {
         case(#Floats(val)){#Floats(toBuffer<Float>(val))};
         case(#Nats(val)){#Nats(toBuffer<Nat>(val))};
         case(#Ints(val)){#Ints(toBuffer<Int>(val))};
-        case(#Map(val)){
+        case(#ValueMap(val)){
           //let entries = Map.entries<CandyShared, CandyShared>(val);
           let unstableEntries = Iter.map<(CandyShared, CandyShared), (Candy, Candy)>(
             val.vals(),
@@ -309,7 +321,17 @@ module {
               (unshare(x.0), unshare(x.1))
             });
         
-          #Map(Map.fromIter<Candy, Candy>(unstableEntries, candyMapHashTool));
+          #ValueMap(Map.fromIter<Candy, Candy>(unstableEntries, candyMapHashTool));
+        };
+        case(#Map(val)){
+          //let entries = Map.entries<CandyShared, CandyShared>(val);
+          let unstableEntries = Iter.map<(Text, CandyShared), (Text, Candy)>(
+            val.vals(),
+            func (x : (Text, CandyShared)){
+              (x.0, unshare(x.1))
+            });
+        
+          #Map(Map.fromIter<Text, Candy>(unstableEntries, Map.thash));
         };
         case(#Set(val)){
           //let entries = Set.keys<Candy>(val);
@@ -432,19 +454,19 @@ module {
   /// let x: CandyShared = #Principal(Principal.fromText("abc"));
   /// let h = Types.hash(x);
   /// ```
-  public func hash(x :Candy) : Nat {
+  public func hash(x :Candy) : Nat32 {
     
     let thisHash = switch(x){
         case(#Int(val)) Map.ihash.0(val);
-        case(#Int8(val)) Map.ihash.0(Int8.toInt(val));
-        case(#Int16(val)) Map.ihash.0(Int16.toInt(val));
-        case(#Int32(val)) Map.ihash.0(Int32.toInt(val));
-        case(#Int64(val)) Map.ihash.0(Int64.toInt(val));
+        case(#Int8(val)) Map.i8hash.0(val);
+        case(#Int16(val)) Map.i16hash.0(val);
+        case(#Int32(val)) Map.i32hash.0(val);
+        case(#Int64(val)) Map.i64hash.0(val);
         case(#Nat(val)) Map.nhash.0(val);
-        case(#Nat8(val)) Map.nhash.0(Nat8.toNat(val));
-        case(#Nat16(val)) Map.nhash.0(Nat16.toNat(val));
-        case(#Nat32(val)) Map.nhash.0(Nat32.toNat(val));
-        case(#Nat64(val)) Map.nhash.0(Nat64.toNat(val));
+        case(#Nat8(val)) Map.n8hash.0(val);
+        case(#Nat16(val)) Map.n16hash.0(val);
+        case(#Nat32(val)) Map.n32hash.0(val);
+        case(#Nat64(val)) Map.n64hash.0(val);
         case(#Float(val)) Map.thash.0(Float.format(#exact, Float.nearest(val * 100000000) / 100000000));
         case(#Text(val)) Map.thash.0(val);
         case(#Bool(val)) Map.lhash.0(val);
@@ -452,20 +474,20 @@ module {
         case(#Class(val)){
           var accumulator = 0 : Nat32;
           for(thisItem in Map.vals(val)){
-            accumulator +%= Nat32.fromNat(Map.thash.0(thisItem.name));
-            accumulator +%= Nat32.fromNat(hash(thisItem.value));
-            accumulator +%= Nat32.fromNat(Map.lhash.0(thisItem.immutable));
+            accumulator +%= Map.thash.0(thisItem.name);
+            accumulator +%= hash(thisItem.value);
+            accumulator +%= Map.lhash.0(thisItem.immutable);
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Principal(val)) Map.phash.0(val);
         case(#Array(val)){ 
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            let ahash = Nat32.fromNat(hash(thisItem));
+            let ahash = hash(thisItem);
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         
         case(#Option(val)){
@@ -473,7 +495,7 @@ module {
           switch(val){
             case(null){ 
               result  -%= 1 : Nat32;
-              return Nat32.toNat(result);
+              return result;
             };
             case(?val){hash(val)};
           };
@@ -483,44 +505,53 @@ module {
         case(#Floats(val)){ //arrays must be in the same order so we add index
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            let ahash = Nat32.fromNat(hash(#Float(thisItem)));
+            let ahash = hash(#Float(thisItem));
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Nats(val)){
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            let ahash = Nat32.fromNat(hash(#Nat(thisItem)));
+            let ahash = hash(#Nat(thisItem));
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Ints(val)){
           var accumulator = 0 : Nat32;
           for(thisItem in StableBuffer.vals(val)){
-            let ahash = Nat32.fromNat(hash(#Int(thisItem)));
+            let ahash = hash(#Int(thisItem));
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
+        };
+        case(#ValueMap(val)){
+          //this map ignores insertion order
+          var accumulator = 0 : Nat32;
+          for(thisItem in Map.entries(val)){
+            accumulator +%= hash(thisItem.0);
+            accumulator +%= hash(thisItem.1);
+          };
+          accumulator;
         };
         case(#Map(val)){
           //this map ignores insertion order
           var accumulator = 0 : Nat32;
           for(thisItem in Map.entries(val)){
-            accumulator +%= Nat32.fromNat(hash(thisItem.0));
-            accumulator +%= Nat32.fromNat(hash(thisItem.1));
+            accumulator +%=  Map.thash.0(thisItem.0);
+            accumulator +%= hash(thisItem.1);
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Set(val)){
           //this set ignores insertion order
 
           var accumulator = 0 : Nat32;
           for(thisItem in Set.keys(val)){
-            accumulator +%= Nat32.fromNat(hash(thisItem));
+            accumulator +%= hash(thisItem);
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
       };
   };
@@ -658,7 +689,7 @@ module {
         };
         return true;
       };
-      case(#Map(x), #Map(y)){
+      case(#ValueMap(x), #ValueMap(y)){
         //this map ignores insertion order
        
         if(Map.size(x) != Map.size(y)) return false;
@@ -705,19 +736,19 @@ module {
   /// let x: Candy = #Principal(Principal.fromText("abc"));
   /// let h = Types.hashShared(x);  
   /// ```
-  public func hashShared(x :CandyShared) : Nat {
+  public func hashShared(x :CandyShared) : Nat32 {
 
     let thisHash = switch(x){
         case(#Int(val)) Map.ihash.0(val);
-        case(#Int8(val)) Map.ihash.0(Int8.toInt(val));
-        case(#Int16(val)) Map.ihash.0(Int16.toInt(val));
-        case(#Int32(val)) Map.ihash.0(Int32.toInt(val));
-        case(#Int64(val)) Map.ihash.0(Int64.toInt(val));
+        case(#Int8(val)) Map.i8hash.0(val);
+        case(#Int16(val)) Map.i16hash.0(val);
+        case(#Int32(val)) Map.i32hash.0(val);
+        case(#Int64(val)) Map.i64hash.0(val);
         case(#Nat(val)) Map.nhash.0(val);
-        case(#Nat8(val)) Map.nhash.0(Nat8.toNat(val));
-        case(#Nat16(val)) Map.nhash.0(Nat16.toNat(val));
-        case(#Nat32(val)) Map.nhash.0(Nat32.toNat(val));
-        case(#Nat64(val)) Map.nhash.0(Nat64.toNat(val));
+        case(#Nat8(val)) Map.n8hash.0(val);
+        case(#Nat16(val)) Map.n16hash.0(val);
+        case(#Nat32(val)) Map.n32hash.0(val);
+        case(#Nat64(val)) Map.n64hash.0(val);
         case(#Float(val)) Map.thash.0(Float.format(#exact, Float.nearest(val * 100000000)/ 100000000));
         case(#Text(val)) Map.thash.0(val);
         case(#Bool(val)) Map.lhash.0(val);
@@ -725,11 +756,11 @@ module {
         case(#Class(val)){
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator +%= Nat32.fromNat(Map.thash.0(thisItem.name));
-            accumulator +%= Nat32.fromNat(hashShared(thisItem.value));
-            accumulator +%= Nat32.fromNat(Map.lhash.0(thisItem.immutable));
+            accumulator +%= Map.thash.0(thisItem.name);
+            accumulator +%= hashShared(thisItem.value);
+            accumulator +%= Map.lhash.0(thisItem.immutable);
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Principal(val)) Map.phash.0(val);
         
@@ -737,17 +768,17 @@ module {
           
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            let ahash = Nat32.fromNat(hashShared(thisItem));
+            let ahash = hashShared(thisItem);
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Option(val)){
           var result : Nat32 = 0;
           switch(val){
             case(null){ 
               result  -%= 1 : Nat32;
-              return Nat32.toNat(result);
+              return result;
             };
             case(?val){hashShared(val)};
           };
@@ -758,43 +789,52 @@ module {
           
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            let ahash = Nat32.fromNat(hashShared(#Float(thisItem)));
+            let ahash = hashShared(#Float(thisItem));
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Nats(val)){
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            let ahash = Nat32.fromNat(hashShared(#Nat(thisItem)));
+            let ahash =hashShared(#Nat(thisItem));
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Ints(val)){
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            let ahash = Nat32.fromNat(hashShared(#Int(thisItem)));
+            let ahash =hashShared(#Int(thisItem));
             accumulator := (accumulator *% 3) +% ahash;
           };
-          Nat32.toNat(accumulator);
+          accumulator;
+        };
+        case(#ValueMap(val)){
+          //this map takes insertion order into account
+          var accumulator = 0 : Nat32;
+          for(thisItem in val.vals()){
+            accumulator +%= hashShared(thisItem.0);
+            accumulator +%= hashShared(thisItem.1);
+          };
+          accumulator;
         };
         case(#Map(val)){
           //this map takes insertion order into account
           var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator +%= Nat32.fromNat(hashShared(thisItem.0));
-            accumulator +%= Nat32.fromNat(hashShared(thisItem.1));
+            accumulator +%= Map.thash.0(thisItem.0);
+            accumulator +%= hashShared(thisItem.1);
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
         case(#Set(val)){
           //this set takes insertion order into account
          var accumulator = 0 : Nat32;
           for(thisItem in val.vals()){
-            accumulator +%= Nat32.fromNat(hashShared(thisItem));
+            accumulator +%= hashShared(thisItem);
           };
-          Nat32.toNat(accumulator);
+          accumulator;
         };
       };
   };
@@ -909,14 +949,14 @@ module {
         };
         return true;
       };
-      case(#Map(x), #Map(y)){
+      case(#ValueMap(x), #ValueMap(y)){
         //this map IGNORES insertion order 
        
         if(x.size() != y.size()) return false;
 
-        let yit = Iter.sort<(CandyShared, CandyShared)>(y.vals(), func(x, y){Nat.compare(hashShared(x.0), hashShared(y.0))});
+        let yit = Iter.sort<(CandyShared, CandyShared)>(y.vals(), func(x, y){Nat32.compare(hashShared(x.0), hashShared(y.0))});
 
-        for(thisItem in Iter.sort<(CandyShared, CandyShared)>(x.vals(), func(x, y){Nat.compare(hashShared(x.0), hashShared(y.0))})){
+        for(thisItem in Iter.sort<(CandyShared, CandyShared)>(x.vals(), func(x, y){Nat32.compare(hashShared(x.0), hashShared(y.0))})){
           switch(yit.next()){
             case(null) return false;
             case(?val){
@@ -933,9 +973,9 @@ module {
       };
       case(#Set(x), #Set(y)){
        //this set takes insertion order into account
-       let yit = Iter.sort<CandyShared>(y.vals(), func(x, y){Nat.compare(hashShared(x), hashShared(y))});
+       let yit = Iter.sort<CandyShared>(y.vals(), func(x, y){Nat32.compare(hashShared(x), hashShared(y))});
 
-        for(thisItem in Iter.sort<CandyShared>(x.vals(), func(x, y){Nat.compare(hashShared(x), hashShared(y))})){
+        for(thisItem in Iter.sort<CandyShared>(x.vals(), func(x, y){Nat32.compare(hashShared(x), hashShared(y))})){
           switch(yit.next()){
             case(null) return false;
             case(?val){

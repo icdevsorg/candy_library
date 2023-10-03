@@ -18,7 +18,7 @@ import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 
-import Map "mo:map7/Map";
+import Map "mo:map9/Map";
 
 import Types "types";
 import CandyHex "hex";
@@ -174,7 +174,62 @@ module {
           case(#Int32(val))buffer.add({_type = #int32; value = #int32(val)});
           case(#Int16(val))buffer.add({_type = #int16; value = #int16(val)});
           case(#Int8(val))buffer.add({_type = #int8; value = #int8(val)});
+
           case(#Map(val)){
+              let list = val;
+              
+              var bFoundMultipleKeyTypes = false;
+              var bFoundMultipleValueTypes = false;
+              var lastKeyType : ?CandidTypes.Type = null;
+              var lastValueType : ?CandidTypes.Type = null;
+              let values: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(list.size());
+              let types: Buffer.Buffer<CandidTypes.RecordFieldType> = Buffer.Buffer<CandidTypes.RecordFieldType>(list.size());
+
+              let localValues: Buffer.Buffer<Value.Value> = Buffer.Buffer<Value.Value>(2);
+              let localTypes: Buffer.Buffer<CandidTypes.RecordFieldType> = Buffer.Buffer<CandidTypes.RecordFieldType>(2);
+
+
+              let body: Buffer.Buffer<Value.RecordFieldValue> = Buffer.Buffer<Value.RecordFieldValue>(list.size());
+
+
+              let localBody: Buffer.Buffer<Value.RecordFieldValue> = Buffer.Buffer<Value.RecordFieldValue>(2);
+
+              var tracker : Nat32 = 0;
+              for(this_item in list.vals()){
+                  let key = (this_item.0);
+                  let value = (value_to_candid(this_item.1))[0];
+                  
+                  switch(lastValueType){
+                    case(null) lastValueType := ?value._type;
+                    case(?lastValueType){
+                      if(CandidTypes.equal(lastValueType, value._type)){
+
+                      } else {
+                        bFoundMultipleValueTypes := true;
+                      };
+                    };
+                  };
+
+                  localTypes.add({_type = #text; tag = #hash(0)});
+                  localTypes.add({_type = value._type; tag = #hash(1)});
+
+                  localBody.add({tag = #hash(0); value = #text(key)});
+                  localBody.add({tag = #hash(1); value = value.value});
+
+                  let thisItem = {_type=#record(Buffer.toArray(localTypes)); value = #record(Buffer.toArray(localBody))};
+
+                  types.add({_type = thisItem._type; tag = #hash(tracker)});
+                  body.add({tag = #hash(tracker); value = thisItem.value});
+                  values.add(thisItem.value);
+                  tracker += 1;
+              };
+
+              
+              buffer.add({_type=#record(Buffer.toArray(types)); value = #record(Buffer.toArray(body))})
+              
+          };
+          
+          case(#ValueMap(val)){
               let list = val;
               
               var bFoundMultipleKeyTypes = false;

@@ -40,7 +40,7 @@ import Types "types";
 import Hex "hex";
 import Properties "properties";
 import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map7/Map";
+import Map "mo:map9/Map";
 
 
 module {
@@ -610,6 +610,7 @@ module {
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
       case(#Ints(val)){Prelude.nyi()};
+      case(#ValueMap(val)){Prelude.nyi()};
       case(#Map(val)){Prelude.nyi()};
       case(#Set(val)){Prelude.nyi()};
     }
@@ -1233,6 +1234,7 @@ module {
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
       case(#Ints(val)){Prelude.nyi()};
+      case(#ValueMap(val)){Prelude.nyi()};
       case(#Map(val)){Prelude.nyi()};
       case(#Set(val)){Prelude.nyi()};
     }

@@ -15,7 +15,7 @@
 /// manipulating classes.
 
 import Buffer "mo:base/Buffer";
-import Map "mo:map7/Map";
+import Map "mo:map9/Map";
 import Text "mo:base/Text";
 import Array "mo:base/Array";
 import Result "mo:base/Result";
@@ -318,9 +318,9 @@ module {
   //
   ///////////////////////////////////
 
-  private func toPropertySharedMap(ps : Properties) : Map.Map<Text,PropertyShared> {
+  private func toPropertySharedMap(ps : Properties) : Map.Map<Text, PropertyShared> {
     let m = Map.new<Text, PropertyShared>();
-    for (property in Map.vals(ps)) {
+    for (property in Map.vals<Text, Property>(ps)) {
       ignore Map.put(m, Map.thash, property.name, Types.shareProperty(property));
     };
     m;

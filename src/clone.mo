@@ -16,8 +16,8 @@
 import Types "types";
 import Array "mo:base/Array";
 import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map7/Map";
-import Set "mo:map7/Set";
+import Map "mo:map9/Map";
+import Set "mo:map9/Set";
 
 module {
 
@@ -46,7 +46,7 @@ module {
       case(#Ints(val)){#Ints(StableBuffer.clone(val))};
       case(#Floats(val)){#Floats(StableBuffer.clone(val))};
       case(#Array(val)){#Array(StableBuffer.clone(val))};
-      case(#Map(val)){#Map(Map.fromIter<Candy,Candy>(Map.entries(val), Types.candyMapHashTool))};
+      case(#ValueMap(val)){#ValueMap(Map.fromIter<Candy,Candy>(Map.entries(val), Types.candyMapHashTool))};
       case(#Set(val)){#Set(Set.fromIter<Candy>(Set.keys(val), Types.candyMapHashTool))};
       case(_) val;
     };

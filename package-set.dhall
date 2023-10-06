@@ -1,4 +1,4 @@
-let upstream = https://github.com/dfinity/vessel-package-set/releases/download/mo-0.10.0-20230911/package-set.dhall sha256:6833f571fdfdb714eb7a788f91ffd1333e912093714bcc5b1de416cfe8bdf0b8
+let upstream = https://github.com/dfinity/vessel-package-set/releases/download/mo-0.10.0-20230911/package-set.dhall sha256:7bce6afe8b96a8808f66b5b6f7015257d44fc1f3e95add7ced3ccb7ce36e5603
 let Package =
     { name : Text, version : Text, repo : Text, dependencies : List Text }
 

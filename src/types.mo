@@ -710,6 +710,26 @@ module {
         };
         return true;
       };
+      case(#Map(x), #Map(y)){
+        //this map ignores insertion order
+       
+        if(Map.size(x) != Map.size(y)) return false;
+
+        for(thisItem in Map.entries(x)){
+          switch(Map.get(y, Map.thash, thisItem.0)){
+        
+              case(null){
+                return false;
+              };
+              case(?val){
+                if(eq(val, thisItem.1) == false){
+                  return false;
+                };
+              }
+            };
+        };
+        return true;
+      };
       case(#Set(x), #Set(y)){
        //this set takes insertion order into account
        if(Set.size(x) != Set.size(y)) return false;
@@ -961,6 +981,28 @@ module {
             case(null) return false;
             case(?val){
                if(eqShared(val.0, thisItem.0) == false){
+                   return false;
+                };
+                if(eqShared(val.1, thisItem.1) == false){
+                  return false;
+                };
+            };
+          };
+        };
+        return true;
+      };
+      case(#Map(x), #Map(y)){
+        //this map IGNORES insertion order 
+       
+        if(x.size() != y.size()) return false;
+
+        let yit = Iter.sort<(Text, CandyShared)>(y.vals(), func(x, y){Nat32.compare(Text.hash(x.0), Text.hash(y.0))});
+
+        for(thisItem in Iter.sort<(Text, CandyShared)>(x.vals(), func(x, y){Nat32.compare(Text.hash(x.0), Text.hash(y.0))})){
+          switch(yit.next()){
+            case(null) return false;
+            case(?val){
+               if(Text.equal(val.0, thisItem.0) == false){
                    return false;
                 };
                 if(eqShared(val.1, thisItem.1) == false){

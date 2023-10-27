@@ -41,6 +41,7 @@ import Hex "hex";
 import Properties "properties";
 import StableBuffer "mo:stablebuffer/StableBuffer";
 import Map "mo:map9/Map";
+import Set "mo:map9/Set";
 
 
 module {
@@ -484,7 +485,40 @@ module {
         return Hex.encode(StableBuffer.toArray(val));
          
       };
-      case(_){assert(false);/*unreachable*/"";};
+      case(#Set(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+         var t = "[";
+          for(thisItem in Set.keys(val)){
+            t := t # "{" # candyToText(thisItem) # "} ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "]";
+
+
+      };
+      case(#Map(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+        var t = "{";
+        for(thisItem in Map.entries(val)){
+          t := t # thisItem.0 # ":" # candyToText(thisItem.1) # "; ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      case(#ValueMap(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+        var t = "{";
+        for(thisItem in Map.entries(val)){
+          t := t # candyToText(thisItem.0) # ":" # candyToText(thisItem.1) # "; ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      //case(_){assert(false);/*unreachable*/"";};
     };
   };
 
@@ -668,6 +702,65 @@ module {
       };
       case(_){
           toBuffer([candyToNat(val)]); //may throw for unconvertable types
+      };
+    };
+  };
+
+  /// Convert a `Candy` to `Map<Text, Candy>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Map.new<text,Candy>();
+  /// Map.put<Text, Candy>(map, thash, "akey", #Text("value"));
+  /// let value: Candy = #Map(map);
+  /// let value_as_nats_buffer = Conversion.candyToMap(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToMap(val : Candy) : Map.Map<Text, Candy>{
+    switch (val){
+      case(#Map(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
+      };
+    };
+  };
+
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Map.new<text,Candy>();
+  /// Map.put<candy, Candy>(map, candyHashTool, #Text("akey"), #Text("value"));
+  /// let value: Candy = #ValueMapMap(map);
+  /// let value_as_nats_buffer = Conversion.candyToValueMap(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToValueMap(val : Candy) : Map.Map<Candy, Candy>{
+    switch (val){
+      case(#ValueMap(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
+      };
+    };
+  };
+
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Set.new<Candy>();
+  /// Set.put<Candy>(map, candyHashTool, #Text("akey"));
+  /// let value: Candy = #Set(map);
+  /// let value_as_nats_buffer = Conversion.candyToSet(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToSet(val : Candy) : Set.Set<Candy>{
+    switch (val){
+      case(#Set(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
       };
     };
   };
@@ -1107,7 +1200,40 @@ module {
         return Hex.encode(val);
             
       };
-      case(_){assert(false);/*unreachable*/"";};
+      case(#Set(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+          var t = "[";
+        for(thisItem in val.vals()){
+            t := t # "{" # candySharedToText(thisItem) # "} ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "]";
+
+
+      };
+      case(#Map(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+          var t = "{";
+          for(thisItem in val.vals()){
+              t := t # thisItem.0 # ": " # candySharedToText(thisItem.1) # "; ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      case(#ValueMap(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+          var t = "{";
+          for(thisItem in val.vals()){
+              t := t # candySharedToText(thisItem.0) # ": " # candySharedToText(thisItem.1) # "; ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      //case(_){assert(false);/*unreachable*/"";};
     };
   };
 

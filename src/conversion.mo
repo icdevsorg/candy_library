@@ -764,6 +764,27 @@ module {
       };
     };
   };
+  
+  /// Convert a `Candy` to `Map<Text, Property>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Map.new<text,Candy>();
+  /// Map.put<Text, Property>(map, thash, "akey", {name="test";value=#Text("value"); immutable=true;);
+  /// let value: Candy = #Class(map);
+  /// let value_as_nats_buffer = Conversion.candyToPropertyMap(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToPropertyMap(val : Candy) : Map.Map<Text, Property>{
+    switch (val){
+      case(#Class(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
+      };
+    };
+  };
 
   /// Convert a `CandyShared` to `Nat`.
   ///

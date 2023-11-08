@@ -157,6 +157,15 @@ module {
     #Set : [CandyShared];
   };
 
+  public type ValueShared = {
+    #Int : Int;
+    #Nat : Nat;
+    #Text : Text;
+    #Blob : Blob;
+    #Array :  [ValueShared];
+    #Map : [(Text, ValueShared)];
+  };
+
   /// The Shared CandyShared.
   public type Candy = {
     #Int :  Int;

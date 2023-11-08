@@ -48,6 +48,7 @@ module {
 
   type CandyShared = Types.CandyShared;
   type Candy = Types.Candy;
+  type ValueShared = Types.ValueShared;
   type DataZone = Types.DataZone;
   type PropertyShared = Types.PropertyShared;
   type Property = Types.Property;
@@ -1956,6 +1957,71 @@ module {
           };
       };
       case(_){val};
+    };
+  };
+
+  ///converts a candyshared value to the reduced set of ValueShared used in many places like ICRC3.  Some types not recoverable
+  public func CandySharedToValue(x: CandyShared) : ValueShared {
+    switch(x){
+      case(#Text(x)) #Text(x);
+      case(#Map(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in x.vals()){
+          buf.add((thisItem.0, CandySharedToValue(thisItem.1)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Class(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in x.vals()){
+          buf.add((thisItem.name, CandySharedToValue(thisItem.value)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Int(x)) #Int(x);
+      case(#Int8(x)) #Int(Int8.toInt(x));
+      case(#Int16(x)) #Int(Int16.toInt(x));
+      case(#Int32(x)) #Int(Int32.toInt(x));
+      case(#Int64(x)) #Int(Int64.toInt(x));
+      case(#Ints(x)){
+         #Array(Array.map<Int,ValueShared>(x, func(x: Int) : ValueShared { #Int(x)}));
+      };
+      case(#Nat(x)) #Nat(x);
+      case(#Nat8(x)) #Nat(Nat8.toNat(x));
+      case(#Nat16(x)) #Nat(Nat16.toNat(x));
+      case(#Nat32(x)) #Nat(Nat32.toNat(x));
+      case(#Nat64(x)) #Nat(Nat64.toNat(x));
+      case(#Nats(x)){
+         #Array(Array.map<Nat,ValueShared>(x, func(x: Nat) : ValueShared { #Nat(x)}));
+      };
+      case(#Bytes(x)){
+         #Blob(Blob.fromArray(x));
+      };
+      case(#Array(x)) {
+        #Array(Array.map<CandyShared, ValueShared>(x, CandySharedToValue));
+      };
+      case(#Blob(x)) #Blob(x);
+      case(#Bool(x)) #Blob(Blob.fromArray([if(x==true){1 : Nat8} else {0: Nat8}]));
+      case(#Float(x)){#Text(Float.format(#exact, x))};
+      case(#Floats(x)){
+        #Array(Array.map<Float,ValueShared>(x, func(x: Float) : ValueShared { CandySharedToValue(#Float(x))}));
+      };
+      case(#Option(x)){ //empty array is null
+        switch(x){
+          case(null) #Array([]);
+          case(?x) #Array([CandySharedToValue(x)]);
+        };
+      };
+      case(#Principal(x)){
+        #Blob(Principal.toBlob(x));
+      };
+      case(#Set(x)) {
+        #Array(Array.map<CandyShared,ValueShared>(x, func(x: CandyShared) : ValueShared { CandySharedToValue(x)}));
+      };
+      case(#ValueMap(x)) {
+        #Array(Array.map<(CandyShared,CandyShared),ValueShared>(x, func(x: (CandyShared,CandyShared)) : ValueShared { #Array([CandySharedToValue(x.0), CandySharedToValue(x.1)])}));
+      };
+      //case(_){assert(false);/*unreachable*/#Nat(0);};
     };
   };
 }

@@ -20,7 +20,7 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 
 import Types "types";
-import CandyHex "hex";
+import Hex "mo:encoding_0_4_1/Hex";
 
 module {
   /// Convert `CandyShared` to JSON format as `Text`.
@@ -79,24 +79,24 @@ module {
         case(#Floats(val)){
           var body: Buffer.Buffer<Text> = Buffer.Buffer<Text>(1);
           for(this_item in val.vals()){
-            body.add(Float.toText(this_item));
+            body.add(Float.format(#exact, this_item));
           };
           return "[" # Text.join(",", body.vals()) # "]";
         };
         //bytes
         case(#Bytes(val)){
-          return "\"" # CandyHex.encode(val) # "\"";//CandyHex.encode(val);
+          return "\"" # Hex.encode(val) # "\"";//CandyHex.encode(val);
         };
         //bytes
         case(#Blob(val)){
-          return "\"" # CandyHex.encode(Blob.toArray(val)) # "\"";//CandyHex.encode(val);
+          return "\"" # Hex.encode(Blob.toArray(val)) # "\"";//CandyHex.encode(val);
         };
         //principal
         case(#Principal(val)){ "\"" # Principal.toText(val) # "\"";};
         //bool	
         case(#Bool(val)){ "\"" # Bool.toText(val) # "\"";};	
         //float	
-        case(#Float(val)){ Float.format(#fix 8, val)};
+        case(#Float(val)){ Float.format(#exact, val)};
         case(#Int(val)){Int.toText(val);};
         case(#Int64(val)){Int64.toText(val);};
         case(#Int32(val)){Int32.toText(val);};

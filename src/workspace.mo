@@ -17,9 +17,9 @@
 
 import Array "mo:base/Array";
 import Buffer "mo:base/Buffer";
-import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map/Map";
-import Set "mo:map/Set";
+import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
+import Map "mo:map9/Map";
+import Set "mo:map9/Set";
 
 import Int "mo:base/Int";
 import Iter "mo:base/Iter";
@@ -144,10 +144,17 @@ module {
         };
         return size;
       };
-      case (#Map(val)) {
+      case (#ValueMap(val)) {
         var size = 0;
         for (thisItem in Map.entries(val)) {
           size += getCandySize(thisItem.0) + getCandySize(thisItem.1) + 2;
+        };
+        return size;
+      };
+      case (#Map(val)) {
+        var size = 0;
+        for (thisItem in Map.entries(val)) {
+          size += (thisItem.0.size() * 4) + getCandySize(thisItem.1) + 2;
         };
         return size;
       };
@@ -245,10 +252,19 @@ module {
         };
         return size;
       };
-      case (#Map(val)) {
+      case (#ValueMap(val)) {
         var size = 0;
         for (thisItem in val.vals()) {
           size += getCandySharedSize(thisItem.0) + getCandySharedSize(thisItem.1) + 2;
+        };
+
+        return size;
+
+      };
+      case (#Map(val)) {
+        var size = 0;
+        for (thisItem in val.vals()) {
+          size += (thisItem.0.size() *4) + getCandySharedSize(thisItem.1) + 2;
         };
 
         return size;

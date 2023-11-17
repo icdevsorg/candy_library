@@ -37,16 +37,18 @@ import Principal "mo:base/Principal";
 import Prelude "mo:base/Prelude";
 import List "mo:base/List";
 import Types "types";
-import Hex "hex";
+import Hex "mo:encoding_0_4_1/Hex";
 import Properties "properties";
-import StableBuffer "mo:stablebuffer/StableBuffer";
-import Map "mo:map/Map";
+import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
+import Map "mo:map9/Map";
+import Set "mo:map9/Set";
 
 
 module {
 
   type CandyShared = Types.CandyShared;
   type Candy = Types.Candy;
+  type ValueShared = Types.ValueShared;
   type DataZone = Types.DataZone;
   type PropertyShared = Types.PropertyShared;
   type Property = Types.Property;
@@ -484,7 +486,40 @@ module {
         return Hex.encode(StableBuffer.toArray(val));
          
       };
-      case(_){assert(false);/*unreachable*/"";};
+      case(#Set(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+         var t = "[";
+          for(thisItem in Set.keys(val)){
+            t := t # "{" # candyToText(thisItem) # "} ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "]";
+
+
+      };
+      case(#Map(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+        var t = "{";
+        for(thisItem in Map.entries(val)){
+          t := t # thisItem.0 # ":" # candyToText(thisItem.1) # "; ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      case(#ValueMap(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+        var t = "{";
+        for(thisItem in Map.entries(val)){
+          t := t # candyToText(thisItem.0) # ":" # candyToText(thisItem.1) # "; ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      //case(_){assert(false);/*unreachable*/"";};
     };
   };
 
@@ -610,6 +645,7 @@ module {
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
       case(#Ints(val)){Prelude.nyi()};
+      case(#ValueMap(val)){Prelude.nyi()};
       case(#Map(val)){Prelude.nyi()};
       case(#Set(val)){Prelude.nyi()};
     }
@@ -667,6 +703,86 @@ module {
       };
       case(_){
           toBuffer([candyToNat(val)]); //may throw for unconvertable types
+      };
+    };
+  };
+
+  /// Convert a `Candy` to `Map<Text, Candy>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Map.new<text,Candy>();
+  /// Map.put<Text, Candy>(map, thash, "akey", #Text("value"));
+  /// let value: Candy = #Map(map);
+  /// let value_as_nats_buffer = Conversion.candyToMap(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToMap(val : Candy) : Map.Map<Text, Candy>{
+    switch (val){
+      case(#Map(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
+      };
+    };
+  };
+
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Map.new<text,Candy>();
+  /// Map.put<candy, Candy>(map, candyHashTool, #Text("akey"), #Text("value"));
+  /// let value: Candy = #ValueMapMap(map);
+  /// let value_as_nats_buffer = Conversion.candyToValueMap(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToValueMap(val : Candy) : Map.Map<Candy, Candy>{
+    switch (val){
+      case(#ValueMap(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
+      };
+    };
+  };
+
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Set.new<Candy>();
+  /// Set.put<Candy>(map, candyHashTool, #Text("akey"));
+  /// let value: Candy = #Set(map);
+  /// let value_as_nats_buffer = Conversion.candyToSet(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToSet(val : Candy) : Set.Set<Candy>{
+    switch (val){
+      case(#Set(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
+      };
+    };
+  };
+  
+  /// Convert a `Candy` to `Map<Text, Property>`
+  ///
+  /// Example:
+  /// ```motoko include=import
+  /// let map = Map.new<text,Candy>();
+  /// Map.put<Text, Property>(map, thash, "akey", {name="test";value=#Text("value"); immutable=true;);
+  /// let value: Candy = #Class(map);
+  /// let value_as_nats_buffer = Conversion.candyToPropertyMap(value);
+  /// ```
+  /// Note: Throws if the underlying value isn't convertible.
+  public func candyToPropertyMap(val : Candy) : Map.Map<Text, Property>{
+    switch (val){
+      case(#Class(val)){
+        return val;
+      };
+      case(_){
+          Prelude.nyi(); //will throw for unconvertable types
       };
     };
   };
@@ -1106,7 +1222,40 @@ module {
         return Hex.encode(val);
             
       };
-      case(_){assert(false);/*unreachable*/"";};
+      case(#Set(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+          var t = "[";
+        for(thisItem in val.vals()){
+            t := t # "{" # candySharedToText(thisItem) # "} ";
+        };
+        
+        return Text.trimEnd(t, #text(" ")) # "]";
+
+
+      };
+      case(#Map(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+          var t = "{";
+          for(thisItem in val.vals()){
+              t := t # thisItem.0 # ": " # candySharedToText(thisItem.1) # "; ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      case(#ValueMap(val)){ //this is currently not parseable and should probably just be used for debuging. It would be nice to output candid.
+
+          var t = "{";
+          for(thisItem in val.vals()){
+              t := t # candySharedToText(thisItem.0) # ": " # candySharedToText(thisItem.1) # "; ";
+          };
+          
+          return Text.trimEnd(t, #text(" ")) # "}";
+
+
+      };
+      //case(_){assert(false);/*unreachable*/"";};
     };
   };
 
@@ -1233,6 +1382,7 @@ module {
       case(#Floats(val)){Prelude.nyi()};
       case(#Nats(val)){Prelude.nyi()};
       case(#Ints(val)){Prelude.nyi()};
+      case(#ValueMap(val)){Prelude.nyi()};
       case(#Map(val)){Prelude.nyi()};
       case(#Set(val)){Prelude.nyi()};
     }
@@ -1808,5 +1958,139 @@ module {
       };
       case(_){val};
     };
+  };
+
+  ///converts a candyshared value to the reduced set of ValueShared used in many places like ICRC3.  Some types not recoverable
+  public func CandySharedToValue(x: CandyShared) : ValueShared {
+    switch(x){
+      case(#Text(x)) #Text(x);
+      case(#Map(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in x.vals()){
+          buf.add((thisItem.0, CandySharedToValue(thisItem.1)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Class(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in x.vals()){
+          buf.add((thisItem.name, CandySharedToValue(thisItem.value)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Int(x)) #Int(x);
+      case(#Int8(x)) #Int(Int8.toInt(x));
+      case(#Int16(x)) #Int(Int16.toInt(x));
+      case(#Int32(x)) #Int(Int32.toInt(x));
+      case(#Int64(x)) #Int(Int64.toInt(x));
+      case(#Ints(x)){
+         #Array(Array.map<Int,ValueShared>(x, func(x: Int) : ValueShared { #Int(x)}));
+      };
+      case(#Nat(x)) #Nat(x);
+      case(#Nat8(x)) #Nat(Nat8.toNat(x));
+      case(#Nat16(x)) #Nat(Nat16.toNat(x));
+      case(#Nat32(x)) #Nat(Nat32.toNat(x));
+      case(#Nat64(x)) #Nat(Nat64.toNat(x));
+      case(#Nats(x)){
+         #Array(Array.map<Nat,ValueShared>(x, func(x: Nat) : ValueShared { #Nat(x)}));
+      };
+      case(#Bytes(x)){
+         #Blob(Blob.fromArray(x));
+      };
+      case(#Array(x)) {
+        #Array(Array.map<CandyShared, ValueShared>(x, CandySharedToValue));
+      };
+      case(#Blob(x)) #Blob(x);
+      case(#Bool(x)) #Blob(Blob.fromArray([if(x==true){1 : Nat8} else {0: Nat8}]));
+      case(#Float(x)){#Text(Float.format(#exact, x))};
+      case(#Floats(x)){
+        #Array(Array.map<Float,ValueShared>(x, func(x: Float) : ValueShared { CandySharedToValue(#Float(x))}));
+      };
+      case(#Option(x)){ //empty array is null
+        switch(x){
+          case(null) #Array([]);
+          case(?x) #Array([CandySharedToValue(x)]);
+        };
+      };
+      case(#Principal(x)){
+        #Blob(Principal.toBlob(x));
+      };
+      case(#Set(x)) {
+        #Array(Array.map<CandyShared,ValueShared>(x, func(x: CandyShared) : ValueShared { CandySharedToValue(x)}));
+      };
+      case(#ValueMap(x)) {
+        #Array(Array.map<(CandyShared,CandyShared),ValueShared>(x, func(x: (CandyShared,CandyShared)) : ValueShared { #Array([CandySharedToValue(x.0), CandySharedToValue(x.1)])}));
+      };
+      //case(_){assert(false);/*unreachable*/#Nat(0);};
+    };
+
+    
+  };
+
+  ///converts a candy value to the reduced set of ValueShared used in many places like ICRC3.  Some types not recoverable
+  public func CandyToValue(x: Candy) : ValueShared {
+    switch(x){
+      case(#Text(x)) #Text(x);
+      case(#Map(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in Map.entries(x)){
+          buf.add((thisItem.0, CandyToValue(thisItem.1)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Class(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in Map.entries(x)){
+          buf.add((thisItem.1.name, CandyToValue(thisItem.1.value)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Int(x)) #Int(x);
+      case(#Int8(x)) #Int(Int8.toInt(x));
+      case(#Int16(x)) #Int(Int16.toInt(x));
+      case(#Int32(x)) #Int(Int32.toInt(x));
+      case(#Int64(x)) #Int(Int64.toInt(x));
+      case(#Ints(x)){
+         #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Int,ValueShared>(x, func(x: Int) : ValueShared { #Int(x)})));
+      };
+      case(#Nat(x)) #Nat(x);
+      case(#Nat8(x)) #Nat(Nat8.toNat(x));
+      case(#Nat16(x)) #Nat(Nat16.toNat(x));
+      case(#Nat32(x)) #Nat(Nat32.toNat(x));
+      case(#Nat64(x)) #Nat(Nat64.toNat(x));
+      case(#Nats(x)){
+          #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Nat,ValueShared>(x, func(x: Nat) : ValueShared { #Nat(x)})));
+      };
+      case(#Bytes(x)){
+         #Blob(Blob.fromArray(StableBuffer.toArray<Nat8>(x)));
+      };
+      case(#Array(x)) {
+        #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Candy, ValueShared>(x, CandyToValue)));
+      };
+      case(#Blob(x)) #Blob(x);
+      case(#Bool(x)) #Blob(Blob.fromArray([if(x==true){1 : Nat8} else {0: Nat8}]));
+      case(#Float(x)){#Text(Float.format(#exact, x))};
+      case(#Floats(x)){
+        #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Float,ValueShared>(x, func(x: Float) : ValueShared { CandyToValue(#Float(x))})));
+      };
+      case(#Option(x)){ //empty array is null
+        switch(x){
+          case(null) #Array([]);
+          case(?x) #Array([CandyToValue(x)]);
+        };
+      };
+      case(#Principal(x)){
+        #Blob(Principal.toBlob(x));
+      };
+      case(#Set(x)) {
+        #Array(Iter.toArray<ValueShared>(Iter.map<Candy,ValueShared>(Set.keys(x), func(x: Candy) : ValueShared { CandyToValue(x)})));
+      };
+      case(#ValueMap(x)) {
+        #Array(Iter.toArray<ValueShared>(Iter.map<(Candy,Candy),ValueShared>(Map.entries(x), func(x: (Candy,Candy)) : ValueShared { #Array([CandyToValue(x.0), CandyToValue(x.1)])})));
+      };
+      //case(_){assert(false);/*unreachable*/#Nat(0);};
+    };
+
+    
   };
 }

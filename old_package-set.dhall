@@ -27,7 +27,7 @@ let
       , dependencies = [ "base"]
       },
       { name = "base", repo = "https://github.com/dfinity/motoko-base.git", version = "moc-0.8.1", dependencies = []: List Text },
-      { name = "map"
+      { name = "map7"
       , repo = "https://github.com/ZhenyaUsenko/motoko-hash-map"
       , version = "v7.0.0"
       , dependencies = [ "base"]

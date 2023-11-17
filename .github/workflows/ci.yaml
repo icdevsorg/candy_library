@@ -22,7 +22,7 @@ jobs:
         node-version: 14
     - uses: aviate-labs/setup-dfx@v0.2.3
       with:
-        dfx-version: 0.13.1
+        dfx-version: 0.15.1
 
     - name: "install Motoko binaries"
       run: |

@@ -15,7 +15,7 @@
 
 import Types "types";
 import Array "mo:base/Array";
-import StableBuffer "mo:stablebuffer/StableBuffer";
+import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
 import Map "mo:map9/Map";
 import Set "mo:map9/Set";
 

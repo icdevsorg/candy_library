@@ -17,7 +17,7 @@
 /// & stabilize/destabilize candy values.
 
 import Buffer "mo:base/Buffer";
-import StableBuffer "mo:stablebuffer/StableBuffer";
+import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Map "mo:map9/Map";

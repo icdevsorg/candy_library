@@ -23,9 +23,18 @@ import Map7 "mo:map7/Map";
 import Set7 "mo:map7/Set";
 import Map "mo:map9/Map";
 import Set "mo:map9/Set";
-import StableBuffer "mo:stablebuffer/StableBuffer";
+import StableBuffer_Old "mo:stablebuffer/StableBuffer";
+import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
 
 module {
+
+  public func toBufferOld<T>(x :[T]) : StableBuffer_Old.StableBuffer<T>{
+    let thisBuffer = StableBuffer_Old.initPresized<T>(x.size());
+    for(thisItem in x.vals()){
+      StableBuffer_Old.add(thisBuffer,thisItem);
+    };
+    return thisBuffer;
+  };
 
   /// Upgrade from V1 representation of `CandyShared` to the V2 representation.
   public func upgradeCandy0_1_2_to_0_2_0(item : CandyOld.CandyValueUnstable) : Candy0_2_0.Candy {
@@ -71,20 +80,20 @@ module {
       };
       case (#Bytes(val)) {
         switch (val) {
-          case (#frozen(val)) { #Bytes(CandyTypes.toBuffer(val)) };
-          case (#thawed(val)) { #Bytes(CandyTypes.toBuffer(Buffer.toArray(val))) };
+          case (#frozen(val)) { #Bytes(toBufferOld(val)) };
+          case (#thawed(val)) { #Bytes(toBufferOld(Buffer.toArray(val))) };
         };
       };
       case (#Floats(val)) {
         switch (val) {
-          case (#frozen(val)) { #Floats(CandyTypes.toBuffer(val)) };
-          case (#thawed(val)) { #Floats(CandyTypes.toBuffer(Buffer.toArray(val))) };
+          case (#frozen(val)) { #Floats(toBufferOld(val)) };
+          case (#thawed(val)) { #Floats(toBufferOld(Buffer.toArray(val))) };
         };
       };
       case (#Nats(val)) {
         switch (val) {
-          case (#frozen(val)) { #Nats(CandyTypes.toBuffer(val)) };
-          case (#thawed(val)) { #Nats(CandyTypes.toBuffer(Buffer.toArray(val))) };
+          case (#frozen(val)) { #Nats(toBufferOld(val)) };
+          case (#thawed(val)) { #Nats(toBufferOld(Buffer.toArray(val))) };
         };
       };
       
@@ -177,7 +186,7 @@ module {
       case (#Int16(val)) { #Int16(val) };
       case (#Int32(val)) { #Int32(val) };
       case (#Int64(val)) { #Int64(val) };
-      case (#Ints(val)) { #Ints(val) };
+      case (#Ints(val)) { #Ints(StableBuffer.fromArray(StableBuffer_Old.toArray(val))) };
       case (#Nat(val)) { #Nat(val) };
       case (#Nat8(val)) { #Nat8(val) };
       case (#Nat16(val)) { #Nat16(val) };
@@ -203,11 +212,11 @@ module {
       };
       case (#Principal(val)) { #Principal(val) };
       case (#Array(val)) {
-        #Array(CandyTypes.toBuffer(Array.map<Candy0_2_0.Candy, CandyTypes.Candy>(StableBuffer.toArray(val), upgradeCandy0_2_0_to_0_3_0)));
+        #Array(CandyTypes.toBuffer(Array.map<Candy0_2_0.Candy, CandyTypes.Candy>(StableBuffer_Old.toArray(val), upgradeCandy0_2_0_to_0_3_0)));
       };
-      case (#Bytes(val)) {#Bytes(val)};
-      case (#Floats(val)) {#Floats(val)};
-      case (#Nats(val)) {#Nats(val)};
+      case (#Bytes(val)) {#Bytes(StableBuffer.fromArray(StableBuffer_Old.toArray(val)))};
+      case (#Floats(val)) {#Floats(StableBuffer.fromArray(StableBuffer_Old.toArray(val)))};
+      case (#Nats(val)) {#Nats(StableBuffer.fromArray(StableBuffer_Old.toArray(val)))};
       case (#Option(val)) {
         switch(val){
           case(null) #Option(null);

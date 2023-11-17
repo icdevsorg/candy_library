@@ -37,9 +37,9 @@ import Principal "mo:base/Principal";
 import Prelude "mo:base/Prelude";
 import List "mo:base/List";
 import Types "types";
-import Hex "hex";
+import Hex "mo:encoding_0_4_1/Hex";
 import Properties "properties";
-import StableBuffer "mo:stablebuffer/StableBuffer";
+import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
 import Map "mo:map9/Map";
 import Set "mo:map9/Set";
 
@@ -2023,5 +2023,74 @@ module {
       };
       //case(_){assert(false);/*unreachable*/#Nat(0);};
     };
+
+    
+  };
+
+  ///converts a candy value to the reduced set of ValueShared used in many places like ICRC3.  Some types not recoverable
+  public func CandyToValue(x: Candy) : ValueShared {
+    switch(x){
+      case(#Text(x)) #Text(x);
+      case(#Map(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in Map.entries(x)){
+          buf.add((thisItem.0, CandyToValue(thisItem.1)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Class(x)) {
+        let buf = Buffer.Buffer<(Text, ValueShared)>(1);
+        for(thisItem in Map.entries(x)){
+          buf.add((thisItem.1.name, CandyToValue(thisItem.1.value)));
+        };
+        #Map(Buffer.toArray(buf));
+      };
+      case(#Int(x)) #Int(x);
+      case(#Int8(x)) #Int(Int8.toInt(x));
+      case(#Int16(x)) #Int(Int16.toInt(x));
+      case(#Int32(x)) #Int(Int32.toInt(x));
+      case(#Int64(x)) #Int(Int64.toInt(x));
+      case(#Ints(x)){
+         #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Int,ValueShared>(x, func(x: Int) : ValueShared { #Int(x)})));
+      };
+      case(#Nat(x)) #Nat(x);
+      case(#Nat8(x)) #Nat(Nat8.toNat(x));
+      case(#Nat16(x)) #Nat(Nat16.toNat(x));
+      case(#Nat32(x)) #Nat(Nat32.toNat(x));
+      case(#Nat64(x)) #Nat(Nat64.toNat(x));
+      case(#Nats(x)){
+          #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Nat,ValueShared>(x, func(x: Nat) : ValueShared { #Nat(x)})));
+      };
+      case(#Bytes(x)){
+         #Blob(Blob.fromArray(StableBuffer.toArray<Nat8>(x)));
+      };
+      case(#Array(x)) {
+        #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Candy, ValueShared>(x, CandyToValue)));
+      };
+      case(#Blob(x)) #Blob(x);
+      case(#Bool(x)) #Blob(Blob.fromArray([if(x==true){1 : Nat8} else {0: Nat8}]));
+      case(#Float(x)){#Text(Float.format(#exact, x))};
+      case(#Floats(x)){
+        #Array(StableBuffer.toArray<ValueShared>(StableBuffer.map<Float,ValueShared>(x, func(x: Float) : ValueShared { CandyToValue(#Float(x))})));
+      };
+      case(#Option(x)){ //empty array is null
+        switch(x){
+          case(null) #Array([]);
+          case(?x) #Array([CandyToValue(x)]);
+        };
+      };
+      case(#Principal(x)){
+        #Blob(Principal.toBlob(x));
+      };
+      case(#Set(x)) {
+        #Array(Iter.toArray<ValueShared>(Iter.map<Candy,ValueShared>(Set.keys(x), func(x: Candy) : ValueShared { CandyToValue(x)})));
+      };
+      case(#ValueMap(x)) {
+        #Array(Iter.toArray<ValueShared>(Iter.map<(Candy,Candy),ValueShared>(Map.entries(x), func(x: (Candy,Candy)) : ValueShared { #Array([CandyToValue(x.0), CandyToValue(x.1)])})));
+      };
+      //case(_){assert(false);/*unreachable*/#Nat(0);};
+    };
+
+    
   };
 }

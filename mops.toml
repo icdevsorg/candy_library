@@ -11,10 +11,11 @@ candy_0_1_12 = "https://github.com/icdevs/candy_library#v0.1.12@20db7a8a74258bb0
 candy_0_2_0 = "https://github.com/icdevs/candy_library#0.2.0@4fc5aebec44355da94a4d3ebef87623e4545d89a"
 encoding_0_4_1 = "https://github.com/aviate-labs/encoding.mo#v0.4.1@2711d18727e954b11afc0d37945608512b5fbce2"
 vector = "0.2.0"
+principal-ext = "0.1.0"
 
 [package]
 name = "candy"
-version = "0.3.0"
+version = "0.3.1"
 description = "Library for Converting Types and Creating Workable Motoko Collections"
 repository = "https://github.com/icdevs/candy_library"
 

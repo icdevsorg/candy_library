@@ -1,5 +1,4 @@
 [dependencies]
-base = "https://github.com/dfinity/motoko-base#moc-0.10.0@a15ca7cd26335505e103288654f480a44463d844"
 matchers = "https://github.com/kritzcreek/motoko-matchers#v1.3.0@3dac8a071b69e4e651b25a7d9683fe831eb7cffd"
 candid = "https://github.com/gekctek/motoko_candid#v1.0.1@4f0c445a4f998d4d07b616fafd463eea8f52e4bc"
 xtendedNumbers = "https://github.com/gekctek/motoko_numbers#v1.0.2@775995c49c55f7c53e5c9e5a52dc3536201064b2"
@@ -12,6 +11,7 @@ candy_0_2_0 = "https://github.com/icdevs/candy_library#0.2.0@4fc5aebec44355da94a
 encoding_0_4_1 = "https://github.com/aviate-labs/encoding.mo#v0.4.1@2711d18727e954b11afc0d37945608512b5fbce2"
 vector = "0.2.0"
 principal-ext = "0.1.0"
+base = "0.14.4"
 
 [package]
 name = "candy"

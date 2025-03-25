@@ -743,8 +743,16 @@ module {
     switch(val){
       case(#Principal(val)){ #ok(val) };
       case(#Blob(val)){ 
-        //should not throw even for absurd principals
+        if(val.size() > 29){ 
+          return #err("invalid blob size for Principal");
+        };
         #ok(Principal.fromBlob(val));
+      };
+      case(#Bytes(val)){ 
+        if(StableBuffer.size(val) > 29){ 
+          return #err("invalid blob size for Principal");
+        };
+        #ok(Principal.fromBlob(Blob.fromArray(StableBuffer.toArray<Nat8>(val))));
       };
       case(#Text(val)){ 
         
@@ -1751,7 +1759,16 @@ module {
         }
       };
       case(#Blob(val)){
+        if (val.size() > 29){ 
+          return #err("invalid blob size for Principal");
+        };
         #ok(Principal.fromBlob(val));
+      };
+      case(#Bytes(val)){
+        if(val.size() > 29){ 
+          return #err("invalid bytes size for Principal");
+        };
+        #ok(Principal.fromBlob(Blob.fromArray(val)));
       };
       case(_){ #err("illegal cast to Principal") };
     };

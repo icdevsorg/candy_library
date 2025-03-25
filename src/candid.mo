@@ -22,9 +22,9 @@ import Map "mo:map9/Map";
 
 import Types "types";
 
-import CandidTypes "mo:candid/Type";
-import Arg "mo:candid/Arg";
-import Value "mo:candid/Value";
+import CandidTypes "mo:candid-old/Type";
+import Arg "mo:candid-old/Arg";
+import Value "mo:candid-old/Value";
 
 
 module {

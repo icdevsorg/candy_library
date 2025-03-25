@@ -10,9 +10,9 @@ import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
 import Array "mo:base/Array";
 import Nat8 "mo:base/Nat8";
 import Text "mo:base/Text";
-import CandidTypes "mo:candid/Type";
-import Arg "mo:candid/Arg";
-import Value "mo:candid/Value";
+import CandidTypes "mo:candid-old/Type";
+import Arg "mo:candid-old/Arg";
+import Value "mo:candid-old/Value";
 
 type CandyShared = Types.CandyShared;
 

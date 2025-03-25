@@ -1,6 +1,6 @@
 [dependencies]
 matchers = "https://github.com/kritzcreek/motoko-matchers#v1.3.0@3dac8a071b69e4e651b25a7d9683fe831eb7cffd"
-candid = "https://github.com/gekctek/motoko_candid#v1.0.1@4f0c445a4f998d4d07b616fafd463eea8f52e4bc"
+candid-old = "https://github.com/gekctek/motoko_candid#v1.0.1@4f0c445a4f998d4d07b616fafd463eea8f52e4bc"
 xtendedNumbers = "https://github.com/gekctek/motoko_numbers#v1.0.2@775995c49c55f7c53e5c9e5a52dc3536201064b2"
 stablebuffer = "https://github.com/skilesare/StableBuffer#v0.2.0@110660769d11ba93c618dc4712525d20503bdc37"
 stablebuffer_1_3_0 = "https://github.com/canscale/StableBuffer#v1.3.0@acdde6bb5b939227997cebdbb8919d2e6da8691c"

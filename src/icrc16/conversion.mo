@@ -38,7 +38,7 @@ import Prelude "mo:base/Prelude";
 import Result "mo:base/Result";
 import List "mo:base/List";
 import Types "../types";
-import Hex "mo:encoding_0_4_1/Hex";
+import Hex "../hex";
 import Properties "../properties";
 import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
 import Map "mo:map9/Map";

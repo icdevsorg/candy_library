@@ -20,7 +20,7 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 
 import Types "types";
-import Hex "mo:encoding_0_4_1/Hex";
+import Hex "hex";
 
 module {
   /// Convert `CandyShared` to JSON format as `Text`.

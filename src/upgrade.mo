@@ -13,18 +13,18 @@
 ///
 /// This module contains the utility functions to upgrade candy values from version 1 to version 2.
 
-import CandyOld "mo:candy_0_1_12/types";
-import Candy0_2_0 "mo:candy_0_2_0/types";
+import CandyOld "vendored/candy_0_1_12/types";
+import Candy0_2_0 "vendored/candy_0_2_0/types";
 import CandyTypes "types";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";
-import Map7 "mo:map7/Map";
-import Set7 "mo:map7/Set";
-import Map "mo:map9/Map";
-import Set "mo:map9/Set";
-import StableBuffer_Old "mo:stablebuffer/StableBuffer";
-import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
+import Map7 "vendored/map_7_0_0/Map";
+import Set7 "vendored/map_7_0_0/Set";
+import Map "mo:map/Map";
+import Set "mo:map/Set";
+import StableBuffer_Old "vendored/stablebuffer_0_2_0/StableBuffer";
+import StableBuffer "vendored/stablebuffer_1_3_0/StableBuffer";
 
 module {
 

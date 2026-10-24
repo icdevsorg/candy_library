@@ -18,13 +18,13 @@ import Blob "mo:base/Blob";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 
-import Map "mo:map9/Map";
+import Map "mo:map/Map";
 
 import Types "types";
 
-import CandidTypes "mo:candid-old/Type";
-import Arg "mo:candid-old/Arg";
-import Value "mo:candid-old/Value";
+import CandidTypes "vendored/candid_1_0_1/Type";
+import Arg "vendored/candid_1_0_1/Arg";
+import Value "vendored/candid_1_0_1/Value";
 
 
 module {

@@ -2,13 +2,13 @@ import D "mo:base/Debug";
 import {test} "mo:test";
 import Types "../src/types";
 import Upgrade "../src/upgrade";
-import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
+import StableBuffer "../src/vendored/stablebuffer_1_3_0/StableBuffer";
 import Nat8 "mo:base/Nat8";
 import Principal "mo:base/Principal";
 import Array "mo:base/Array";
 import Blob "mo:base/Blob";
-import CandyOld "mo:candy_0_1_12/types";
-import Candy0_2_0 "mo:candy_0_2_0/types";
+import CandyOld "../src/vendored/candy_0_1_12/types";
+import Candy0_2_0 "../src/vendored/candy_0_2_0/types";
 
 type CandyV1 = CandyOld.CandyValueUnstable;
 type CandySharedV1 = CandyOld.CandyValue;

@@ -6,13 +6,13 @@ import Conv "../src/conversion";
 import Principal "mo:base/Principal";
 import Nat "mo:base/Nat";
 import Int "mo:base/Int";
-import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
+import StableBuffer "../src/vendored/stablebuffer_1_3_0/StableBuffer";
 import Array "mo:base/Array";
 import Nat8 "mo:base/Nat8";
 import Text "mo:base/Text";
-import CandidTypes "mo:candid-old/Type";
-import Arg "mo:candid-old/Arg";
-import Value "mo:candid-old/Value";
+import CandidTypes "../src/vendored/candid_1_0_1/Type";
+import Arg "../src/vendored/candid_1_0_1/Arg";
+import Value "../src/vendored/candid_1_0_1/Value";
 
 type CandyShared = Types.CandyShared;
 

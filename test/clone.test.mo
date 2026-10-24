@@ -19,9 +19,9 @@ import Bool "mo:base/Bool";
 import Text "mo:base/Text";
 import Blob "mo:base/Blob";
 import Array "mo:base/Array";
-import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
-import Map "mo:map9/Map";
-import Set "mo:map9/Set";
+import StableBuffer "../src/vendored/stablebuffer_1_3_0/StableBuffer";
+import Map "mo:map/Map";
+import Set "mo:map/Set";
 
 type Candy = Types.Candy;
 type CandyShared = Types.CandyShared;

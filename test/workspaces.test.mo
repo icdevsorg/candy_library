@@ -2,7 +2,7 @@
 import Workspace "../src/workspace";
 import Types "../src/types";
 import {test} "mo:test";
-import StableBuffer "mo:stablebuffer_1_3_0/StableBuffer";
+import StableBuffer "../src/vendored/stablebuffer_1_3_0/StableBuffer";
 import Array "mo:base/Array";
 import Iter "mo:base/Iter";
 import Buffer "mo:base/Buffer";

@@ -13,8 +13,11 @@ This library provides for both Stable and Shared collections and conversions.  T
 ## Installation
 
 ```
-mops candy
+mops add candy
 ```
+
+Since 0.3.2 candy has no GitHub dependencies, so it builds from a plain `mops install` with no
+`base-0.7.3` package alias. Third-party code it carries is under `src/vendored/` (see NOTICE).
 
 ## Structure
 The provided functionality is divided into separate libraries to silo some of the functionality.
